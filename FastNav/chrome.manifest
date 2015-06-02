@@ -1,0 +1,4 @@
+content   fastnav           		chrome/content/
+locale    fastnav   en-US			chrome/locale/en-US/
+
+overlay  chrome://browser/content/browser.xul chrome://fastnav/content/fastnav.xul
