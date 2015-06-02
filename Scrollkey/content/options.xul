@@ -5,22 +5,33 @@
 <prefwindow id="scrollkey-preferences"
     title="&pref_title;"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    name="scrollkey-preferences"
-    >
+    name="scrollkey-preferences">
 
 	<prefpane>
 		<preferences>
-			<preference id="scrollkey-scrollvalue-pref" name="extensions.scrollkey.scrollvalue" type="int" />
-			<preference id="scrollkey-scrollpagedownpageup-pref" name="extensions.scrollkey.scrollpagedownpageup" type="bool" />
+			<preference id="scrollkey-scrollvalue" name="extensions.scrollkey.scrollvalue" type="int" />
+			<preference id="scrollkey-scrollvalue-shift" name="extensions.scrollkey.scrollvalue-shift" type="int" />
+			<preference id="scrollkey-scrollvalue-alt" name="extensions.scrollkey.scrollvalue-alt" type="int" />
+			<preference id="scrollkey-scrollpagedownpageup" name="extensions.scrollkey.scrollpagedownpageup" type="bool" />
 		</preferences>
-		<vbox align="center">
-			<hbox align="center" pack="end">
-				<label value="&pref_scrollvalue;"/>
-				<textbox preference="scrollkey-scrollvalue-pref" id="scrollkey-scrollvalue-pref" type="number" min="0" max="800" />
+		<vbox align="start">
+			<hbox align="center">
+				<label value="&pref_scrollvalue;" minwidth="150px"/>
+				<textbox preference="scrollkey-scrollvalue" id="scrollkey-scrollvalue" type="number" min="1" max="1500" maxwidth="70px" />
 				<label value="&pref_pixels;"/>
 			</hbox>
 			<hbox align="center" pack="end">
-				<checkbox label="&pref_pagedownpageup;" preference="scrollkey-scrollpagedownpageup-pref" id="scrollkey-scrollpagedownpageup-pref"/>
+				<checkbox label="&pref_pagedownpageup;" preference="scrollkey-scrollpagedownpageup" id="scrollkey-scrollpagedownpageup"/>
+			</hbox>
+			<hbox align="center">
+				<label value="&pref_scrollvalue_shift;" minwidth="150px"/>
+				<textbox preference="scrollkey-scrollvalue-shift" id="scrollkey-scrollvalue-shift" type="number" min="1" max="1500" maxwidth="70px" />
+				<label value="&pref_pixels;"/>
+			</hbox>
+			<hbox align="center">
+				<label value="&pref_scrollvalue_alt;" minwidth="150px"/>
+				<textbox preference="scrollkey-scrollvalue-alt" id="scrollkey-scrollvalue-alt" type="number" min="1" max="1500" maxwidth="70px" />
+				<label value="&pref_pixels;"/>
 			</hbox>
 		</vbox>
 	</prefpane>

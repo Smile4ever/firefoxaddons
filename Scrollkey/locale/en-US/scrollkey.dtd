@@ -1,3 +1,6 @@
 <!ENTITY pref_title "Preferences for Scrollkey">
 <!ENTITY pref_scrollvalue "Scroll value">
+<!ENTITY pref_scrollvalue_shift "Scroll value (Shift)">
+<!ENTITY pref_scrollvalue_alt "Scroll value (Alt)">
 <!ENTITY pref_pixels "pixels">
+<!ENTITY pref_pagedownpageup "PageDown and PageUp scroll the value indicated above">

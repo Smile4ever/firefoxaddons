@@ -1,3 +1,0 @@
-pref_title=Scrollkey-voorkeuren
-pref_scrollvalue=Scrollwaarde
-pref_pixels=pixels

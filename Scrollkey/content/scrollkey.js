@@ -3,9 +3,16 @@ var scrollkey = {
 	prefs: function(){
 		return Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
 	},
-	getscrollvalue: function(){
+	getscrollvalue: function(code){
+		var pref = "extensions.scrollkey.scrollvalue";
+		if (code == 1){
+			pref = "extensions.scrollkey.scrollvalue-shift";
+		}
+		if (code == 2){
+			pref = "extensions.scrollkey.scrollvalue-alt";
+		}
 		try{
-			value = this.prefs().getIntPref("extensions.scrollkey.scrollvalue");
+			value = this.prefs().getIntPref(pref);
 		}
 		catch(err){
 			value = 400;
@@ -25,10 +32,10 @@ var scrollkey = {
 		return value;
 	},
 	scrollup: function(){
-		window.content.scrollBy(0,this.getscrollvalue() * -1);
+		window.content.scrollBy(0,this.getscrollvalue(0) * -1);
 	},
 	scrolldown: function(){
-		window.content.scrollBy(0,this.getscrollvalue());
+		window.content.scrollBy(0,this.getscrollvalue(0));
 	},
 	scrollupif: function(){
 		if(this.getpagevalue()){
@@ -36,6 +43,18 @@ var scrollkey = {
 		}else{
 			window.content.scrollBy(0, (window.innerHeight-300) * -1);
 		}
+	},
+	scrolldownshift: function(){
+		window.content.scrollBy(0,this.getscrollvalue(1));
+	},
+	scrollupshift: function(){
+		window.content.scrollBy(0,this.getscrollvalue(1) * -1);
+	},
+	scrolldownalt: function(){
+		window.content.scrollBy(0,this.getscrollvalue(2));
+	},
+	scrollupalt: function(){
+		window.content.scrollBy(0,this.getscrollvalue(2) * -1);
 	},
 	scrolldownif: function(){
 		// window.innerHeight
