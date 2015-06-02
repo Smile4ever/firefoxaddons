@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>   
+<!DOCTYPE window SYSTEM "chrome://scrollkey/locale/scrollkey.dtd">
+
+<prefwindow id="scrollkey-preferences"
+    title="&pref_title;"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    name="scrollkey-preferences"
+    >
+
+	<prefpane>
+		<preferences>
+			<preference id="scrollkey-scrollvalue-pref" name="extensions.scrollkey.scrollvalue" type="int" />
+			<preference id="scrollkey-scrollpagedownpageup-pref" name="extensions.scrollkey.scrollpagedownpageup" type="bool" />
+		</preferences>
+		<vbox align="center">
+			<hbox align="center" pack="end">
+				<label value="&pref_scrollvalue;"/>
+				<textbox preference="scrollkey-scrollvalue-pref" id="scrollkey-scrollvalue-pref" type="number" min="0" max="800" />
+				<label value="&pref_pixels;"/>
+			</hbox>
+			<hbox align="center" pack="end">
+				<checkbox label="&pref_pagedownpageup;" preference="scrollkey-scrollpagedownpageup-pref" id="scrollkey-scrollpagedownpageup-pref"/>
+			</hbox>
+		</vbox>
+	</prefpane>
+
+</prefwindow>

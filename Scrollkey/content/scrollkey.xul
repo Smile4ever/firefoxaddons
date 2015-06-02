@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay SYSTEM "chrome://scrollkey/locale/scrollkey.dtd">
+
+<overlay id="scrollkey-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <!-- javascript -->
+  <script src="chrome://scrollkey/content/scrollkey.js"/>
+
+   <keyset id="mainKeyset">
+		<!-- Scroll up k -->
+		<key id='scrollkey-scrollup-k'
+		modifiers=''
+		key='k'
+		oncommand='scrollkey.scrollup();'
+		/>
+		<!-- Scroll up alt -->
+		<key id='scrollkey-scrollup-altk'
+		modifiers='alt'
+		key='k'
+		oncommand='scrollkey.scrollup();'
+		/>
+		<!-- Scroll up shift -->
+		<key id='scrollkey-scrollup-shiftk'
+		modifiers='shift'
+		key='k'
+		oncommand='scrollkey.scrollup();'
+		/>
+		<!-- Scroll up pageup -->
+		<key id='scrollkey-scrollup-pageup'
+		keycode='VK_PAGE_UP'
+		oncommand='scrollkey.scrollupif();'
+		/>
+		<!-- Scroll down j -->
+		<key id='scrollkey-scrolldown-j'
+		modifiers=''
+		key='j'
+		oncommand='scrollkey.scrolldown();'
+		/>
+		<!-- Scroll down alt (does not work on wikis) -->
+		<key id='scrollkey-scrolldown-altj'
+		modifiers='alt'
+		key='j'
+		oncommand='scrollkey.scrolldown();'
+		/>
+		<!-- Scroll down shift (works on wikis) -->
+		<key id='scrollkey-scrolldown-shiftj'
+		modifiers='shift'
+		key='j'
+		oncommand='scrollkey.scrolldown();'
+		/>
+		<!-- Scroll down on pagedown -->
+		<key id='scrollkey-scrollup-pagedown'
+		keycode='VK_PAGE_DOWN'
+		oncommand='scrollkey.scrolldownif();'
+		/>
+	</keyset>
+</overlay>

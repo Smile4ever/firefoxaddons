@@ -1,0 +1,15 @@
+#content   scrollkey           		chrome/content/
+#locale    scrollkey   en-US			chrome/locale/en-US/
+
+#overlay  chrome://browser/content/browser.xul chrome://scrollkey/content/scrollkey.xul
+
+content scrollkey content/
+locale scrollkey en-US locale/en-US/
+locale scrollkey nl-BE locale/nl-BE/
+locale scrollkey nl-NL locale/nl-NL/
+locale scrollkey fr-FR locale/fr-FR/
+locale scrollkey fr-BE locale/fr-BE/
+locale scrollkey de-DE locale/de-DE/
+
+#skin scrollkey classic/1.0 skin/
+overlay chrome://browser/content/browser.xul chrome://scrollkey/content/scrollkey.xul

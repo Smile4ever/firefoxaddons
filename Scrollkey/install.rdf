@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>scrollkey@hugsmile.eu</em:id>
+    <em:name>Scrollkey</em:name>
+    <em:type>2</em:type>
+    <em:version>0.5.1</em:version>
+    <em:creator>Geoffrey De Belie</em:creator>
+    <em:contributor></em:contributor>
+    <em:description>Scroll pages down and up in VIM style, using j and k shortcuts.</em:description>
+	<em:homepageURL>http://hugsmile.eu</em:homepageURL> 
+	<em:aboutURL>http://hugsmile.eu</em:aboutURL>
+	<em:iconURL>chrome://scrollkey/content/scrollkey32.png</em:iconURL> <!-- Thanks to PICOL.org for the base design, adapted for Scrollkey by Geoffrey De Belie. Redistributed under CC-BY-SA, source: https://www.iconfinder.com/icons/103513/document_down_text_icon -->
+	<em:optionsURL>chrome://scrollkey/content/options.xul</em:optionsURL>
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
+        <em:minVersion>3.0</em:minVersion>
+		<em:maxVersion>36.0</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    <em:targetApplication>
+	  <Description>
+		<em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id> <!-- Pale Moon -->
+		<em:minVersion>16.0</em:minVersion>
+		<em:maxVersion>36.0</em:maxVersion>
+	  </Description>
+    </em:targetApplication>
+  </Description>
+</RDF>

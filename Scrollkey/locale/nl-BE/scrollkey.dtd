@@ -1,0 +1,4 @@
+<!ENTITY pref_title "Scrollkey-voorkeuren">
+<!ENTITY pref_scrollvalue "Scrollwaarde">
+<!ENTITY pref_pixels "pixels">
+<!ENTITY pref_pagedownpageup "PageDown and PageUp scroll the value indicated above">
