@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay SYSTEM "chrome://getarchive/locale/getarchive.dtd">
+
+<overlay id="getarchive-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <!-- javascript -->
+  <script src="chrome://getarchive/content/getarchive.js"/>
+
+  <!-- context menu --> 
+  <popup id="contentAreaContextMenu">
+	<menuitem id="getarchive" label="Get Archive.org" insertbefore="context-undo"
+	class="menu-iconic" image="chrome://getarchive/content/icon16.png" onclick="getarchive.getarchiveorglink(event.button);hidePopup();">
+	</menuitem>
+	<menuitem id="gettodayarchive" label="Get Archive.today" insertbefore="context-undo"
+	class="menu-iconic" image="chrome://getarchive/content/16x16today.png" onclick="getarchive.gettodayarchive(event.button);hidePopup();">
+	</menuitem>
+   </popup>
+   
+   <keyset id="mainKeyset">
+		<!-- Archive.org -->
+		<key id='archive-org-shortcut'
+		modifiers='control'
+		key='3'
+		oncommand='getarchive.getarchiveorglink(-1);'
+		/>
+		<!-- Archive.org µ -->
+		<key id='archive-org-shortcut-function'
+		modifiers=''
+		key='µ'
+		oncommand='getarchive.getarchiveorglink(-1);'
+		/>
+		<!-- Archive.org 3 -->
+		<key id='archive-org-shortcut-three'
+		modifiers=''
+		key='3'
+		oncommand='getarchive.getarchiveorglink(-1);'
+		/>
+		<!-- Archive.org 3 azerty -->
+		<key id='archive-org-shortcut-three-azerty'
+		modifiers=''
+		key='&quot;'
+		oncommand='getarchive.getarchiveorglink(-1);'
+		/>
+		<!-- Archive.today -->
+		<key id='archive-today-shortcut'
+		modifiers='control'
+		key='4'
+		oncommand='getarchive.gettodayarchive(-1);'
+		/>
+		<!-- Archive.today 4 -->
+		<key id='archive-today-shortcut-four'
+		modifiers=''
+		key='4'
+		oncommand='getarchive.gettodayarchive(-1);'
+		/>
+		<!-- Archive.today 4 azerty -->
+		<key id='archive-today-shortcut-fourazerty'
+		modifiers=''
+		key='&#39;'
+		oncommand='getarchive.gettodayarchive(-1);'
+		/>
+   </keyset>
+   
+</overlay>
