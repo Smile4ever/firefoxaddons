@@ -18,5 +18,12 @@
 		<em:maxVersion>42.0</em:maxVersion>
       </Description>
     </em:targetApplication>
+    <em:targetApplication>
+	  <Description>
+		<em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id> <!-- Pale Moon -->
+		<em:minVersion>16.0</em:minVersion>
+		<em:maxVersion>36.0</em:maxVersion>
+	  </Description>
+    </em:targetApplication>
   </Description>
 </RDF>
