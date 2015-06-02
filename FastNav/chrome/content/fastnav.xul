@@ -3,22 +3,22 @@
 
 <overlay id="fastnav-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <!-- javascript -->
   <script src="chrome://fastnav/content/fastnav.js"/>
  
    <keyset id="mainKeyset">
-	    <!-- Delete/confirm alt+i -->
 		<key id='fastnav-next'
 		modifiers=''
 		key='n'
 		oncommand='fastnav.next();'
 		/>
-	</keyset>
-	<keyset id="mainKeyset">
-	    <!-- Delete/confirm alt+i -->
 		<key id='fastnav-prev'
 		modifiers=''
 		key='p'
+		oncommand='fastnav.prev();'
+		/>
+		<key id='fastnav-before'
+		modifiers=''
+		key='b'
 		oncommand='fastnav.prev();'
 		/>
 	</keyset>
