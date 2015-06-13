@@ -41,7 +41,8 @@ var scrollkey = {
 		if(this.getpagevalue()){
 			this.scrollup();
 		}else{
-			window.content.scrollBy(0, (window.innerHeight-(window.outerHeight / 2.8)) * -1);
+			window.content.scrollByPages(-1);
+			//window.content.scrollBy(0, (window.innerHeight-(window.outerHeight / 2.8)) * -1);
 		}
 	},
 	scrolldownshift: function(){
@@ -77,7 +78,8 @@ var scrollkey = {
 			this.scrolldown();
 		}else{
 			//keyelement.setAttribute('command', '://');
-			window.content.scrollBy(0, window.innerHeight-(window.outerHeight / 2.8));
+			//window.content.scrollBy(0, window.innerHeight-(window.outerHeight / 2.8));
+			window.content.scrollByPages(1);
 		}
 	},
 }

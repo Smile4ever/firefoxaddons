@@ -4,7 +4,7 @@
     <em:id>scrollkey@hugsmile.eu</em:id>
     <em:name>Scrollkey</em:name>
     <em:type>2</em:type>
-    <em:version>0.6.1</em:version>
+    <em:version>0.6.2</em:version>
     <em:creator>Geoffrey De Belie</em:creator>
     <em:contributor></em:contributor>
     <em:description>Scroll pages down and up in VIM style, using j and k shortcuts.</em:description>
