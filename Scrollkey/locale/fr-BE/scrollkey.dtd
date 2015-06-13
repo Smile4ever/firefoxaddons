@@ -1,5 +1,6 @@
 <!ENTITY pref_title "Scrollkey préférences">
 <!ENTITY pref_scrollvalue "Valeur de défilement">
 <!ENTITY pref_scrollvalue_shift "Valeur de défilement (Maj)">
+<!ENTITY pref_scrollvalue_alt "Valeur de défilement (alt)">
 <!ENTITY pref_pixels "pixels">
 <!ENTITY pref_pagedownpageup "PageDown et PageUp défile la valeur indiquée ci-dessus">
