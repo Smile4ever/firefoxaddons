@@ -7,3 +7,4 @@ Description pages:
 - [FastNav](https://addons.mozilla.org/firefox/addon/fastnav/)
 - [Get Archive](https://addons.mozilla.org/firefox/addon/get-archive/)
 - [Scrollkey](https://addons.mozilla.org/firefox/addon/scrollkey/)
+- [Translate Now](https://addons.mozilla.org/nl/firefox/addon/translate-now/)
