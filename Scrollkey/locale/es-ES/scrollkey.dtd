@@ -4,3 +4,4 @@
 <!ENTITY pref_scrollvalue_alt "Valor de desplazamiento (alt)">
 <!ENTITY pref_pixels "píxeles">
 <!ENTITY pref_pagedownpageup "AvPág y RePág desplazarse el valor indicado anteriormente">
+<!ENTITY pref_horizontalscroll "Utilice la tecla de acceso directo de arriba para el desplazamiento horizontal">

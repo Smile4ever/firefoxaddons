@@ -13,6 +13,9 @@
 			<preference id="scrollkey-scrollvalue-shift" name="extensions.scrollkey.scrollvalue-shift" type="int" />
 			<preference id="scrollkey-scrollvalue-alt" name="extensions.scrollkey.scrollvalue-alt" type="int" />
 			<preference id="scrollkey-scrollpagedownpageup" name="extensions.scrollkey.scrollpagedownpageup" type="bool" />
+			<preference id="scrollkey-horizontalscrollnormal" name="extensions.scrollkey.horizontal-scroll-normal" type="bool" />
+			<preference id="scrollkey-horizontalscrollshift" name="extensions.scrollkey.horizontal-scroll-shift" type="bool" />
+			<preference id="scrollkey-horizontalscrollalt" name="extensions.scrollkey.horizontal-scroll-alt" type="bool" />
 		</preferences>
 		<vbox align="start">
 			<hbox align="center">
@@ -20,8 +23,11 @@
 				<textbox preference="scrollkey-scrollvalue" id="scrollkey-scrollvalue" type="number" min="1" max="1500" maxwidth="70px" />
 				<label value="&pref_pixels;"/>
 			</hbox>
-			<hbox align="center" pack="end">
+			<hbox align="center">
+				<vbox align="start">
 				<checkbox label="&pref_pagedownpageup;" preference="scrollkey-scrollpagedownpageup" id="scrollkey-scrollpagedownpageup"/>
+				<checkbox label="&pref_horizontalscroll;" preference="scrollkey-horizontalscrollnormal" id="scrollkey-horizontalscrollnormal"/>
+				</vbox>
 			</hbox>
 			<hbox align="center">
 				<label value="&pref_scrollvalue_shift;" minwidth="150px"/>
@@ -29,9 +35,15 @@
 				<label value="&pref_pixels;"/>
 			</hbox>
 			<hbox align="center">
+				<checkbox label="&pref_horizontalscroll;" preference="scrollkey-horizontalscrollshift" id="scrollkey-horizontalscrollshift"/>
+			</hbox>
+			<hbox align="center">
 				<label value="&pref_scrollvalue_alt;" minwidth="150px"/>
 				<textbox preference="scrollkey-scrollvalue-alt" id="scrollkey-scrollvalue-alt" type="number" min="1" max="1500" maxwidth="70px" />
 				<label value="&pref_pixels;"/>
+			</hbox>
+			<hbox align="center">
+				<checkbox label="&pref_horizontalscroll;" preference="scrollkey-horizontalscrollalt" id="scrollkey-horizontalscrollalt"/>
 			</hbox>
 		</vbox>
 	</prefpane>

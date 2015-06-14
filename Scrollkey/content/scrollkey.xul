@@ -11,19 +11,19 @@
 		<key id='scrollkey-scrollup-k'
 		modifiers=''
 		key='k'
-		oncommand='scrollkey.scrollup();'
+		oncommand='scrollkey.scrollup(0);'
 		/>
 		<!-- Scroll up alt -->
 		<key id='scrollkey-scrollup-altk'
 		modifiers='alt'
 		key='k'
-		oncommand='scrollkey.scrollupalt();'
+		oncommand='scrollkey.scrollup(2);'
 		/>
 		<!-- Scroll up shift -->
 		<key id='scrollkey-scrollup-shiftk'
 		modifiers='shift'
 		key='k'
-		oncommand='scrollkey.scrollupshift();'
+		oncommand='scrollkey.scrollup(1);'
 		/>
 		<!-- Scroll up pageup -->
 		<key id='scrollkey-scrollup-pageup'
@@ -34,19 +34,19 @@
 		<key id='scrollkey-scrolldown-j'
 		modifiers=''
 		key='j'
-		oncommand='scrollkey.scrolldown();'
+		oncommand='scrollkey.scrolldown(0);'
 		/>
 		<!-- Scroll down alt (does not work on wikis) -->
 		<key id='scrollkey-scrolldown-altj'
 		modifiers='alt'
 		key='j'
-		oncommand='scrollkey.scrolldownalt();'
+		oncommand='scrollkey.scrolldown(2);'
 		/>
 		<!-- Scroll down shift (works on wikis) -->
 		<key id='scrollkey-scrolldown-shiftj'
 		modifiers='shift'
 		key='j'
-		oncommand='scrollkey.scrolldownshift();'
+		oncommand='scrollkey.scrolldown(1);'
 		/>
 		<!-- Scroll down on pagedown -->
 		<key id='scrollkey-scrollup-pagedown'

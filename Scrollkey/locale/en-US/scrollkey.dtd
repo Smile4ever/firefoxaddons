@@ -4,3 +4,4 @@
 <!ENTITY pref_scrollvalue_alt "Scroll value (Alt)">
 <!ENTITY pref_pixels "pixels">
 <!ENTITY pref_pagedownpageup "PageDown and PageUp scroll the value indicated above">
+<!ENTITY pref_horizontalscroll "Use the shortcut above for horizontal scrolling">

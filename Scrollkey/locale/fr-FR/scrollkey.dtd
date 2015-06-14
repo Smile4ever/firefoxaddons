@@ -4,3 +4,4 @@
 <!ENTITY pref_scrollvalue_alt "Valeur de défilement (alt)">
 <!ENTITY pref_pixels "pixels">
 <!ENTITY pref_pagedownpageup "PageDown et PageUp défile la valeur indiquée ci-dessus">
+<!ENTITY pref_horizontalscroll "Utilisez la touche de raccourci ci-dessus pour le défilement horizontal">

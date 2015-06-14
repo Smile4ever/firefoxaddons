@@ -4,3 +4,4 @@
 <!ENTITY pref_scrollvalue_alt "Scrollwert (Alt)">
 <!ENTITY pref_pixels "Pixel">
 <!ENTITY pref_pagedownpageup "PageDown und PageUp blättern den oben angegebenen Wert">
+<!ENTITY pref_horizontalscroll "Verwenden Sie die Tastenkombination oben für horizontalen Bildlauf">

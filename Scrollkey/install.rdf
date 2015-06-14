@@ -4,10 +4,10 @@
     <em:id>scrollkey@hugsmile.eu</em:id>
     <em:name>Scrollkey</em:name>
     <em:type>2</em:type>
-    <em:version>0.6.3</em:version>
+    <em:version>0.7.0</em:version>
     <em:creator>Geoffrey De Belie</em:creator>
     <em:contributor></em:contributor>
-    <em:description>Scroll pages down and up in VIM style, using j and k shortcuts.</em:description>
+    <em:description>Scroll pages in VIM style, using j and k shortcuts.</em:description>
 	<em:homepageURL>http://hugsmile.eu</em:homepageURL> 
 	<em:aboutURL>http://hugsmile.eu</em:aboutURL>
 	<em:iconURL>chrome://scrollkey/content/scrollkey32.png</em:iconURL> <!-- Thanks to PICOL.org for the base design, adapted for Scrollkey by Geoffrey De Belie. Redistributed under CC-BY-SA, source: https://www.iconfinder.com/icons/103513/document_down_text_icon -->
