@@ -88,32 +88,35 @@ var getarchive = {
 
 		if(isTalkPage){
 			contentText = content.document.getElementById("mw-content-text").innerHTML;
-		
-			var count = contentText.match(/mw-headline/g).length;
-			try {
-				var countDodeLink = contentText.match(/id=\"Dode_/g).length;
-			}
-			catch(err){
-				var countDodeLink = 0;
-			}
-			try {
-				var countLinks = contentText.match(/external/g).length;
-			}catch(err){
-				var countLinks = 0;
-			}
+			if(contentText != undefined){
+				var count = contentText.match(/mw-headline/g).length;
+				try {
+					var countDodeLink = contentText.match(/id=\"Dode_/g).length;
+				}
+				catch(err){
+					var countDodeLink = 0;
+				}
+				try {
+					var countLinks = contentText.match(/external/g).length;
+				}catch(err){
+					var countLinks = 0;
+				}
 
-			if (countDodeLink == 1 && (count == 1 || count == undefined || countLinks == 1)){
-				var startExternalLink = contentText.indexOf("external free");
-				var endExternalLink = contentText.indexOf(">",startExternalLink);
-				pageLocation = contentText.substring(startExternalLink + 21, endExternalLink - 1);
-			}else{
-				if(countDodeLink == 1 && countLinks > 1){
-					var startHeadline = contentText.indexOf("\"Dode_");
-					var startExternalLink = contentText.indexOf("external free", startHeadline)
+				if (countDodeLink == 1 && (count == 1 || count == undefined || countLinks == 1)){
+					var startExternalLink = contentText.indexOf("external free");
 					var endExternalLink = contentText.indexOf(">",startExternalLink);
 					pageLocation = contentText.substring(startExternalLink + 21, endExternalLink - 1);
+				}else{
+					if(countDodeLink == 1 && countLinks > 1){
+						var startHeadline = contentText.indexOf("\"Dode_");
+						var startExternalLink = contentText.indexOf("external free", startHeadline)
+						var endExternalLink = contentText.indexOf(">",startExternalLink);
+						pageLocation = contentText.substring(startExternalLink + 21, endExternalLink - 1);
+					}
 				}
 			}
+			//else: not a talk page after all (archive.is is fooling us)
+			
 		}
 		return pageLocation.split('amp;').join('');
 	},
