@@ -227,7 +227,7 @@ var getarchive = {
 		currentLocation = currentLocation.replace("https://archive.is/", "");
 		
 		if(gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
-			linkToPage = content.document.getElementsByClassName("TEXT-BLOCK")[0].getElementsByTagName("a")[0].getAttribute("href");
+			linkToPage = window.content.document.getElementsByClassName("TEXT-BLOCK")[0].getElementsByTagName("a")[0].getAttribute("href");
 			if(linkToPage != null && linkToPage != undefined){
 				window.content.location.href = linkToPage;
 				this.copytoclipboard();
@@ -240,7 +240,6 @@ var getarchive = {
 			
 			if(content.indexOf("://") > -1){
 				pageLocation = content;
-				//alert("readClipboard");
 			}
 		}
 		
