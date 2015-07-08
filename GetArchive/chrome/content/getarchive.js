@@ -14,7 +14,6 @@ var getarchive = {
 				
 		if(currentLocation.indexOf("web.archive.org/web/*/") > -1){
 			window.content.location.href = currentLocation.replace("web.archive.org/web/*/", "web.archive.org/web/2005/");
-			//alert("oeps");
 			this.copytoclipboard();
 			//pageLocation = "";
 			//currentLocation = "";
@@ -37,7 +36,6 @@ var getarchive = {
 				pageLocation = content;
 			}
 		}
-
 
 		if(currentLocation.indexOf("Overleg:") > -1 && gContextMenu == null){
 			temp = this.getPageLocation();
@@ -114,17 +112,13 @@ var getarchive = {
 				}
 			}
 			//else: not a talk page after all (archive.is is fooling us)
-			
 		}
 		return pageLocation.split('amp;').join('');
 	},
 	isurlloaded: function(){
 		if(gBrowser.contentDocument.location.href.indexOf("archive.org") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
 			if(gBrowser.contentDocument.location.href.indexOf("archive.org") > -1 && gBrowser.contentDocument.location.href.indexOf("archive.org/web/2005/") == -1){
-				contentText = "";
-				try{
-					contentText = content.document.body.textContent;
-				}catch(err){}
+				contentText = this.getcontenttext();
 				
 				if(contentText != ""){
 					if(contentText.indexOf("Redirecting to...") > -1){
@@ -139,12 +133,19 @@ var getarchive = {
 		}
 		return false;
 	},
+	getcontenttext: function(){
+		contentText = "";
+		try{
+			contentText = content.document.body.textContent;
+		}catch(err){}
+		return contentText;
+	},
 	isurlvalid: function(){
 		// Checks if page is valid. Used to stop the counter on invalid pages.
 		if(content.document.title.indexOf("404") > -1){
 			return false;
 		}
-		if(content.document.body.textContent.indexOf("Wayback Machine doesn't have that page archived.") > -1){
+		if(this.getcontenttext().indexOf("Wayback Machine doesn't have that page archived.") > -1){
 			return false;
 		}
 		return true;
@@ -172,7 +173,8 @@ var getarchive = {
 				}
 			}else{
 				if(that.isurlvalid()){
-					if(!document.readyState === "complete"){
+					// this is the same as (!document.readyState === "complete") (but better)
+					if(that.getcontenttext()==""){ //not loaded yet
 						//console.log("Valid page (keeps loading?)");
 						window.setTimeout(func, 800);
 					}
