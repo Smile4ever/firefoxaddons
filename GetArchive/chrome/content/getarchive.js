@@ -14,7 +14,7 @@ var getarchive = {
 				
 		if(currentLocation.indexOf("web.archive.org/web/*/") > -1){
 			window.content.location.href = currentLocation.replace("web.archive.org/web/*/", "web.archive.org/web/2005/");
-			alert("oeps");
+			//alert("oeps");
 			this.copytoclipboard();
 			//pageLocation = "";
 			//currentLocation = "";
@@ -28,7 +28,6 @@ var getarchive = {
 					pageLocation = inputElements[i].getAttribute("value");
 				}
 			}
-			
 		}
 
 		if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
@@ -43,7 +42,7 @@ var getarchive = {
 		if(currentLocation.indexOf("Overleg:") > -1 && gContextMenu == null){
 			temp = this.getPageLocation();
 			//alert(temp);
-			if (temp != ""){
+			if (temp != "" && temp != "NONE"){ //TODO: check this
 				pageLocation = temp;
 			}
 		}
@@ -52,7 +51,6 @@ var getarchive = {
 			// right click / action-submit / action-edit
 
 			if(buttoncode > 0 || currentLocation.indexOf("wiki") > -1){
-				//alert("yes");
 				gBrowser.selectedTab = gBrowser.addTab(archiveOrgBaseURL+decodeURI(pageLocation));
 			}else{
 				window.content.location.href = archiveOrgBaseURL+pageLocation;
@@ -79,7 +77,7 @@ var getarchive = {
 		talkPageObject=content.document.getElementById("ca-talk");
 		isTalkPage = false;
 
-		if(talkPageObject != null){
+		if(talkPageObject != null && talkPageObject != undefined){
 			if(talkPageObject.getAttribute("class") == "selected"){
 				isTalkPage = true;
 			}
@@ -123,11 +121,17 @@ var getarchive = {
 	isurlloaded: function(){
 		if(gBrowser.contentDocument.location.href.indexOf("archive.org") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
 			if(gBrowser.contentDocument.location.href.indexOf("archive.org") > -1 && gBrowser.contentDocument.location.href.indexOf("archive.org/web/2005/") == -1){
-				if(content.document.body.textContent.indexOf("Redirecting to...") > -1){
-					return false;
-				}else{
-					return this.isurlvalid();
+				contentText = "";
+				try{
+					contentText = content.document.body.textContent;
+				}catch(err){}
+				
+				if(contentText != ""){
+					if(contentText.indexOf("Redirecting to...") > -1){
+						return false;
+					}
 				}
+				return this.isurlvalid();
 			}
 			if(gBrowser.contentDocument.location.href.length < 28){
 				return this.isurlvalid();
@@ -136,7 +140,11 @@ var getarchive = {
 		return false;
 	},
 	isurlvalid: function(){
+		// Checks if page is valid. Used to stop the counter on invalid pages.
 		if(content.document.title.indexOf("404") > -1){
+			return false;
+		}
+		if(content.document.body.textContent.indexOf("Wayback Machine doesn't have that page archived.") > -1){
 			return false;
 		}
 		return true;
@@ -146,7 +154,7 @@ var getarchive = {
 		that=this;
 		copied=false;
 		copiedURL = "";
-		
+				
 		var func = function(){
 			if(copied && content.document.title.indexOf("+") == 0){
 				//if(copiedURL.indexOf(that.getpartialurl(gBrowser.contentDocument.location.href)) > -1){
@@ -160,23 +168,20 @@ var getarchive = {
 					copiedURL = gBrowser.contentDocument.location.href;
 					that.copytoclipboardv2(gBrowser.contentDocument.location.href);
 					copied = true;
-					//if(content.document.title.indexOf("+") != 0){
-						content.document.title = "+" + content.document.title;
-					//}
-					//clearInterval(myInterval);
+					content.document.title = "+" + content.document.title;
 				}
 			}else{
 				if(that.isurlvalid()){
-					window.setTimeout(func, 800);
+					if(!document.readyState === "complete"){
+						//console.log("Valid page (keeps loading?)");
+						window.setTimeout(func, 800);
+					}
+				}else{
+					//console.log("Invalid page");
 				}
 			}
-			
-			/*if(content.document.title.indexOf("+") != 0 && copied == true){
-				clearInterval(myInterval);
-			}*/
-			
 		};
-		window.setTimeout(func,1200); // once to start with
+		window.setTimeout(func,1200); // one to start with
 	},
 	copytoclipboardv2: function(text){
 		var str = Components.classes["@mozilla.org/supports-string;1"].
@@ -198,9 +203,7 @@ var getarchive = {
 		clip.setData(trans, null, clipid.kGlobalClipboard);
 	},
 	getpartialurl: function(fullurl){
-		//alert(fullurl);
 		locationHttp = fullurl.indexOf("://", 20); // second occurence
-		//alert(fullurl.substring(locationHttp));
 		return fullurl.substring(locationHttp);
 	},	
 	gettodayarchive: function(buttoncode){
@@ -226,30 +229,29 @@ var getarchive = {
 			}
 		}
 				
-		/*if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
+		if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
 			var content = readFromClipboard();
 			
 			if(content.indexOf("://") > -1){
 				pageLocation = content;
 				//alert("readClipboard");
 			}
-		}*/
+		}
+		
 		if(currentLocation.indexOf("web.archive.org/web/2") > -1 || currentLocation.indexOf("web.archive.org/web/1") > -1){
 			// we have some kind of filled in link
 			var indexHttp = currentLocation.indexOf("http", 20);
 			if(indexHttp > -1){
-				//alert("what? substring?");
 				window.content.location.href = "https://archive.is/" + currentLocation.substring(indexHttp);
 				return;
 			}else{
-				//alert("worked good");
 				currentLocation = window.content.location.href; // works good so far
 			}
 		}
 				
 		if (pageLocation.length < 4){
 			pageLocation = currentLocation;
-			if(currentLocation.indexOf("Overleg:")){
+			if(currentLocation.indexOf("Overleg:") > -1){
 				temp = this.getPageLocation();
 				if (temp != "NONE"){
 					//alert("Lets use the page location");
