@@ -49,7 +49,11 @@ var getarchive = {
 			// right click / action-submit / action-edit
 
 			if(buttoncode > 0 || currentLocation.indexOf("wiki") > -1){
-				gBrowser.selectedTab = gBrowser.addTab(archiveOrgBaseURL+decodeURI(pageLocation));
+				try{
+					gBrowser.selectedTab = gBrowser.addTab(archiveOrgBaseURL+decodeURI(pageLocation)); //can fail (invalid URI)
+				}catch(err){
+					gBrowser.selectedTab = gBrowser.addTab(archiveOrgBaseURL+pageLocation);
+				}
 			}else{
 				window.content.location.href = archiveOrgBaseURL+pageLocation;
 			}
