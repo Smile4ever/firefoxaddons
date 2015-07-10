@@ -149,6 +149,12 @@ var getarchive = {
 		if(content.document.title.indexOf("404") > -1){
 			return false;
 		}
+		if(content.document.title.toLowerCase().indexOf("not found") > -1){
+			return false;
+		}
+		if(content.document.title.toLowerCase().indexOf("niet gevonden") > -1){
+			return false;
+		}
 		if(this.getcontenttext().indexOf("Wayback Machine doesn't have that page archived.") > -1){
 			return false;
 		}
@@ -170,10 +176,14 @@ var getarchive = {
 			if(that.isurlloaded()){
 				//clipboard.copyString(gBrowser.contentDocument.location.href);
 				if(gBrowser.contentDocument.hasFocus()){
-					copiedURL = gBrowser.contentDocument.location.href;
-					that.copytoclipboardv2(gBrowser.contentDocument.location.href);
-					copied = true;
-					content.document.title = "+" + content.document.title;
+					if(content.document.title == ""){
+						window.setTimeout(func, 800);
+					}else{
+						copiedURL = gBrowser.contentDocument.location.href;
+						that.copytoclipboardv2(gBrowser.contentDocument.location.href);
+						copied = true;
+						content.document.title = "+" + content.document.title;
+					}
 				}
 			}else{
 				if(that.isurlvalid()){
