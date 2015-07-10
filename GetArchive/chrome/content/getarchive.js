@@ -146,16 +146,26 @@ var getarchive = {
 	},
 	isurlvalid: function(){
 		// Checks if page is valid. Used to stop the counter on invalid pages.
+		var documentTitle = content.document.title.toLowerCase();
 		if(content.document.title.indexOf("404") > -1){
 			return false;
 		}
-		if(content.document.title.toLowerCase().indexOf("not found") > -1){
+		if(documentTitle.indexOf("not found") > -1){
 			return false;
 		}
-		if(content.document.title.toLowerCase().indexOf("niet gevonden") > -1){
+		if(documentTitle.indexOf("niet gevonden") > -1){
+			return false;
+		}
+		if(documentTitle.indexOf("cannot be found") > -1){
 			return false;
 		}
 		if(this.getcontenttext().indexOf("Wayback Machine doesn't have that page archived.") > -1){
+			return false;
+		}
+		if(this.getcontenttext().toLowerCase().indexOf("cannot be found") > -1){
+			return false;
+		}
+		if(this.getcontenttext().toLowerCase().indexOf("page not found") > -1){
 			return false;
 		}
 		return true;
