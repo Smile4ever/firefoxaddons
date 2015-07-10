@@ -281,4 +281,25 @@ var getarchive = {
 			window.content.location.href = "https://archive.is/" + gBrowser.contentDocument.location.href;
 		}     
 	},
+	getgoogle: function(buttoncode){
+		var currentLocation=gBrowser.contentDocument.location.href;
+		
+		currentLocation = currentLocation.replace("http://archive.today/", "");
+		currentLocation = currentLocation.replace("https://archive.today/", "");
+		currentLocation = currentLocation.replace("http://archive.is/", "");
+		currentLocation = currentLocation.replace("https://archive.is/", "");
+
+		if(currentLocation.indexOf("web.archive.org/web/2") > -1 || currentLocation.indexOf("web.archive.org/web/1") > -1){
+			var indexHttp = currentLocation.indexOf("http", 20);
+			if(indexHttp > -1){
+				currentLocation = currentLocation.substring(indexHttp);
+			}
+		}
+
+		if(window.content.location.href.indexOf("wiki") > -1 || buttoncode > 0){
+			gBrowser.selectedTab = gBrowser.addTab("http://google.com/search?q="+currentLocation);
+		}else{
+			window.content.location.href = "http://google.com/search?q=" + currentLocation;
+		}     
+	},
 }

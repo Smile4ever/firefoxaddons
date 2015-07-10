@@ -17,7 +17,7 @@
    </popup>
    
    <keyset id="mainKeyset">
-		<!-- Archive.org -->
+		<!-- Archive.org control -->
 		<key id='archive-org-shortcut'
 		modifiers='control'
 		key='3'
@@ -41,7 +41,7 @@
 		key='&quot;'
 		oncommand='getarchive.getarchiveorglink(-1);'
 		/>
-		<!-- Archive.today -->
+		<!-- Archive.today control -->
 		<key id='archive-today-shortcut'
 		modifiers='control'
 		key='4'
@@ -52,6 +52,18 @@
 		modifiers=''
 		key='4'
 		oncommand='getarchive.gettodayarchive(-1);'
+		/>
+		<!-- Archive.today 4 azerty -->
+		<key id='archive-today-shortcut-fourazerty'
+		modifiers=''
+		key='&#39;'
+		oncommand='getarchive.gettodayarchive(-1);'
+		/>
+		<!-- Google g -->
+		<key id='google-shortcut-five'
+		modifiers=''
+		key='g'
+		oncommand='getarchive.getgoogle(-1);'
 		/>
 		<!-- Archive.today 4 azerty -->
 		<key id='archive-today-shortcut-fourazerty'
