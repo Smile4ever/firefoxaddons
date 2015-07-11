@@ -150,6 +150,7 @@ var getarchive = {
 		if(content.document.title.indexOf("404") > -1){
 			return false;
 		}
+		
 		if(documentTitle.indexOf("not found") > -1){
 			return false;
 		}
@@ -168,6 +169,14 @@ var getarchive = {
 		if(this.getcontenttext().toLowerCase().indexOf("page not found") > -1){
 			return false;
 		}
+		
+		var http = new XMLHttpRequest();
+        http.open('HEAD', gBrowser.contentDocument.location.href, false);
+        http.send();
+        if (http.status == 404){
+			return false;
+		}
+		
 		return true;
 	},
 	copytoclipboard: function(){
