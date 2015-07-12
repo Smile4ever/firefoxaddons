@@ -183,36 +183,29 @@ var getarchive = {
 		//var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper);
 		that=this;
 		copied=false;
-		copiedURL = "";
 				
 		var func = function(){
 			if(copied && content.document.title.indexOf("+") == 0){
-				//if(copiedURL.indexOf(that.getpartialurl(gBrowser.contentDocument.location.href)) > -1){
-					return; // correct page - already copied
-				//}
-				//clearInterval(myInterval);
+				return; // already copied
 			}
 			if(that.isurlloaded()){
 				//clipboard.copyString(gBrowser.contentDocument.location.href);
-				if(gBrowser.contentDocument.hasFocus()){
-					if(content.document.title == ""){
-						window.setTimeout(func, 800);
-					}else{
-						copiedURL = gBrowser.contentDocument.location.href;
-						that.copytoclipboardv2(gBrowser.contentDocument.location.href);
-						copied = true;
-						content.document.title = "+" + content.document.title;
-					}
+				if(content.document.title == ""){
+					window.setTimeout(func, 800);
+				}else{
+					that.copytoclipboardv2(gBrowser.contentDocument.location.href);
+					copied = true;
+					content.document.title = "+" + content.document.title;
 				}
 			}else{
 				if(that.isurlvalid()){
 					// this is the same as (!document.readyState === "complete") (but better)
 					if(that.getcontenttext()==""){ //not loaded yet
-						//console.log("Valid page (keeps loading?)");
+						// valid page (keeps loading?)
 						window.setTimeout(func, 800);
 					}
 				}else{
-					//console.log("Invalid page");
+					// Invalid page (focus wrong?);
 				}
 			}
 		};
