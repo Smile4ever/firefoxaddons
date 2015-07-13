@@ -215,14 +215,22 @@ var getarchive = {
 					// this is the same as (!document.readyState === "complete") (but better)
 					// that.getcontenttext()==""{ // valid page, not loaded yet
 					window.setTimeout(func, wait);
+					
+					//if(that.getcontenttext()==""){ //not loaded yet
+						// valid page (keeps loading?)
+					//	window.setTimeout(func, wait);
+					//}else{
+					//	if(gBrowser.contentDocument.location.href.indexOf("archive.is") > -1 && gBrowser.contentDocument.location.href.length < 30){
+					//		that.copytoclipboardv2(gBrowser.contentDocument.location.href);
+					//		copied = true;
+					//		content.document.title = "+" + content.document.title;
+					//	}
+					//}
+					
 				}else{
 					// Invalid page (focus wrong?)
 					// Stop here (we cannot pass the URL between page loads)
 				}
-			}
-			if(content.document.readyState === "complete" && that.isurlvalid() && content.document.title.indexOf("+") == -1){
-				copied = false;
-				window.setTimeout(func,wait);
 			}
 		};
 		window.setTimeout(func,wait); // one to start with
