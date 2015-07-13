@@ -200,7 +200,6 @@ var getarchive = {
 			if(copied && content.document.title.indexOf("+") == 0){
 				return; // already copied
 			}
-			
 			if(that.isurlloaded()){
 				//clipboard.copyString(gBrowser.contentDocument.location.href);
 				if(content.document.title == ""){
@@ -273,6 +272,10 @@ var getarchive = {
 		currentLocation = currentLocation.replace("https://archive.today/", "");
 		currentLocation = currentLocation.replace("http://archive.is/", "");
 		currentLocation = currentLocation.replace("https://archive.is/", "");
+		
+		if(that.getcontenttext().indexOf("No results") > -1 && gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
+			return; // no need for this
+		}
 		
 		if(gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
 			try{
