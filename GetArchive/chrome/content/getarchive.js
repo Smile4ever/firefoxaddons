@@ -273,7 +273,7 @@ var getarchive = {
 		currentLocation = currentLocation.replace("http://archive.is/", "");
 		currentLocation = currentLocation.replace("https://archive.is/", "");
 		
-		if(that.getcontenttext().indexOf("No results") > -1 && gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
+		if(this.getcontenttext().indexOf("No results") > -1 && gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
 			return; // no need for this
 		}
 		
