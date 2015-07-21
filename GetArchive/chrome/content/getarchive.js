@@ -130,6 +130,15 @@ var getarchive = {
 					if(contentText.indexOf("Redirecting to...") > -1){
 						return false;
 					}
+					// disabled until further testing is done
+					//if(contentText.indexOf("The machine that serves this file is down. We're working on it.") > -1){
+					//	var locationNextDateText = contentText.indexOf("Would you like to try the "); // would you like to try the next date?
+					//	var locationNextDateDate = contentText.indexOf("date", locationNextDateText);
+					//	var nextDateText = contentText.substring(locationNextDateText, locationNextDateDate - locationNextDateText);
+					//	alert(nextDateText);
+						//gBrowser.contentDocument.location.href = ;//get next date
+					//	return false;
+					//}
 				}
 				return this.isurlvalid();
 			}
@@ -157,6 +166,16 @@ var getarchive = {
 				if(http.status === 404){
 					return false;
 				}else{
+					if(this.getcontenttext().indexOf("Wayback Machine doesn't have that page archived.") > -1){
+						return false;
+					}
+					if(this.getcontenttext().indexOf("The machine that serves this file is down. We're working on it.") > -1){
+						return false;
+					}
+					if(this.getcontenttext().indexOf("errorBorder") > -1){ //unknown archive.org error
+						return false;
+					}
+					
 					return true;
 				}
 			}
@@ -176,9 +195,6 @@ var getarchive = {
 			return false;
 		}
 		if(documentTitle.indexOf("cannot be found") > -1){
-			return false;
-		}
-		if(this.getcontenttext().indexOf("Wayback Machine doesn't have that page archived.") > -1){
 			return false;
 		}
 		if(this.getcontenttext().toLowerCase().indexOf("cannot be found") > -1){
