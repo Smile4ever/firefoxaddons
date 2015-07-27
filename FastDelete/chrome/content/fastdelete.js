@@ -3,7 +3,8 @@ var deletemw = {
 		var str=window.content.location.href;
 		var deleteForm = content.document.getElementById("deleteconfirm");
 
-		if(content.document.body.textContent.indexOf("This page has been deleted") > -1){
+		// content.document.body.innerHTML.indexOf("mw-logline-delete")
+		if(content.document.body.textContent.indexOf("This page has been deleted") > -1 || content.document.body.textContent.indexOf("There is currently no text in this page") > -1 || content.document.body.innerHTML.indexOf("noarticletext") > -1){
 			this.closetab();
 			return;
 		}
