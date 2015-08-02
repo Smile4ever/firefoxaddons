@@ -116,7 +116,6 @@ var deletemw = {
 			
 			var indexSlash = str.indexOf("/", 10);
 			var baseURL = str.substring(0, indexSlash);
-			
 		    var links = content.document.getElementsByTagName('link');
 			
 			for ( var i=0; i<links.length; i++ ) {
@@ -139,18 +138,17 @@ var deletemw = {
 					if(str.indexOf("&action=") > -1){
 						// everything alright
 					}else{
-						// this will probably fail, use another url (I need a good example for this code path. This is for a next release.)
-											
-						//str = content.document.getElementById("ca-talk").innerHTML;
-						//str = str.substring(str.indexOf("/"), str.indexOf("&amp;"));
-						
-						////if(content.document.getElementById("ca-talk").innerHTML ) > -1){
-						////	str = str.replace("_talk", "");
-						////	str = str.replace("Talk:", "");
-
-						////}
-						//str = baseURL + str + "&action=";
-						//alert(str + "fail");
+						// there is no action yet, add it (prevents failure on some older MediaWiki sites)
+						//http://wiki.lxde.org/pt/Utilizador:Random (with text on page)		
+						t_permalink = content.document.getElementById("t-permalink");
+						if(t_permalink){
+							ahref = t_permalink.getElementsByTagName('a')[0];
+							if(ahref){
+								var locationoldid = ahref.href.indexOf("&oldid");
+								str = ahref.href.substring(0, locationoldid);
+								str = str + "&action="
+							}
+						}
 					}
 
 				}
