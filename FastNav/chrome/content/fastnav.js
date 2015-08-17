@@ -17,14 +17,15 @@ var fastnav = {
 		
 		if(location.indexOf("reddit.com") > -1){
 			var locationAfter = -1
+			var bodyhtml = content.document.body.innerHTML;
 			if(mode == "next"){
-				locationAfter = content.document.body.innerHTML.indexOf("after=")
+				locationAfter = bodyhtml.indexOf("after=")
 			}else{
-				locationAfter = content.document.body.innerHTML.indexOf("before=")
+				locationAfter = bodyhtml.indexOf("before=")
 			}
-			var locationCount = content.document.body.innerHTML.indexOf("www.reddit.com/?count=", locationAfter - 30)
-			var locationCountEnd = content.document.body.innerHTML.indexOf("\"", locationCount)
-			window.content.location.href = "http://" + this.cleanurl(content.document.body.innerHTML.substring(locationCount, locationCountEnd))
+			var locationCount = bodyhtml.indexOf("www.reddit.com/?count=", locationAfter - 30)
+			var locationCountEnd = bodyhtml.indexOf("\"", locationCount)
+			window.content.location.href = "http://" + this.cleanurl(bodyhtml.substring(locationCount, locationCountEnd))
 			return
 		}
 		
