@@ -4,7 +4,7 @@
     <em:id>fastnav@hugsmile.eu</em:id>
     <em:name>FastNav</em:name>
     <em:type>2</em:type>
-    <em:version>0.2.0</em:version>
+    <em:version>0.2.1</em:version>
     <em:creator>Geoffrey De Belie</em:creator>
     <em:contributor></em:contributor>
     <em:description>Quickly navigate to the next page with your keyboard. Press n to go to the next page, press p to go to the previous page.</em:description>

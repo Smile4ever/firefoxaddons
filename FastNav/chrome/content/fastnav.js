@@ -51,6 +51,19 @@ var fastnav = {
 				return
 			}
 		}
+		var paginatorNext = window.content.document.getElementsByClassName("paginator-next")[0];
+		var paginatorPrevious = window.content.document.getElementsByClassName("paginator-previous")[0];
+
+		// webwereld.nl, computerworld.nl etc.
+		if(mode == "next"){
+			if(paginatorNext != undefined){
+				window.content.location.href = paginatorNext.href;
+			}
+		}else{
+			if(paginatorPrevious != undefined){
+				window.content.location.href = paginatorPrevious.href;
+			}
+		}
 		
 		if(lastIndex == -1){
 			//page-1
