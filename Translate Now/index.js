@@ -31,7 +31,23 @@ var menuItem = contextMenu.Item({
 		if(source_lang_value == null){
 			source_lang_value = "auto"
 		}
-        tabs.open("http://translate.google.com/#" + source_lang_value + "/" + dest_lang_value + "/" + encodeURIComponent(selectedText))
+		if(selectedText == null){
+			var notifications = require("sdk/notifications");
+			notifications.notify({
+			  title: "Translate Now",
+			  text: "Try another selection",
+			  data: "OK",
+			  onClick: function (data) {
+			  }
+			});
+		}else{
+			var newText = selectedText //.replace("%", "")
+			newText = encodeURIComponent(newText)
+			newText = newText.replace("%25", "")
+			newText = newText.replace("%C2%A0", " ")
+			tabs.open("http://translate.google.com/#" + source_lang_value + "/" + dest_lang_value + "/" + newText)
+		}
+
     }
 });
 
