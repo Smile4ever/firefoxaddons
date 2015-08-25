@@ -1,0 +1,12 @@
+{
+  "title": "FastNav",
+  "name": "fastnav",
+  "version": "0.3.0",
+  "description": "Quickly navigate to the next page with your keyboard. Press shift+n to go to the next page, press shift+p to go to the previous page.",
+  "main": "index.js",
+  "author": "Geoffrey De Belie",
+  "engines": {
+    "firefox": ">=38.0a1"
+  },
+  "license": "GPL2+ / MPL"
+}
