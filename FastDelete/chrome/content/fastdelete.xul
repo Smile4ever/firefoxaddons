@@ -77,11 +77,11 @@
 		key='x'
 		oncommand='deletemw.closetab();'
 		/>
-		<!-- Close tab DEL -->
-		<key id='deletemw-closetab-deletekey'
-		keycode='VK_INSERT'
+		<!-- Close tab DEL is implemented in JavaScript to circumvent a bug in Firefox (VK_DELETE does not fire an event) -->
+		<!--<key id='deletemw-closetab-deletekey'
+		keycode='VK_DELETE'
 		label='Fast Delete - Close Tab'
 		oncommand='deletemw.closetab();'
-		/>
+		/>-->
 	</keyset>
 </overlay>
