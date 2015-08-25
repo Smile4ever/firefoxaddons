@@ -8,6 +8,12 @@ window.addEventListener("keyup", function (event) {
 		// todo: implement an options window on what do to when the user presses delete
 		// possible options: delete a page, delete a page immediately, close the tab..
 		
+		// check if modifier is pressed (ctrl, shift)
+		// if pressed, return
+		if(event.getModifierState("Alt") || event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
+			return;
+		}
+		
 		// order is important here
 		if(content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
 			deletemw.closetab();
