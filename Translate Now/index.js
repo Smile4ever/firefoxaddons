@@ -4,12 +4,19 @@ var tabs = require("sdk/tabs")
 var simple = require("sdk/simple-prefs")
 var selection = require("sdk/selection")
 var selectedText = ""
+
 //the addons icon is a modified version of http://www.flaticon.com/free-icon/translator-tool_69101
 //see their website for licensing information
 
 //source: http://stackoverflow.com/questions/8621044/how-to-get-selected-text-using-the-firefox-add-on-sdk
 function selectionChanged(event){
-    selectedText = selection.text;
+	// if focus moves away, the selectionChanged event is fired because the context changes
+	// if selection is null, this means the context is switching away
+	// if out of focus, retain the current selection (if an user wants to use the same selection twice)
+	// this is done because the selectionChanged event doesn't fire when the context is switched back
+    if(selection.text != null){
+	   selectedText = selection.text;
+	}
 }
 
 selection.on('select', selectionChanged);
