@@ -3,6 +3,7 @@
   "name": "fastnav",
   "version": "0.3.0",
   "description": "Quickly navigate to the next page with your keyboard. Press n to go to the next page, press p to go to the previous page.",
+  "id": "fastnav@hugsmile.eu",
   "main": "index.js",
   "author": "Geoffrey De Belie",
   "engines": {
