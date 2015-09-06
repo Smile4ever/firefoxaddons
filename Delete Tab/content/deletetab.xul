@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay SYSTEM "chrome://deletetab/locale/deletetab.dtd">
+
+<overlay id="deletetab-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <!-- javascript -->
+  <script src="chrome://deletetab/content/deletetab.js"/>
+
+   <!--<keyset id="mainKeyset">
+		<key id='deletetab-shortcut'
+		modifiers=''
+		key='VK_DELETE'
+		oncommand='deletetab.closetab();'
+		/>
+	</keyset>-->
+</overlay>

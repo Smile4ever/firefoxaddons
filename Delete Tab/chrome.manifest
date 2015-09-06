@@ -1,0 +1,2 @@
+content deletetab content/
+overlay chrome://browser/content/browser.xul chrome://deletetab/content/deletetab.xul
