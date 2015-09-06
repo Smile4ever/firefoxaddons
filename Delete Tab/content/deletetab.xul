@@ -6,11 +6,12 @@
   <!-- javascript -->
   <script src="chrome://deletetab/content/deletetab.js"/>
 
-   <!--<keyset id="mainKeyset">
+	<!-- old school still works the best -->
+   <keyset id="mainKeyset">
 		<key id='deletetab-shortcut'
 		modifiers=''
 		key='VK_DELETE'
 		oncommand='deletetab.closetab();'
 		/>
-	</keyset>-->
+	</keyset>
 </overlay>

@@ -4,7 +4,7 @@
     <em:id>deletetab@hugsmile.eu</em:id>
     <em:name>Delete Tab</em:name>
     <em:type>2</em:type>
-    <em:version>0.3.0</em:version>
+    <em:version>0.3.1</em:version>
     <em:creator>Geoffrey De Belie</em:creator>
     <em:contributor></em:contributor>
     <em:description>Close the current tab by pressing the key Delete</em:description>

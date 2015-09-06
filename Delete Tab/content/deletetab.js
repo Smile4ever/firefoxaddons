@@ -1,4 +1,4 @@
-window.addEventListener("keyup", function (event) {
+/*window.addEventListener("keyup", function (event) {
   if (event.defaultPrevented) {
     return;
   }
@@ -22,7 +22,7 @@ window.addEventListener("keyup", function (event) {
 
   // don't allow for double actions for a single event
   event.preventDefault();
-}, true);
+}, true);*/
 
 
 var deletetab = {
