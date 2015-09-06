@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>   
+<!DOCTYPE window SYSTEM "chrome://getarchive/locale/getarchive.dtd">
+
+<prefwindow id="getarchive-preferences"
+    title="Preferences"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    name="getarchive-preferences">
+
+	<prefpane>
+		<preferences>
+			<preference id="getarchive-engine" name="extensions.getarchive.engine" type="string" />
+		</preferences>
+		<vbox align="start">
+			<!--<hbox align="center">-->
+				<label value="Search engine" minwidth="150px"/>
+				<menulist preference="getarchive-engine">
+				  <menupopup>
+					<menuitem label="Bing" value="bing"/>
+				    <menuitem label="DuckDuckGo" value="duckduckgo"/>
+					<menuitem label="Google" value="google"/>
+				  </menupopup>
+				</menulist>
+			<!--</hbox>-->
+		</vbox>
+	</prefpane>
+
+</prefwindow>

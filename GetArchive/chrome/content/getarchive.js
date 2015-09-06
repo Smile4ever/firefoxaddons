@@ -160,6 +160,17 @@ var getarchive = {
 		var documentTitle = content.document.title.toLowerCase();
 		var that=this;
 		
+		try{
+			if(documentTitle.indexOf("page not found") > -1){
+				return false;
+			}
+			if(documentTitle.indexOf("cannot be found") > -1){
+				return false;
+			}
+		}catch(ex){
+			// documentTitle is null or undefined
+		}
+		
 		var http = new XMLHttpRequest();
 		http.open("HEAD", gBrowser.contentDocument.location.href, true);
 		http.onload = function (e) {
@@ -173,10 +184,16 @@ var getarchive = {
 					if(that.getcontenttext().indexOf("The machine that serves this file is down. We're working on it.") > -1){
 						return false;
 					}
+					
 					if(that.getcontenttext().indexOf("errorBorder") > -1){ //unknown archive.org error
 						return false;
 					}
-					
+					if(this.getcontenttext().toLowerCase().indexOf("cannot be found") > -1){
+						return false;
+					}
+					if(this.getcontenttext().toLowerCase().indexOf("page not found") > -1){
+						return false;
+					}
 					return true;
 				}
 			}
@@ -184,27 +201,7 @@ var getarchive = {
 		http.onerror = function (e) {
 		};
 		http.send(null);
-				
-		/*if(content.document.title.indexOf("404") > -1){
-			return false;
-		}
-		
-		if(documentTitle.indexOf("not found") > -1){
-			return false;
-		}
-		if(documentTitle.indexOf("niet gevonden") > -1){
-			return false;
-		}
-		if(documentTitle.indexOf("cannot be found") > -1){
-			return false;
-		}
-		if(this.getcontenttext().toLowerCase().indexOf("cannot be found") > -1){
-			return false;
-		}
-		if(this.getcontenttext().toLowerCase().indexOf("page not found") > -1){
-			return false;
-		}*/
-		
+	
 		return true;
 	},
 	copytoclipboard: function(){
