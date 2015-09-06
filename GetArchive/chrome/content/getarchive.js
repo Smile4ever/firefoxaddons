@@ -158,6 +158,7 @@ var getarchive = {
 	isurlvalid: function(){
 		// Checks if page is valid. Used to stop the counter on invalid pages.
 		var documentTitle = content.document.title.toLowerCase();
+		var that=this;
 		
 		var http = new XMLHttpRequest();
 		http.open("HEAD", gBrowser.contentDocument.location.href, true);
@@ -166,13 +167,13 @@ var getarchive = {
 				if(http.status === 404){
 					return false;
 				}else{
-					if(this.getcontenttext().indexOf("Wayback Machine doesn't have that page archived.") > -1){
+					if(that.getcontenttext().indexOf("Wayback Machine doesn't have that page archived.") > -1){
 						return false;
 					}
-					if(this.getcontenttext().indexOf("The machine that serves this file is down. We're working on it.") > -1){
+					if(that.getcontenttext().indexOf("The machine that serves this file is down. We're working on it.") > -1){
 						return false;
 					}
-					if(this.getcontenttext().indexOf("errorBorder") > -1){ //unknown archive.org error
+					if(that.getcontenttext().indexOf("errorBorder") > -1){ //unknown archive.org error
 						return false;
 					}
 					
@@ -211,14 +212,17 @@ var getarchive = {
 		that=this;
 		copied=false;
 		//console.log('[' + new Date().toUTCString() + '] ')
-
+		var maxtries = 15 * 5 // wait 200ms means 5 per second, so do this 15 seconds
+		var tries = 0
+		
 		var func = function(){
-			if(copied && content.document.title.indexOf("+") == 0){
+			if(copied && content.document.title.indexOf("+") == 0 || tries + 1 == maxtries){
 				return; // already copied
 			}
 			if(that.isurlloaded()){
 				//clipboard.copyString(gBrowser.contentDocument.location.href);
 				if(content.document.title == ""){
+					tries++;
 					window.setTimeout(func, wait);
 				}else{
 					that.copytoclipboardv2(gBrowser.contentDocument.location.href);
@@ -229,6 +233,7 @@ var getarchive = {
 				if(that.isurlvalid()){
 					// this is the same as (!document.readyState === "complete") (but better)
 					// that.getcontenttext()==""{ // valid page, not loaded yet
+					tries++;
 					window.setTimeout(func, wait);
 					
 					//if(that.getcontenttext()==""){ //not loaded yet
@@ -346,7 +351,10 @@ var getarchive = {
 		}
 		this.copytoclipboard(); //added
 	},
-	getgoogle: function(buttoncode){
+	prefs: function(){
+		return Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
+	},
+	gosearch: function(buttoncode){
 		var currentLocation=gBrowser.contentDocument.location.href;
 		
 		currentLocation = currentLocation.replace("http://archive.today/", "");
@@ -361,10 +369,68 @@ var getarchive = {
 			}
 		}
 
+		var engine = this.prefs().getCharPref("extensions.getarchive.engine");
+		var baseURL = "";
+		
+		switch(engine){
+			case "auto":
+				// TODO: get current search engine URL
+				//browser.search.defaultenginename
+				//baseURL =
+				break;
+			case "duckduckgo":
+				baseURL = "https://duckduckgo.com/?q="; break;
+			case "google":
+				baseURL = "https://google.com/search?q="; break;
+			case "bing":
+				baseURL = "https://bing.com/search?q="; break;
+			default:
+				if(engine.indexOf("http") > -1){
+					baseURL = engine;
+				}
+				break;
+		}
+		
 		if(window.content.location.href.indexOf("wiki") > -1 || buttoncode > 0){
-			gBrowser.selectedTab = gBrowser.addTab("http://google.com/search?q="+currentLocation);
+			gBrowser.selectedTab = gBrowser.addTab(baseURL+currentLocation);
 		}else{
-			window.content.location.href = "http://google.com/search?q=" + currentLocation;
+			window.content.location.href = baseURL + currentLocation;
 		}     
+	},
+	paste: function(){
+		goDoCommand('cmd_paste');
+	},
+	readclipboardv2: function(){
+		var trans = Cc["@mozilla.org/widget/transferable;1"].createInstance(Ci.nsITransferable);
+		trans.init(null)
+		trans.addDataFlavor("text/unicode");
+
+		Services.clipboard.getData(trans, Services.clipboard.kGlobalClipboard);
+
+		var str       = {};
+		var strLength = {};
+
+		trans.getTransferData("text/unicode", str, strLength);
+
+		if (str) {
+		  return str.value.QueryInterface(Ci.nsISupportsString).data;
+		}
+		return ""
+	},
+	pastecomment: function(){
+		// paste with <!-- Archieflink: -->
+		var	clipboardText = this.readclipboardv2();
+
+		if(clipboardText != ""){
+			if(window.content.location.href.indexOf("nl.wikipedia.org") > -1){
+				newClipboardText = "<!-- Archieflink: " + clipboardText + " -->"
+				this.copytoclipboardv2(newClipboardText); // we can't paste random text, only from clipboard
+				goDoCommand('cmd_paste');
+				this.copytoclipboardv2(clipboardText); //restore url to clipboard
+			}else{
+				goDoCommand('cmd_paste');
+			}
+		}
+			
 	},
 }

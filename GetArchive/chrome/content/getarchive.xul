@@ -60,16 +60,26 @@
 		oncommand='getarchive.gettodayarchive(-1);'
 		/>
 		<!-- Google g -->
-		<key id='google-shortcut-five'
+		<key id='getarchive-go-search'
 		modifiers=''
 		key='g'
-		oncommand='getarchive.getgoogle(-1);'
+		oncommand='getarchive.gosearch(-1);'
 		/>
 		<!-- Archive.today 4 azerty -->
 		<key id='archive-today-shortcut-fourazerty'
 		modifiers=''
 		key='&#39;'
 		oncommand='getarchive.gettodayarchive(-1);'
+		/>
+		<!-- Insert clipboard text with INSERT -->
+		<key id='shortcut-insert'
+		keycode='VK_INSERT'
+		oncommand='getarchive.paste();'
+		/>
+		<!-- Insert clipboard text including comment with BREAK/PAUSE -->
+		<key id='shortcut-insertcomment'
+		keycode='VK_PAUSE'
+		oncommand='getarchive.pastecomment();'
 		/>
    </keyset>
    
