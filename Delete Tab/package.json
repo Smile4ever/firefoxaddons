@@ -1,0 +1,13 @@
+{
+  "title": "Delete Tab",
+  "name": "deletetab",
+  "version": "0.1.0",
+  "description": "Close the current tab by pressing the key Delete.",
+  "id": "deletetab@hugsmile.eu",
+  "main": "index.js",
+  "author": "Geoffrey De Belie",
+  "engines": {
+    "firefox": ">=38.0a1"
+  },
+  "license": "GPL2+ / MPL"
+}
