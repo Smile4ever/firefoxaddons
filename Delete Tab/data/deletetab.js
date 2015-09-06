@@ -6,7 +6,7 @@ window.addEventListener("keyup", function (event) {
   switch (event.key) {
     case "Delete":
 		// check if modifier is pressed (ctrl, shift)
-		// if pressed, return
+		//if pressed, return
 		if(event.getModifierState("Alt") || event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
 			return;
 		}
