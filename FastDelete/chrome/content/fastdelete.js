@@ -15,8 +15,11 @@ window.addEventListener("keyup", function (event) {
 		}
 		
 		// order is important here
-		if(content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
-			deletemw.closetab();
+		//console.log("has focus " + content.document.hasFocus);
+		//console.log(window.content.document.activeElement.tagName == "BODY");
+		if(window.content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
+			//deletemw.closetab();
+			window.closetab();
 		}else{
 			return;
 		}
