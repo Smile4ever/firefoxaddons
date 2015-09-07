@@ -157,45 +157,48 @@ var getarchive = {
 	},
 	isurlvalid: function(){
 		// Checks if page is valid. Used to stop the counter on invalid pages.
-		var documentTitle = content.document.title.toLowerCase();
 		var that=this;
 		
 		try{
+			var documentTitle = content.document.title.toLowerCase();
+
 			if(documentTitle.indexOf("page not found") > -1){
 				return false;
 			}
 			if(documentTitle.indexOf("cannot be found") > -1){
 				return false;
 			}
+			if(that.getcontenttext().indexOf("Wayback Machine doesn't have that page archived.") > -1){
+				return false;
+			}
+			if(that.getcontenttext().indexOf("The machine that serves this file is down. We're working on it.") > -1){
+				return false;
+			}
+			if(that.getcontenttext().indexOf("errorBorder") > -1){ //unknown archive.org error
+				return false;
+			}
+			if(that.getcontenttext().toLowerCase().indexOf("cannot be found") > -1){
+				return false;
+			}
+			if(that.getcontenttext().toLowerCase().indexOf("page not found") > -1){
+				return false;
+			}
+			if(that.getcontenttext().indexOf("404 - File or directory not found.") > -1){
+				return false;
+			}
 		}catch(ex){
 			//alert("documentTitle is null or undefined")
 		}
 
-		var http = new XMLHttpRequest();
+		// DOESNT WORK, expand the checks above if needed
+		
+		/*var http = new XMLHttpRequest();
 		http.open("HEAD", gBrowser.contentDocument.location.href, true);
 		http.onload = function (e) {
 			if (http.readyState === 4){
 				if(http.status === 404){
 					return false;
 				}else{
-					if(that.getcontenttext().indexOf("Wayback Machine doesn't have that page archived.") > -1){
-						return false;
-					}
-					if(that.getcontenttext().indexOf("The machine that serves this file is down. We're working on it.") > -1){
-						return false;
-					}
-					if(that.getcontenttext().indexOf("errorBorder") > -1){ //unknown archive.org error
-						return false;
-					}
-					if(that.getcontenttext().toLowerCase().indexOf("cannot be found") > -1){
-						return false;
-					}
-					if(that.getcontenttext().toLowerCase().indexOf("page not found") > -1){
-						return false;
-					}
-					if(that.getcontenttext().toLowerCase().indexOf("404 - File or directory not found.") > -1){
-						return false;
-					}
 					return true;
 				}
 			}
@@ -203,8 +206,8 @@ var getarchive = {
 		http.onerror = function (e) {
 		};
 		http.send(null);
-	
-		//return true; // the XMLHttpRequest is async, returning true here doesn't work (return is done before request is received) 
+		*/	
+		return true;
 	},
 	copytoclipboard: function(){
 		//var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper);
@@ -232,6 +235,7 @@ var getarchive = {
 				}
 			}else{
 				if(that.isurlvalid()){
+
 					// this is the same as (!document.readyState === "complete") (but better)
 					// that.getcontenttext()==""{ // valid page, not loaded yet
 					tries++;
