@@ -4,7 +4,7 @@
     <em:id>getarchive@hugsmile.eu</em:id>
     <em:type>2</em:type>
     <em:name>Get Archive</em:name>
-    <em:version>1.5.1</em:version>
+    <em:version>1.5.2</em:version>
     <em:creator>Geoffrey De Belie</em:creator>
     <em:contributor></em:contributor>
     <em:description>Gets a previous version from a webpage using archive.org or archive.is.</em:description>

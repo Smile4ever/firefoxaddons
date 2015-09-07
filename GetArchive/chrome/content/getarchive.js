@@ -168,9 +168,9 @@ var getarchive = {
 				return false;
 			}
 		}catch(ex){
-			// documentTitle is null or undefined
+			//alert("documentTitle is null or undefined")
 		}
-		
+
 		var http = new XMLHttpRequest();
 		http.open("HEAD", gBrowser.contentDocument.location.href, true);
 		http.onload = function (e) {
@@ -184,14 +184,16 @@ var getarchive = {
 					if(that.getcontenttext().indexOf("The machine that serves this file is down. We're working on it.") > -1){
 						return false;
 					}
-					
 					if(that.getcontenttext().indexOf("errorBorder") > -1){ //unknown archive.org error
 						return false;
 					}
-					if(this.getcontenttext().toLowerCase().indexOf("cannot be found") > -1){
+					if(that.getcontenttext().toLowerCase().indexOf("cannot be found") > -1){
 						return false;
 					}
-					if(this.getcontenttext().toLowerCase().indexOf("page not found") > -1){
+					if(that.getcontenttext().toLowerCase().indexOf("page not found") > -1){
+						return false;
+					}
+					if(that.getcontenttext().toLowerCase().indexOf("404 - File or directory not found.") > -1){
 						return false;
 					}
 					return true;
@@ -202,7 +204,7 @@ var getarchive = {
 		};
 		http.send(null);
 	
-		return true;
+		//return true; // the XMLHttpRequest is async, returning true here doesn't work (return is done before request is received) 
 	},
 	copytoclipboard: function(){
 		//var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper);
@@ -222,9 +224,11 @@ var getarchive = {
 					tries++;
 					window.setTimeout(func, wait);
 				}else{
-					that.copytoclipboardv2(gBrowser.contentDocument.location.href);
-					copied = true;
-					content.document.title = "+" + content.document.title;
+					if(that.isurlvalid()){
+						that.copytoclipboardv2(gBrowser.contentDocument.location.href);
+						copied = true;
+						content.document.title = "+" + content.document.title;
+					}
 				}
 			}else{
 				if(that.isurlvalid()){
