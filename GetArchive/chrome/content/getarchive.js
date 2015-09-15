@@ -139,11 +139,11 @@ var getarchive = {
 				if(content.document.body == null){
 					return false;
 				}
-				var contentText = this.getcontenttext();
-				if(contentText != ""){
-					if(contentText.indexOf("Redirecting to...") > -1){
-						return false;
-					}
+				//var contentText = this.getcontenttext();
+				//if(contentText != ""){
+					//if(contentText.indexOf("Redirecting to...") > -1){
+					//	return false;
+					//}
 					// disabled until further testing is done
 					//if(contentText.indexOf("The machine that serves this file is down. We're working on it.") > -1){
 					//	var locationNextDateText = contentText.indexOf("Would you like to try the "); // would you like to try the next date?
@@ -153,7 +153,7 @@ var getarchive = {
 						//gBrowser.contentDocument.location.href = ;//get next date
 					//	return false;
 					//}
-				}
+				//}
 				return this.isurlvalid();
 			}
 		}
@@ -249,9 +249,15 @@ var getarchive = {
 					window.setTimeout(func, wait);
 				}else{
 					if(that.isurlvalid()){
-						that.copytoclipboardv2(gBrowser.contentDocument.location.href);
-						copied = true;
-						content.document.title = "+" + content.document.title;
+						if(content.document.title == "Internet Archive Wayback Machine"){
+							// let's hope this is "Redirecting to..." (no reliable way to check)
+							tries++;
+							window.setTimeout(func, wait);
+						}else{
+							that.copytoclipboardv2(gBrowser.contentDocument.location.href);
+							copied = true;
+							content.document.title = "+" + content.document.title;
+						}
 					}
 				}
 			}else{
