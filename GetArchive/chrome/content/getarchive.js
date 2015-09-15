@@ -219,9 +219,8 @@ var getarchive = {
 		//var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper);
 		that=this;
 		copied=false;
-		//console.log('[' + new Date().toUTCString() + '] ')
-		var maxtries = 15 * 5 // wait 200ms means 5 per second, so do this 15 seconds
-		var tries = 0
+		var maxtries = 15 * (1000 / wait); // wait 200ms means 5 per second, so do this 15 seconds
+		var tries = 0;
 		
 		var func = function(){
 			if(copied && content.document.title.indexOf("+") == 0 || tries + 1 == maxtries){
