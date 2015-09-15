@@ -1,10 +1,14 @@
 var wait = 200;
+var getarchive_website = "";
+
 var getarchive = {
    
 	getarchiveorglink: function(buttoncode) {
 		var currentLocation=gBrowser.contentDocument.location.href;
 		var archiveOrgBaseURL = "http://web.archive.org/web/2005/"; //0000000000
 		var pageLocation = "";
+		
+		getarchive_website="archive.org"
 		
 		try{
 			pageLocation = gContextMenu.linkURL;
@@ -121,7 +125,20 @@ var getarchive = {
 		return pageLocation.split('amp;').join('');
 	},
 	isurlloaded: function(){
-		if(gBrowser.contentDocument.location.href.indexOf("archive.org") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
+		if(gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
+			if(getarchive_website="archive.org"){
+				return false; // probably still loading
+			}
+			if(gBrowser.contentDocument.location.href.length < 28){ //is this needed?
+				return this.isurlvalid();
+			}
+		}
+		
+		if(gBrowser.contentDocument.location.href.indexOf("archive.org") > -1){
+			if(getarchive_website="archive.is"){
+				return false; // probably still loading
+			}
+			
 			if(gBrowser.contentDocument.location.href.indexOf("archive.org") > -1 && gBrowser.contentDocument.location.href.indexOf("archive.org/web/2005/") == -1){
 				if(content.document.body == null){
 					return false;
@@ -141,9 +158,6 @@ var getarchive = {
 					//	return false;
 					//}
 				}
-				return this.isurlvalid();
-			}
-			if(gBrowser.contentDocument.location.href.length < 28){
 				return this.isurlvalid();
 			}
 		}
@@ -299,7 +313,9 @@ var getarchive = {
 		var pageLocation = "";
 		var linkToPage = null;
 		
+		getarchive_website="archive.is"
 		try{
+			
 			pageLocation = gContextMenu.linkURL;
 		}catch(err){
 		    pageLocation = "";
