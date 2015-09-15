@@ -26,22 +26,9 @@ var getarchive = {
 		}
 
 		// get URL from HTML
-		if(currentLocation.indexOf("archive.today") > -1 || currentLocation.indexOf("archive.is") > -1){
-			var inputElements = window.content.document.body.getElementsByTagName("input");
-			for (i = 0; i < inputElements.length; i++) {
-				var contentText = window.content.document.body.innerHTML;
-				var redirectedFromPos = contentText.indexOf("Redirected from");
-				
-				if(redirectedFromPos > -1){ // prefer "Redirected from"
-					var httpPos = contentText.indexOf("http", redirectedFromPos);
-					var httpPosEnd = contentText.indexOf("\"", httpPos);
-					pageLocation = contentText.substring(httpPos, httpPosEnd);
-				}
-				
-				if(inputElements[i].getAttribute("name") == "q" && pageLocation == ""){ // q can occur multiple times
-					pageLocation = this.getpartialurl(inputElements[i].getAttribute("value"));
-				}
-			}
+		var linkToPage = this.getlocationfrompage();
+		if(linkToPage != ""){
+			pageLocation = linkToPage;
 		}
 
 		if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
@@ -320,7 +307,28 @@ var getarchive = {
 			locationHttpStart = fullurl.indexOf("http", locationHttp - 6);
 		}
 		return fullurl.substring(locationHttpStart);
-	},	
+	},
+	getlocationfrompage: function(){
+		// get URL from HTML
+		if(gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
+			var inputElements = window.content.document.body.getElementsByTagName("input");
+			for (i = 0; i < inputElements.length; i++) {
+				var contentText = window.content.document.body.innerHTML;
+				var redirectedFromPos = contentText.indexOf("Redirected from");
+				
+				if(redirectedFromPos > -1){ // prefer "Redirected from"
+					var httpPos = contentText.indexOf("http", redirectedFromPos);
+					var httpPosEnd = contentText.indexOf("\"", httpPos);
+					return contentText.substring(httpPos, httpPosEnd);
+				}
+				
+				if(inputElements[i].getAttribute("name") == "q" && pageLocation == ""){ // q can occur multiple times
+					return this.getpartialurl(inputElements[i].getAttribute("value"));
+				}
+			}
+		}
+		return "";
+	},
 	gettodayarchive: function(buttoncode){
 		var pageLocation = "";
 		var linkToPage = null;
@@ -342,17 +350,11 @@ var getarchive = {
 			return; // no need for this
 		}
 		
-		if(gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
-			try{
-				linkToPage = window.content.document.getElementsByClassName("TEXT-BLOCK")[0].getElementsByTagName("a")[0].getAttribute("href");
-			}catch(e){
-				linkToPage = null;
-			}
-			if(linkToPage != null && linkToPage != undefined){
-				window.content.location.href = linkToPage;
-				this.copytoclipboard();
-				return;
-			}
+		var linkToPage = this.getlocationfrompage();
+		if(linkToPage != ""){
+			window.content.location.href = linkToPage;
+			this.copytoclipboard();
+			return;
 		}
 		
 		/*if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
@@ -409,7 +411,7 @@ var getarchive = {
 		currentLocation = currentLocation.replace("http://archive.is/", "");
 		currentLocation = currentLocation.replace("https://archive.is/", "");
 
-		if(currentLocation.indexOf("web.archive.org/web/2") > -1 || currentLocation.indexOf("web.archive.org/web/1") > -1){
+		if(currentLocation.indexOf("web.archive.org/web/2") > -1 || currentLocation.indexOf("web.archive.org/web/1") > -1 || currentLocation.indexOf("http://web.archive.org/save/_embed/") > -1){
 			var indexHttp = currentLocation.indexOf("http", 20);
 			if(indexHttp > -1){
 				currentLocation = currentLocation.substring(indexHttp);
@@ -436,6 +438,11 @@ var getarchive = {
 					baseURL = engine;
 				}
 				break;
+		}
+		
+		var linkToPage = this.getlocationfrompage(); //archive.today
+		if(linkToPage != ""){
+			currentLocation = linkToPage;
 		}
 		
 		if(window.content.location.href.indexOf("wiki") > -1 || buttoncode > 0){
