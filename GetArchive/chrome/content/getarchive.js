@@ -29,6 +29,15 @@ var getarchive = {
 		if(currentLocation.indexOf("archive.today") > -1 || currentLocation.indexOf("archive.is") > -1){
 			var inputElements = window.content.document.body.getElementsByTagName("input");
 			for (i = 0; i < inputElements.length; i++) {
+				var contentText = window.content.document.body.innerHTML;
+				var redirectedFromPos = contentText.indexOf("Redirected from");
+				
+				if(redirectedFromPos > -1){ // prefer "Redirected from"
+					var httpPos = contentText.indexOf("http", redirectedFromPos);
+					var httpPosEnd = contentText.indexOf("\"", httpPos);
+					pageLocation = contentText.substring(httpPos, httpPosEnd);
+				}
+				
 				if(inputElements[i].getAttribute("name") == "q" && pageLocation == ""){ // q can occur multiple times
 					pageLocation = this.getpartialurl(inputElements[i].getAttribute("value"));
 				}
@@ -126,7 +135,7 @@ var getarchive = {
 	},
 	isurlloaded: function(){
 		if(gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
-			if(getarchive_website="archive.org"){
+			if(getarchive_website=="archive.org"){
 				return false; // probably still loading
 			}
 			if(gBrowser.contentDocument.location.href.length < 28){ //is this needed?
@@ -135,7 +144,7 @@ var getarchive = {
 		}
 		
 		if(gBrowser.contentDocument.location.href.indexOf("archive.org") > -1){
-			if(getarchive_website="archive.is"){
+			if(getarchive_website=="archive.is"){
 				return false; // probably still loading
 			}
 			
