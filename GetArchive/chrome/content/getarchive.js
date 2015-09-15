@@ -316,6 +316,8 @@ var getarchive = {
 	},
 	getlocationfrompage: function(){
 		// get URL from HTML
+		var pageLocation = "";
+		
 		if(gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
 			var inputElements = window.content.document.body.getElementsByTagName("input");
 			for (i = 0; i < inputElements.length; i++) {
@@ -325,15 +327,15 @@ var getarchive = {
 				if(redirectedFromPos > -1){ // prefer "Redirected from"
 					var httpPos = contentText.indexOf("http", redirectedFromPos);
 					var httpPosEnd = contentText.indexOf("\"", httpPos);
-					return contentText.substring(httpPos, httpPosEnd);
+					pageLocation = contentText.substring(httpPos, httpPosEnd);
 				}
 				
 				if(inputElements[i].getAttribute("name") == "q" && pageLocation == ""){ // q can occur multiple times
-					return this.getpartialurl(inputElements[i].getAttribute("value"));
+					pageLocation = this.getpartialurl(inputElements[i].getAttribute("value"));
 				}
 			}
 		}
-		return "";
+		return pageLocation;
 	},
 	gettodayarchive: function(buttoncode){
 		var pageLocation = "";
