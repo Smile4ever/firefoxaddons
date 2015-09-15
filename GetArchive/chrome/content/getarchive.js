@@ -327,7 +327,6 @@ var getarchive = {
 		
 		getarchive_website="archive.is"
 		try{
-			
 			pageLocation = gContextMenu.linkURL;
 		}catch(err){
 		    pageLocation = "";
@@ -356,24 +355,27 @@ var getarchive = {
 			}
 		}
 		
-		if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
+		/*if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
 			var content = readFromClipboard();
 			
 			if(content.indexOf("://") > -1){
 				pageLocation = content;
 			}
+		}*/
+		var indexLocation = pageLocation; // make a new variable that won't conflict with the code below
+		if (pageLocation == ""){
+			indexLocation = currentLocation;
 		}
-
-		if(currentLocation.indexOf("web.archive.org/web/2") > -1 || currentLocation.indexOf("web.archive.org/web/1") > -1){
+		if(indexLocation.indexOf("web.archive.org/web/2") > -1 || indexLocation.indexOf("web.archive.org/web/1") > -1 || indexLocation.indexOf("http://web.archive.org/save/_embed/") > -1){
 			// we have some kind of filled in link
-			var indexHttp = currentLocation.indexOf("http", 20);
+			var indexHttp = indexLocation.indexOf("http", 20);
 			if(indexHttp > -1){
-				window.content.location.href = "https://archive.is/" + currentLocation.substring(indexHttp);
+				window.content.location.href = "https://archive.is/" + indexLocation.substring(indexHttp);
 				this.copytoclipboard(); //added
 				return;
-			}else{
+			}/*else{
 				currentLocation = window.content.location.href; // works good so far
-			}
+			}*/
 		}
 	
 		if (pageLocation.length < 4){
