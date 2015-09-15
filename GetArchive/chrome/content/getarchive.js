@@ -197,6 +197,9 @@ var getarchive = {
 			if(documentTitle.indexOf("object not found") > -1){
 				return false;
 			}
+			if(documentTitle.indexOf("403 forbidden") > -1){
+				return false;
+			}
 			if(contentText.indexOf("Wayback Machine doesn't have that page archived.") > -1){
 				return false;
 			}
