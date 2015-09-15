@@ -168,6 +168,9 @@ var getarchive = {
 			if(documentTitle.indexOf("cannot be found") > -1){
 				return false;
 			}
+			if(documentTitle.indexOf("object not found") > -1){
+				return false;
+			}
 			if(that.getcontenttext().indexOf("Wayback Machine doesn't have that page archived.") > -1){
 				return false;
 			}
@@ -184,6 +187,9 @@ var getarchive = {
 				return false;
 			}
 			if(that.getcontenttext().indexOf("404 - File or directory not found.") > -1){
+				return false;
+			}
+			if(that.getcontenttext().toLowerCase().indexOf("buy this domain") > -1){
 				return false;
 			}
 		}catch(ex){
