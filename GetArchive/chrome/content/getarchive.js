@@ -25,8 +25,8 @@ var getarchive = {
 		if(currentLocation.indexOf("archive.today") > -1 || currentLocation.indexOf("archive.is") > -1){
 			var inputElements = window.content.document.body.getElementsByTagName("input");
 			for (i = 0; i < inputElements.length; i++) {
-				if(inputElements[i].getAttribute("name") == "q"){
-					pageLocation = inputElements[i].getAttribute("value");
+				if(inputElements[i].getAttribute("name") == "q" && pageLocation == ""){ // q can occur multiple times
+					pageLocation = this.getpartialurl(inputElements[i].getAttribute("value"));
 				}
 			}
 		}
@@ -41,7 +41,6 @@ var getarchive = {
 
 		if(currentLocation.indexOf("Overleg:") > -1 && gContextMenu == null){
 			temp = this.getPageLocation();
-			//alert(temp);
 			if (temp != "" && temp != "NONE"){ //TODO: check this
 				pageLocation = temp;
 			}
@@ -124,8 +123,10 @@ var getarchive = {
 	isurlloaded: function(){
 		if(gBrowser.contentDocument.location.href.indexOf("archive.org") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
 			if(gBrowser.contentDocument.location.href.indexOf("archive.org") > -1 && gBrowser.contentDocument.location.href.indexOf("archive.org/web/2005/") == -1){
-				contentText = this.getcontenttext();
-				
+				if(content.document.body == null){
+					return false;
+				}
+				var contentText = this.getcontenttext();
 				if(contentText != ""){
 					if(contentText.indexOf("Redirecting to...") > -1){
 						return false;
@@ -161,7 +162,9 @@ var getarchive = {
 		
 		try{
 			var documentTitle = content.document.title.toLowerCase();
-
+			var contentText = that.getcontenttext();
+			var contentTextLower = that.getcontenttext().toLowerCase();
+			
 			if(documentTitle.indexOf("page not found") > -1){
 				return false;
 			}
@@ -171,25 +174,25 @@ var getarchive = {
 			if(documentTitle.indexOf("object not found") > -1){
 				return false;
 			}
-			if(that.getcontenttext().indexOf("Wayback Machine doesn't have that page archived.") > -1){
+			if(contentText.indexOf("Wayback Machine doesn't have that page archived.") > -1){
 				return false;
 			}
-			if(that.getcontenttext().indexOf("The machine that serves this file is down. We're working on it.") > -1){
+			if(contentText.indexOf("The machine that serves this file is down. We're working on it.") > -1){
 				return false;
 			}
-			if(that.getcontenttext().indexOf("errorBorder") > -1){ //unknown archive.org error
+			if(contentText.indexOf("errorBorder") > -1){ //unknown archive.org error
 				return false;
 			}
-			if(that.getcontenttext().toLowerCase().indexOf("cannot be found") > -1){
+			if(contentTextLower.indexOf("cannot be found") > -1){
 				return false;
 			}
-			if(that.getcontenttext().toLowerCase().indexOf("page not found") > -1){
+			if(contentTextLower.indexOf("page not found") > -1){
 				return false;
 			}
-			if(that.getcontenttext().indexOf("404 - File or directory not found.") > -1){
+			if(contentText.indexOf("404 - File or directory not found.") > -1){
 				return false;
 			}
-			if(that.getcontenttext().toLowerCase().indexOf("buy this domain") > -1){
+			if(contentTextLower.indexOf("buy this domain") > -1){
 				return false;
 			}
 		}catch(ex){
@@ -219,7 +222,7 @@ var getarchive = {
 		//var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper);
 		that=this;
 		copied=false;
-		var maxtries = 15 * (1000 / wait); // wait 200ms means 5 per second, so do this 15 seconds
+		var maxtries = 20 * (1000 / wait); // wait 200ms means 5 per second, so do this 15 seconds
 		var tries = 0;
 		
 		var func = function(){
@@ -228,7 +231,7 @@ var getarchive = {
 			}
 			if(that.isurlloaded()){
 				//clipboard.copyString(gBrowser.contentDocument.location.href);
-				if(content.document.title == ""){
+				if(content.document.title == "" && content.document.title == "Internet Archive Wayback Machine"){
 					tries++;
 					window.setTimeout(func, wait);
 				}else{
@@ -263,7 +266,7 @@ var getarchive = {
 				}
 			}
 		};
-		window.setTimeout(func,wait); // one to start with
+		window.setTimeout(func,800); // one to start with
 	},
 	copytoclipboardv2: function(text){
 		var str = Components.classes["@mozilla.org/supports-string;1"].
@@ -285,8 +288,12 @@ var getarchive = {
 		clip.setData(trans, null, clipid.kGlobalClipboard);
 	},
 	getpartialurl: function(fullurl){
-		locationHttp = fullurl.indexOf("://", 20); // second occurence
-		return fullurl.substring(locationHttp);
+		var locationHttp = fullurl.indexOf("://", 20); // second occurence
+		var locationHttpStart = -1;
+		if(locationHttp > 1){
+			locationHttpStart = fullurl.indexOf("http", locationHttp - 6);
+		}
+		return fullurl.substring(locationHttpStart);
 	},	
 	gettodayarchive: function(buttoncode){
 		var pageLocation = "";
