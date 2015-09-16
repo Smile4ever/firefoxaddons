@@ -377,13 +377,13 @@ var getarchive = {
 			return;
 		}*/
 		
-		/*if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
+		if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
 			var content = readFromClipboard();
 			
 			if(content.indexOf("://") > -1){
 				pageLocation = content;
 			}
-		}*/
+		}
 		var indexLocation = pageLocation; // make a new variable that won't conflict with the code below
 		if (pageLocation == ""){
 			indexLocation = currentLocation;
