@@ -358,12 +358,24 @@ var getarchive = {
 			return; // no need for this
 		}
 		
-		var linkToPage = this.getlocationfrompage();
+		// http://archive.is/http://link-to.url/page -> http://archive.is/ixIyjm		
+		if(gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
+			try{
+				linkToPage = window.content.document.getElementsByClassName("TEXT-BLOCK")[0].getElementsByTagName("a")[0].getAttribute("href");
+				window.content.location.href = linkToPage;
+				this.copytoclipboard();
+				return;
+			}catch(e){}
+		}
+				
+		/* Is this required?
+ 		 var linkToPage = this.getlocationfrompage();
+				
 		if(linkToPage != ""){
 			window.content.location.href = linkToPage;
 			this.copytoclipboard();
 			return;
-		}
+		}*/
 		
 		/*if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
 			var content = readFromClipboard();
