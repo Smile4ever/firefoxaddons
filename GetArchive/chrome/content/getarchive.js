@@ -30,11 +30,10 @@ var getarchive = {
 		if(linkToPage != ""){
 			pageLocation = linkToPage;
 		}
-
 		if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
 			var content = readFromClipboard();
 			
-			if(content.indexOf("://") > -1){  // sometimes copying to clipboard fails (for no reason)
+			if(content.indexOf("://") > -1 && this.getInnerBody().indexOf(content) > -1){  // sometimes copying to clipboard fails (for no reason)
 				pageLocation = content;
 			}
 		}
@@ -175,6 +174,9 @@ var getarchive = {
 			var contentText = that.getcontenttext();
 			var contentTextLower = that.getcontenttext().toLowerCase();
 			
+			if(documentTitle.indexOf("404 not found") > -1){
+				return false;
+			}
 			if(documentTitle.indexOf("page not found") > -1){
 				return false;
 			}
@@ -321,7 +323,7 @@ var getarchive = {
 		if(gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
 			var inputElements = window.content.document.body.getElementsByTagName("input");
 			for (i = 0; i < inputElements.length; i++) {
-				var contentText = window.content.document.body.innerHTML;
+				var contentText = this.getInnerBody();
 				var redirectedFromPos = contentText.indexOf("Redirected from");
 				
 				if(redirectedFromPos > -1){ // prefer "Redirected from"
@@ -380,7 +382,7 @@ var getarchive = {
 		if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
 			var content = readFromClipboard();
 			
-			if(content.indexOf("://") > -1){
+			if(content.indexOf("://") > -1 && this.getInnerBody().indexOf(content) > -1){
 				pageLocation = content;
 			}
 		}
@@ -504,7 +506,9 @@ var getarchive = {
 			}else{
 				goDoCommand('cmd_paste');
 			}
-		}
-			
+		}	
 	},
+	getInnerBody: function(){
+		return window.content.document.body.innerHTML;
+	}
 }
