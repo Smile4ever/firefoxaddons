@@ -1,8 +1,5 @@
-var pagenum
+var pagenum;
 
-self.port.on("alert", function(message) {
-	window.alert(message);
-});
 self.port.on("prev", function(){
 	generic("prev");
 });
@@ -24,7 +21,7 @@ window.addEventListener("keyup", function (event) {
 		}
 		
 		// order is important here
-		if(content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
+		if(window.content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
 			generic("next");
 		}else{
 			return;
@@ -40,7 +37,7 @@ window.addEventListener("keyup", function (event) {
 		}
 		
 		// order is important here
-		if(content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
+		if(window.content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
 			generic("prev");
 		}else{
 			return;
@@ -63,6 +60,16 @@ function generic(mode){
 	var lastIndex = location.lastIndexOf("=");
 	var pageNumber = location.substring(lastIndex+1);
 	var stringlength = 1;
+	
+	var counter;
+	var linkTags = window.document.getElementsByTagName("link");
+	for(counter = 0; counter < linkTags.length; counter++){
+		if(linkTags[counter].getAttribute("rel") == mode){
+			// http://www.phoronix.com/forums/forum/phoronix/latest-phoronix-articles/823939-the-best-most-efficient-graphics-cards-for-1080p-linux-gamers/page2
+			window.location.href = linkTags[counter].getAttribute("href");
+			return;
+		}
+	}
 	
 	if(location.indexOf("reddit.com") > -1){
 		var locationAfter = -1
@@ -98,7 +105,7 @@ function generic(mode){
 					window.location.href = window.location.href.substring(0, lastIndex) + "/" + (parseInt(pageNumber) - 1)
 				}
 			}
-			return
+			return;
 		}
 	}
 	
