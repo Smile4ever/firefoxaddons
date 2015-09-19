@@ -1,33 +1,14 @@
 var self = require('sdk/self');
-var { Hotkey } = require("sdk/hotkeys");
 var tabs = require("sdk/tabs");
-var worker
+var worker;
+var typeahead;
+var typeahead_value;
 
 tabs.on("ready", function(tab) {
+  typeahead = "accessibility.typeaheadfind";
+  typeahead_value = require("sdk/preferences/service").get(typeahead);
   worker = tab.attach({
     contentScriptFile: "./fastnav.js"
   });
+  worker.port.emit("init", typeahead_value);
 });
-
-var fastnavNext = Hotkey({
-	combo: "alt-n",
-	onPress: function() {
-		worker.port.emit("next");
-	}
-});
-var fastnavPrevious = Hotkey({
-	combo: "alt-p",
-	onPress: function() {
-		worker.port.emit("prev");
-	}
-});
-var fastnavBefore = Hotkey({
-	combo: "alt-b",
-	onPress: function() {
-		worker.port.emit("prev");
-	}
-});
-
-
-
-

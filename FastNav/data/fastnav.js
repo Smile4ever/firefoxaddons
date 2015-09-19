@@ -1,4 +1,10 @@
 var pagenum;
+var typeahead_value;
+var that=this;
+
+self.port.on("init", function(value){
+	typeahead_value = value;
+});
 
 self.port.on("prev", function(){
 	generic("prev");
@@ -16,10 +22,12 @@ window.addEventListener("keyup", function (event) {
     case "n":
 		// check if modifier is pressed (ctrl, shift)
 		// if pressed, return
-		if(event.getModifierState("Alt") || event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
+		if(event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
 			return;
 		}
-		
+		if(event.getModifierState("Alt") && (typeahead_value == false || that.isMediaWiki() == true )){
+			return;
+		}
 		// order is important here
 		if(window.content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
 			generic("next");
@@ -32,7 +40,10 @@ window.addEventListener("keyup", function (event) {
     case "p":
 		// check if modifier is pressed (ctrl, shift)
 		// if pressed, return
-		if(event.getModifierState("Alt") || event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
+		if(event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
+			return;
+		}
+		if(event.getModifierState("Alt") && (typeahead_value == false || that.isMediaWiki() == true )){
 			return;
 		}
 		
@@ -51,6 +62,22 @@ window.addEventListener("keyup", function (event) {
   // don't allow for double actions for a single event
   event.preventDefault();
 }, true);
+
+function isMediaWiki(){
+	//generator
+	var counter;
+	var metaTags = window.document.getElementsByTagName("meta");
+	for(counter = 0; counter < metaTags.length; counter++){
+		if(metaTags[counter].getAttribute("name") == "generator"){
+			if(metaTags[counter].getAttribute("content").indexOf("MediaWiki") > -1){
+				return true;
+			}else{
+				return false;
+			}
+		}
+	}
+	return false;
+}
 
 function cleanurl(url){
 	return decodeURIComponent(url.replace("&amp;", "&"))
