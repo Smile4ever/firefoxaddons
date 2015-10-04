@@ -198,7 +198,7 @@ var deletemw = {
 			window.content.location.href = str+"delete";
 		}else{
 			if (str.indexOf("nl.wikipedia") > -1){
-				if((count.length == countDodeLink) && firstP != "<p>" || (firstP != "<p>" && count.length == 2 && mwContentText.indexOf("Afbeeldingsuggestie") > -1)){
+				if((count.length == countDodeLink) && firstP != "<p>" || (firstP != "<p>" && count.length == 2 && mwContentText.indexOf("Afbeeldingsuggestie") > -1) || mwContentText.indexOf("<p>== Afbeeldingsuggestie ==</p>") > -1){
 					if(mwContentText.indexOf("<blockquote>") == -1){
 						window.content.location.href = str+"delete";
 					}else{
