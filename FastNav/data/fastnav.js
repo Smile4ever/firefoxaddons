@@ -2,6 +2,11 @@ var pagenum;
 var typeahead_value;
 var that=this;
 
+// TODO:
+// if back history is available, use that (as an option in the settings)
+// if forward history is available, use that (as an option in the settings)
+
+
 self.port.on("init", function(value){
 	typeahead_value = value;
 });
@@ -136,10 +141,10 @@ function generic(mode){
 		}
 	}
 	
+	// webwereld.nl, computerworld.nl etc.
 	var paginatorNext = window.document.getElementsByClassName("paginator-next")[0];
 	var paginatorPrevious = window.document.getElementsByClassName("paginator-previous")[0];
 	
-	// webwereld.nl, computerworld.nl etc.
 	if(mode == "next"){
 		if(paginatorNext != undefined){
 			window.location.href = paginatorNext.href;
@@ -150,6 +155,57 @@ function generic(mode){
 		}
 	}
 	
+	// jenkov.com
+	var nextPageJenkovCom = window.document.getElementsByClassName("nextArticleInCategory")[0];
+	if(nextPageJenkovCom != null){
+		if(mode == "next"){
+			window.location.href = nextPageJenkovCom.parentElement.href;
+		}else{
+			window.history.back();
+		}
+	}
+	
+	// waarmaarraar.nl
+	var nextPageWMR = window.document.getElementsByClassName("readmore")[0];
+	if(nextPageWMR != null){
+		var alink = nextPageWMR.getElementsByTagName("a")[0];
+		if(mode == "next"){
+			window.location.href = alink.href;
+		}
+	}
+	
+	// clixsense adgrid
+	if(location.indexOf("clixsense.com/en/ClixGrid") > -1){
+		// /10/7?69738**
+		var lastIndexSlash = location.lastIndexOf("/");
+		var lastQuestionMark = location.lastIndexOf("?");
+		var indexSlash = location.indexOf("/", lastIndexSlash - 6);
+		
+		var column = parseInt(location.substring(indexSlash+1,lastIndexSlash));// 1-30
+		var row =  parseInt(location.substring(lastIndexSlash+1, lastQuestionMark)); // 1-20
+		var userid = location.substring(lastQuestionMark + 1)
+		if(mode == "next"){
+			if(column < 30){
+				column = column + 1;
+			}else{
+				if(row < 20){
+					row = row + 1;
+				}
+			}
+		}else{
+			if(column > 1){
+				column = column - 1;
+			}else{
+				if(row > 1){
+					row = row - 1;
+				}
+			}
+		}
+		window.location.href = "http://www.clixsense.com/en/ClixGrid/" + column + "/" + row + "?" + userid;
+		return;
+	}
+	
+	// generic
 	if(lastIndex == -1){
 		//page-1
 		stringlength = 5
