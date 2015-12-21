@@ -4,8 +4,8 @@
 
     <Description about="urn:mozilla:install-manifest">
 
-        <em:id>multilinks@hugsmile.eu</em:id>
-        <em:name>Multi Links</em:name>
+        <em:id>multilinksplus@hugsmile.eu</em:id>
+        <em:name>Multi Links Plus</em:name>
         <em:version>3.0.1</em:version>
 
         <em:targetApplication>
@@ -16,7 +16,7 @@
             </Description>
         </em:targetApplication>
 
-		<em:description>Multi Links lets you open, copy or bookmark multiple links at the same time rather than having to do them all individually.</em:description>
+		<em:description>Multi Links Plus lets you open, copy or bookmark multiple links at the same time rather than having to do them all individually.</em:description>
 		<em:optionsURL>chrome://multilinks/content/options.xul</em:optionsURL>
 	    <em:iconURL>chrome://multilinks/skin/logo.png</em:iconURL> 
         <em:creator>Geoffrey De Belie</em:creator> <!-- original: Grizzly Ape -->
