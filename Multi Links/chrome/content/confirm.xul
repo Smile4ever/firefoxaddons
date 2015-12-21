@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://multilinks/skin/skin.css" type="text/css"?>
+
+<dialog id="MultiLinks-Confirm" title="Multi Links"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        buttons="none"
+        orient="vertical"
+        onload="MLDialogLoad();"
+        width="350"
+        height="150">
+
+	<script type="application/x-javascript"
+        src="chrome://multilinks/content/datamanager.js" />
+	<script type="application/x-javascript" 
+		src="chrome://multilinks/content/jsconfirm.js" />
+  
+  <spacer width="10"/>
+  <hbox style="padding-top:10px; padding-left:10px">
+  	<vbox>
+    	<image id="Image" height="32px" maxHeight="32px"/>
+  	</vbox>	
+    <spacer width="5"/>
+    <vbox>
+      <spacer flex="1" />
+	  <description id="Description" width="275px" maxWidth="275px"></description>
+      <spacer flex="1" />
+    </vbox>
+  </hbox>
+  <spacer height="3"/>
+  <checkbox id="show-again"
+			style="padding-left:120px"
+			label="Don't show this message again" 
+			checked="false"/>
+  <spacer height="10"/>
+  <hbox>
+    <spacer flex="1" />
+    <button id="bt_yes" label="Yes" oncommand="MLClose('true');"/>
+	<button id="bt_no" label="No" oncommand="MLClose('false');"/>	
+    <spacer flex="1" />
+  </hbox>
+        
+</dialog>

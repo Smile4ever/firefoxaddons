@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/css" href="chrome://global/skin/" ?>
+<?xml-stylesheet href="chrome://multilinks/skin/style.css"
+                 type="text/css"?>
+
+<overlay id="multilinks-overlay" 
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<script type="application/x-javascript"
+        src="chrome://multilinks/content/observer.js" />
+	<script type="application/x-javascript"
+        src="chrome://multilinks/content/datamanager.js" />
+	<script type="application/x-javascript"
+        src="chrome://multilinks/content/linksmanager.js" />
+	<script type="application/x-javascript"
+        src="chrome://multilinks/content/jscode.js" />
+		
+	<statusbar id="status-bar">
+        <statusbarpanel id="MultiLinks-StatusBar" 
+						context="MultiLinks-StatusContextMenu"
+						onmouseup="MultiLinks_Wrapper.TButton(event);">
+			<image 	id="multilinks-toolbarbutton"
+					tooltiptext="Multi Links"/>    
+        </statusbarpanel>
+        <menupopup id="MultiLinks-StatusContextMenu" >
+            <menuitem id="MultiLinks-menuOptions"
+                label="Options..." 
+				oncommand="MultiLinks_Wrapper.Options();"/>
+			<menuseparator/>
+			<menuitem id="MultiLinks-menuInstr"
+                label="Instructions"
+				oncommand="MultiLinks_Wrapper.Help();"/>
+			<menuitem id="MultiLinks-menuDonate"
+                label="Donate"
+				oncommand="MultiLinks_Wrapper.Donate();"/>
+        </menupopup>
+		<menupopup id="MultiLinks-OperationContextMenu"
+					onpopuphidden = "MultiLinks_Wrapper.OpContext(0);"
+					onpopuphiding = "MultiLinks_Wrapper.OnContextHiding();">
+            <menuitem id="MultiLinks-Op1"
+                label="Open in new Tabs" 
+				oncommand="MultiLinks_Wrapper.OpContext(1);"/>
+			<menuitem id="MultiLinks-Op2"
+                label="Open in new Windows" 
+				oncommand="MultiLinks_Wrapper.OpContext(2);"/>
+			<menuitem id="MultiLinks-Op3"
+                label="Open as Tabs in new Window" 
+				oncommand="MultiLinks_Wrapper.OpContext(3);"/>
+			<menu label="Copy to Clipboard" >
+				<menupopup
+					onpopuphidden = "MultiLinks_Wrapper.OpContext(-1);">
+					<menuitem id="MultiLinks-Op4-0"
+						label="Copy Urls and Titles" 
+						oncommand="MultiLinks_Wrapper.OpContext(4, 1);"/>
+					<menuitem id="MultiLinks-Op4-1"
+						label="Copy Urls only" 
+						oncommand="MultiLinks_Wrapper.OpContext(4, 2);"/>
+					<menuitem id="MultiLinks-Op4-2"
+						label="Copy Titles only" 
+						oncommand="MultiLinks_Wrapper.OpContext(4, 3);"/>
+					<menuitem id="MultiLinks-Op4-3"
+						label="Copy as HTML" 
+						oncommand="MultiLinks_Wrapper.OpContext(4, 4);"/>
+				</menupopup>
+			</menu>
+			<menuitem id="MultiLinks-Op5"
+                label="Add to Bookmarks" 
+				oncommand="MultiLinks_Wrapper.OpContext(5);"/>
+			<menuitem id="MultiLinks-Op6"
+                label="Download Links" 
+				oncommand="MultiLinks_Wrapper.OpContext(6);"/>
+			<menuseparator/>
+			<menuitem id="MultiLinks-MoveSelection"
+                label="Move selection" 
+				oncommand="MultiLinks_Wrapper.StartMoveSelection();"/>
+			<menuitem id="MultiLinks-OpCancel"
+                label="Cancel" 
+				oncommand="MultiLinks_Wrapper.OpContext(0);"/>
+        </menupopup>
+    </statusbar>
+<!--
+	<statusbar id="status-bar">
+		<statusbarpanel id="status-bar-sample-1" label="Hello World" tooltiptext="Sample status bar">
+			<hbox 	id="artik-debug-bar"
+					height="100"
+					width="500">
+				<textbox id="debug-str"
+						 multiline="true"
+						 width="500"/>
+				<vbox>
+					<spacer height="5px"/>
+					<button label="clear"
+							onclick="document.getElementById('debug-str').value = '';"/>
+					<checkbox id="debug-ch" label="Enable Debug" checked="true"/>
+					<spacer flex="1"/>
+				</vbox>
+			</hbox>
+			<toolbarbutton 	label="Show/Hide Debug"
+							oncommand="document.getElementById('artik-debug-bar').hidden = !document.getElementById('artik-debug-bar').hidden;"/>
+		</statusbarpanel>
+	</statusbar>
+-->
+</overlay>

@@ -1,0 +1,731 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?> 
+<?xml-stylesheet href="chrome://multilinks/skin/skin.css" type="text/css"?>
+
+<dialog id="MultiLinks-Options" title="Multi Links Preferences"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        buttons="none"
+        orient="vertical"
+        onload="MultyLinksOptionsLoad();"
+        onunload="MultyLinksOptionsUnload();"
+        ondialogaccept="MultyLinksOptionsaccept();"
+		style="margin:5px;padding:1px;">
+
+  <script type="application/x-javascript"
+          src="chrome://multilinks/content/datamanager.js" />
+  
+  <script type="application/x-javascript" 
+          src="chrome://multilinks/content/options.js" />
+
+	<tabbox id="MLOptions" selectedIndex="0">
+		<tabs>
+			<tab label="General"/>
+			<tab label="Advanced"/>
+			<tab label="Actions"/>
+			<tab label="Appearance"/>
+		</tabs>
+		<tabpanels>
+			<tabpanel>
+				<vbox>
+					<spacer height="10"/>
+					
+					<checkbox id="show-statusbaricon"
+								label="Show statusbar icon" 
+								checked="true"/>
+
+					<spacer height="10"/>
+					
+					<checkbox id="smart-selection"
+								label="Smart selection" 
+								checked="true"/>
+								
+					<vbox style="margin-left:40px">
+						<description>
+							Smart selection allows you to select 
+						</description>
+						<description>
+							only search results in search engines
+						</description>
+					</vbox>
+								
+					<spacer height="15px"/>
+
+					<hbox>
+						<spacer width="5"/>
+						<vbox width="160">
+							<spacer flex="1"/>
+							<label  value="Key for multiple selection" control="multi-key"/>
+							<spacer flex="1"/>
+						</vbox>
+						<vbox>
+							<menulist id="multi-key" width="80">
+								<menupopup>
+									<menuitem label="Ctrl" value="ctrl"/>
+									<menuitem label="Alt" value="alt"/>
+									<menuitem label="Shift" value="shift"/>
+								</menupopup>
+							</menulist>
+						</vbox>
+					</hbox>
+
+					<hbox>
+					<spacer width="0"/>
+					<checkbox id="select-multy-down"
+								label="select only if this key is pressed" 
+								checked="false"/>
+					</hbox>	
+
+					<spacer height="10"/>
+					
+					<hbox>
+						<spacer width="5"/>
+						<vbox width="160">
+							<spacer flex="1"/>
+							<label value="Maximum number of links" control="maxlnumber"/>
+							<spacer flex="1"/>
+						</vbox>
+						<vbox>
+							<textbox id="maxlnumber" type="number" min="2" max="99999" width="80" height="18"/>
+						</vbox>
+					</hbox>
+
+					<spacer height="10"/>
+					
+					<hbox>
+						<spacer width="5"/>
+						<vbox width="160">
+							<spacer flex="1"/>
+							<label  value="Scroll speed" control="scroll-speed"/>
+							<spacer flex="1"/>
+						</vbox>
+						<vbox>
+							<menulist id="scroll-speed" width="80">
+								<menupopup>
+									<menuitem label="1x" value="1"/>
+									<menuitem label="2x" value="2"/>
+									<menuitem label="3x" value="3"/>
+									<menuitem label="4x" value="4"/>
+									<menuitem label="5x" value="5"/>
+									<menuitem label="6x" value="6"/>
+									<menuitem label="7x" value="7"/>
+									<menuitem label="8x" value="8"/>
+									<menuitem label="9x" value="9"/>
+									<menuitem label="10x" value="10"/>
+								</menupopup>
+							</menulist>
+						</vbox>
+					</hbox>
+					<spacer flex="1"/>
+					<spacer height="10"/>
+					<hbox>
+						<button label="Reset to defaults" oncommand="ResetToDefaults();"/>
+						<spacer flex="1"/>
+					</hbox>
+				</vbox>
+			</tabpanel>
+			
+			<tabpanel>
+				<vbox>
+					<spacer height="10"/>
+					<checkbox id="allways-copy-to-clipboard"
+								label="Allways copy to clipboard" 
+								checked="false"
+								onclick="AllwaysCopyCLick();"/>
+						<radiogroup id="MultiLinks-CopyTC-Operation" style="margin-left:35px">
+							<radio label="Copy urls with titles" />
+							<radio label="Copy urls only" />
+							<radio label="Copy titles only" />
+							<radio label="Copy as HTML" />
+						</radiogroup>
+
+					<spacer height="10"/>
+
+					<checkbox id="block-same"
+								label="Block same links in one opening sequence" 
+								checked="false"/>
+								
+					<spacer height="10px"/>
+					
+					<checkbox id="reverse-order"
+								label="Reverse order of opening links" 
+								checked="false"/>
+
+					<spacer height="10"/>
+					
+					<hbox>
+						<spacer width="5"/>
+						<vbox width="200">
+							<spacer flex="1"/>
+							<label value="Delay in opening links (seconds)" control="delay"/>
+							<spacer flex="1"/>
+						</vbox>
+						<vbox>
+							<textbox id="delay" type="number" min="0" max="10" width="70" height="18"/>
+						</vbox>
+					</hbox>
+					
+					<spacer flex="1"/>
+					<spacer height="10"/>
+					<hbox>
+						<button label="Reset to defaults" oncommand="ResetToDefaults();"/>
+						<spacer flex="1"/>
+					</hbox>
+				</vbox>
+			</tabpanel>
+			
+			<tabpanel>
+				<vbox>
+					<tabbox id="MLOptionsOperation" selectedIndex="0">
+						<tabs>
+							<tab label="Right mouse button"/>
+							<tab label="Middle mouse button"/>
+							<tab label="Left mouse button"/>
+						</tabs>
+						<tabpanels>
+							<tabpanel>
+								<vbox>
+									<radiogroup id="MultiLinks-Operation-R" style="margin-left:15px">
+										<radio label="No action" selected="true" oncommand="MultyLinksOptionsChangeOp('R', 0);"/>
+										<radio label="Open in new tabs" selected="true" oncommand="MultyLinksOptionsChangeOp('R', 1);"/>
+											<checkbox id="activate-new-tab-R" label="Activate new opened tab" checked="true" style="margin-left:35px"/>
+										<radio label="Open in new windows"  oncommand="MultyLinksOptionsChangeOp('R', 2);"/>
+											<checkbox id="activate-new-window-R" label="Activate new opened window" checked="true" style="margin-left:35px"/>
+										<radio label="Open as tabs in new window"  oncommand="MultyLinksOptionsChangeOp('R', 3);"/>
+										<radio label="Copy to clipboard" oncommand="MultyLinksOptionsChangeOp('R', 4);"/>
+											<radiogroup id="MultiLinks-CopyTC-Operation-R" style="margin-left:35px">
+												<radio label="Copy urls with titles" />
+												<radio label="Copy urls only" />
+												<radio label="Copy titles only" />
+												<radio label="Copy as HTML" />
+											</radiogroup>
+										<radio label="Add to bookmarks"  oncommand="MultyLinksOptionsChangeOp('R', 5);"/>
+										<radio label="Download links"  oncommand="MultyLinksOptionsChangeOp('R', 6);"/>
+									</radiogroup>
+								</vbox>
+							</tabpanel>
+							<tabpanel>
+								<vbox>
+									<radiogroup id="MultiLinks-Operation-M" style="margin-left:15px">
+										<radio label="No action" selected="true" oncommand="MultyLinksOptionsChangeOp('M', 0);"/>
+										<radio label="Open in new tabs" selected="true" oncommand="MultyLinksOptionsChangeOp('M', 1);"/>
+											<checkbox id="activate-new-tab-M" label="Activate new opened tab" checked="true" style="margin-left:35px"/>
+										<radio label="Open in new windows"  oncommand="MultyLinksOptionsChangeOp('M', 2);"/>
+											<checkbox id="activate-new-window-M" label="Activate new opened window" checked="true" style="margin-left:35px"/>
+										<radio label="Open as tabs in new window"  oncommand="MultyLinksOptionsChangeOp('M', 3);"/>
+										<radio label="Copy to clipboard" oncommand="MultyLinksOptionsChangeOp('M', 4);"/>
+											<radiogroup id="MultiLinks-CopyTC-Operation-M" style="margin-left:35px">
+												<radio label="Copy urls with titles" />
+												<radio label="Copy urls only" />
+												<radio label="Copy titles only" />
+												<radio label="Copy as HTML" />
+											</radiogroup>
+										<radio label="Add to bookmarks"  oncommand="MultyLinksOptionsChangeOp('M', 5);"/>
+										<radio label="Download links"  oncommand="MultyLinksOptionsChangeOp('M', 6);"/>
+									</radiogroup>
+								</vbox>
+							</tabpanel>
+							<tabpanel>
+								<vbox>
+									<radiogroup id="MultiLinks-Operation-L" style="margin-left:15px">
+										<radio label="No action" selected="true" oncommand="MultyLinksOptionsChangeOp('L', 0);"/>
+										<radio label="Open in new tabs" selected="true" oncommand="MultyLinksOptionsChangeOp('L', 1);"/>
+											<checkbox id="activate-new-tab-L" label="Activate new opened tab" checked="true" style="margin-left:35px"/>
+										<radio label="Open in new windows"  oncommand="MultyLinksOptionsChangeOp('L', 2);"/>
+											<checkbox id="activate-new-window-L" label="Activate new opened window" checked="true" style="margin-left:35px"/>
+										<radio label="Open as tabs in new window"  oncommand="MultyLinksOptionsChangeOp('L', 3);"/>
+										<radio label="Copy to clipboard" oncommand="MultyLinksOptionsChangeOp('L', 4);"/>
+											<radiogroup id="MultiLinks-CopyTC-Operation-L" style="margin-left:35px">
+												<radio label="Copy urls with titles" />
+												<radio label="Copy urls only" />
+												<radio label="Copy titles only" />
+												<radio label="Copy as HTML" />
+											</radiogroup>
+										<radio label="Add to bookmarks"  oncommand="MultyLinksOptionsChangeOp('L', 5);"/>
+										<radio label="Download links"  oncommand="MultyLinksOptionsChangeOp('L', 6);"/>
+									</radiogroup>
+								</vbox>
+							</tabpanel>
+						</tabpanels>
+					</tabbox>
+					<spacer flex="1"/>
+					<spacer height="10"/>
+					<hbox>
+						<button label="Reset to defaults" oncommand="ResetToDefaults();"/>
+						<spacer flex="1"/>
+					</hbox>
+				</vbox>
+			</tabpanel>
+			
+			<tabpanel>
+				<vbox>
+					<tabbox id="MLOptionsAppearance" selectedIndex="0">
+						<tabs>
+							<tab label="Right mouse button"/>
+							<tab label="Middle mouse button"/>
+							<tab label="Left mouse button"/>
+						</tabs>
+						<tabpanels>
+							<tabpanel><!--Right mouse button-->
+								<vbox>
+									<spacer height="20"/>
+									<hbox>
+										<spacer height="20"/>
+										
+										<vbox width="130">
+											<spacer flex="1"/>
+											<label value="Selection color" control="selection-color"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox width="70">
+											<spacer flex="1"/>
+											<hbox>
+												<colorpicker id="selection-color-R" 
+														type="button"
+														onchange="MultyLinksOptionsChangeSColor();"
+														width="40"/>
+												<spacer flex="1"/>
+											</hbox>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<label value="#" 
+														control="selection-tcolor" 
+														style="margin-right:1px; margin-top:5px"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<textbox id="selection-tcolor-R" 
+														width="60" 
+														maxlength="6" 
+														style="margin-left:1px"
+														oninput="MultyLinksOptionsInputSColor()"/>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									<spacer height="5"/>
+									<hbox>
+										<vbox width="130">
+											<spacer flex="1"/>
+											<label value="Links color" control="links-color"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox width="70">
+											<spacer flex="1"/>
+											<hbox>
+												<colorpicker id="links-color-R" 
+														type="button"
+														onchange="MultyLinksOptionsChangeLColor();"
+														width="40"/>
+												<spacer flex="1"/>
+											</hbox>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<label value="#" 
+													control="links-tcolor" 
+													style="margin-right:1px; margin-top:5px"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<textbox id="links-tcolor-R" 
+													width="60" 
+													maxlength="6" 
+													style="margin-left:1px"
+													oninput="MultyLinksOptionsInputLColor()"/>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									
+									<spacer height="20"/>
+									
+									<hbox>
+										<vbox width="170">
+											<spacer flex="1"/>
+											<label value="Selection box width in pixels" control="selection-width"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<textbox id="selection-width-R" type="number" min="1" max="5" width="60"/>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									<spacer height="3"/>
+									<hbox>
+										<vbox width="170">
+											<spacer flex="1"/>
+											<label value="Links border width in pixels" control="links-width"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<textbox id="links-width-R" type="number" min="1" max="5" width="60"/>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									
+									<spacer height="20"/>
+
+									<hbox>
+										<vbox width="120">
+											<spacer flex="1"/>
+											<label value="Selection box style" control="selection-style"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<menulist id="selection-style-R" width="80">
+												<menupopup>
+													<menuitem label="dotted" value="dotted"/>
+													<menuitem label="dashed" value="dashed"/>
+													<menuitem label="solid" value="solid"/>
+												</menupopup>
+											</menulist>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									<spacer height="3"/>
+									<hbox>
+										<vbox width="120">
+											<spacer flex="1"/>
+											<label value="Links border style" control="links-style"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<menulist id="links-style-R" width="80">
+												<menupopup>
+													<menuitem label="dotted" value="dotted"/>
+													<menuitem label="dashed" value="dashed"/>
+													<menuitem label="solid" value="solid"/>
+												</menupopup>
+											</menulist>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									<spacer height="20"/>
+								</vbox>
+							</tabpanel>
+							
+							<tabpanel><!--Middle mouse button-->
+								<vbox>
+									<spacer height="20"/>
+									<hbox>
+										<spacer height="20"/>
+										
+										<vbox width="130">
+											<spacer flex="1"/>
+											<label value="Selection color" control="selection-color"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox width="70">
+											<spacer flex="1"/>
+											<hbox>
+												<colorpicker id="selection-color-M" 
+														type="button"
+														onchange="MultyLinksOptionsChangeSColor();"
+														width="40"/>
+												<spacer flex="1"/>
+											</hbox>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<label value="#" 
+														control="selection-tcolor" 
+														style="margin-right:1px; margin-top:5px"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<textbox id="selection-tcolor-M" 
+														width="60" 
+														maxlength="6" 
+														style="margin-left:1px"
+														oninput="MultyLinksOptionsInputSColor()"/>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									<spacer height="5"/>
+									<hbox>
+										<vbox width="130">
+											<spacer flex="1"/>
+											<label value="Links color" control="links-color"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox width="70">
+											<spacer flex="1"/>
+											<hbox>
+												<colorpicker id="links-color-M" 
+														type="button"
+														onchange="MultyLinksOptionsChangeLColor();"
+														width="40"/>
+												<spacer flex="1"/>
+											</hbox>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<label value="#" 
+													control="links-tcolor" 
+													style="margin-right:1px; margin-top:5px"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<textbox id="links-tcolor-M" 
+													width="60" 
+													maxlength="6" 
+													style="margin-left:1px"
+													oninput="MultyLinksOptionsInputLColor()"/>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									
+									<spacer height="20"/>
+									
+									<hbox>
+										<vbox width="170">
+											<spacer flex="1"/>
+											<label value="Selection box width in pixels" control="selection-width"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<textbox id="selection-width-M" type="number" min="1" max="5" width="60"/>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									<spacer height="3"/>
+									<hbox>
+										<vbox width="170">
+											<spacer flex="1"/>
+											<label value="Links border width in pixels" control="links-width"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<textbox id="links-width-M" type="number" min="1" max="5" width="60"/>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									
+									<spacer height="20"/>
+
+									<hbox>
+										<vbox width="120">
+											<spacer flex="1"/>
+											<label value="Selection box style" control="selection-style"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<menulist id="selection-style-M" width="80">
+												<menupopup>
+													<menuitem label="dotted" value="dotted"/>
+													<menuitem label="dashed" value="dashed"/>
+													<menuitem label="solid" value="solid"/>
+												</menupopup>
+											</menulist>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									<spacer height="3"/>
+									<hbox>
+										<vbox width="120">
+											<spacer flex="1"/>
+											<label value="Links border style" control="links-style"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<menulist id="links-style-M" width="80">
+												<menupopup>
+													<menuitem label="dotted" value="dotted"/>
+													<menuitem label="dashed" value="dashed"/>
+													<menuitem label="solid" value="solid"/>
+												</menupopup>
+											</menulist>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									<spacer height="20"/>
+								</vbox>							
+							</tabpanel>
+							
+							<tabpanel><!--Left mouse button-->
+								<vbox>
+									<spacer height="20"/>
+									<hbox>
+										<spacer height="20"/>
+										
+										<vbox width="130">
+											<spacer flex="1"/>
+											<label value="Selection color" control="selection-color"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox width="70">
+											<spacer flex="1"/>
+											<hbox>
+												<colorpicker id="selection-color-L" 
+														type="button"
+														onchange="MultyLinksOptionsChangeSColor();"
+														width="40"/>
+												<spacer flex="1"/>
+											</hbox>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<label value="#" 
+														control="selection-tcolor" 
+														style="margin-right:1px; margin-top:5px"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<textbox id="selection-tcolor-L" 
+														width="60" 
+														maxlength="6" 
+														style="margin-left:1px"
+														oninput="MultyLinksOptionsInputSColor()"/>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									<spacer height="5"/>
+									<hbox>
+										<vbox width="130">
+											<spacer flex="1"/>
+											<label value="Links color" control="links-color"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox width="70">
+											<spacer flex="1"/>
+											<hbox>
+												<colorpicker id="links-color-L" 
+														type="button"
+														onchange="MultyLinksOptionsChangeLColor();"
+														width="40"/>
+												<spacer flex="1"/>
+											</hbox>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<label value="#" 
+													control="links-tcolor" 
+													style="margin-right:1px; margin-top:5px"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<textbox id="links-tcolor-L" 
+													width="60" 
+													maxlength="6" 
+													style="margin-left:1px"
+													oninput="MultyLinksOptionsInputLColor()"/>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									
+									<spacer height="20"/>
+									
+									<hbox>
+										<vbox width="170">
+											<spacer flex="1"/>
+											<label value="Selection box width in pixels" control="selection-width"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<textbox id="selection-width-L" type="number" min="1" max="5" width="60"/>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									<spacer height="3"/>
+									<hbox>
+										<vbox width="170">
+											<spacer flex="1"/>
+											<label value="Links border width in pixels" control="links-width"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<textbox id="links-width-L" type="number" min="1" max="5" width="60"/>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									
+									<spacer height="20"/>
+
+									<hbox>
+										<vbox width="120">
+											<spacer flex="1"/>
+											<label value="Selection box style" control="selection-style"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<menulist id="selection-style-L" width="80">
+												<menupopup>
+													<menuitem label="dotted" value="dotted"/>
+													<menuitem label="dashed" value="dashed"/>
+													<menuitem label="solid" value="solid"/>
+												</menupopup>
+											</menulist>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									<spacer height="3"/>
+									<hbox>
+										<vbox width="120">
+											<spacer flex="1"/>
+											<label value="Links border style" control="links-style"/>
+											<spacer flex="1"/>
+										</vbox>
+										<vbox>
+											<spacer flex="1"/>
+											<menulist id="links-style-L" width="80">
+												<menupopup>
+													<menuitem label="dotted" value="dotted"/>
+													<menuitem label="dashed" value="dashed"/>
+													<menuitem label="solid" value="solid"/>
+												</menupopup>
+											</menulist>
+											<spacer flex="1"/>
+										</vbox>
+									</hbox>
+									<spacer height="20"/>
+								</vbox>							
+							</tabpanel>
+						</tabpanels>
+					</tabbox>
+					
+					<spacer flex="1"/>
+					<spacer height="10"/>
+					<hbox>
+						<button label="Reset to defaults" oncommand="ResetToDefaults();"/>
+						<spacer flex="1"/>
+					</hbox>
+				</vbox>
+			</tabpanel>
+		</tabpanels>
+	</tabbox>
+	
+	<!--<hbox>
+		<spacer flex="1"/>
+		<label value="Multi Links Instructions" class="text-link" onmouseup="MultyLinksOptionsHelp()"/>
+	</hbox>
+	
+	<hbox>
+		<button label="Donate" oncommand="Donate();"/>
+		<spacer flex="1"/>
+		<button label="OK" oncommand="MultyLinksOptionsaccept(); window.close();"/>
+		<button label="Cancel" oncommand="window.close();"/>
+	</hbox>-->
+</dialog>

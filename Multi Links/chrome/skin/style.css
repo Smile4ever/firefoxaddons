@@ -1,0 +1,4 @@
+#multilinks-toolbarbutton{
+	list-style-image: url("chrome://multilinks/skin/ml.png");
+	cursor:pointer;
+}

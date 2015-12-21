@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+    <Description about="urn:mozilla:install-manifest">
+
+        <em:id>multilinks@plugin</em:id>
+        <em:name>Multi Links</em:name>
+        <em:version>3.0.1</em:version>
+
+        <em:targetApplication>
+            <Description>
+                <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+                <em:minVersion>2.0</em:minVersion>
+                <em:maxVersion>45.*</em:maxVersion>
+            </Description>
+        </em:targetApplication>
+
+		<em:description>Multi Links lets you open, copy or bookmark multiple links at the same time rather than having to do them all individually.</em:description>
+		<em:optionsURL>chrome://multilinks/content/options.xul</em:optionsURL>
+	    <em:iconURL>chrome://multilinks/skin/logo.png</em:iconURL> 
+        <em:creator>Geoffrey De Belie</em:creator> <!-- original: Grizzly Ape -->
+		<em:homepageURL>http://www.hugsmile.eu/</em:homepageURL>
+    </Description>
+</RDF>

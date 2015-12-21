@@ -1,0 +1,3 @@
+content	multilinks chrome/content/
+overlay	chrome://browser/content/browser.xul	chrome://multilinks/content/xulref.xul
+skin multilinks classic/1.0 chrome/skin/
