@@ -1,7 +1,7 @@
 {
   "title": "FastNav",
   "name": "fastnav",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Quickly navigate to the next page with your keyboard. Press n to go to the next page, press p to go to the previous page.",
   "id": "fastnav@hugsmile.eu",
   "main": "index.js",

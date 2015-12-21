@@ -1,7 +1,3 @@
-var pagenum;
-var typeahead_value;
-var that=this;
-
 // TODO:
 // if back history is available, use that (as an option in the settings)
 // if forward history is available, use that (as an option in the settings)
@@ -18,42 +14,45 @@ self.port.on("next", function(){
 	generic("next");
 });
 
+var pagenum;
+var typeahead_value;
+
 window.addEventListener("keyup", function (event) {
   if (event.defaultPrevented) {
     return;
   }
 
-  switch (event.key) {
-    case "n":
+  switch (event.keyCode) {
+    case 78:
 		// check if modifier is pressed (ctrl, shift)
 		// if pressed, return
 		if(event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
 			return;
 		}
-		if(event.getModifierState("Alt") && (typeahead_value == false || that.isMediaWiki() == true )){
+		if(event.getModifierState("Alt") && (typeahead_value == false || isMediaWiki() == true )){
 			return;
 		}
 		// order is important here
-		if(window.content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
+		if(document.hasFocus() && document.activeElement.tagName == "BODY"){
 			generic("next");
 		}else{
 			return;
 		}
 				
       break;
-    case "b":
-    case "p":
+    case 66:
+    case 80:
 		// check if modifier is pressed (ctrl, shift)
 		// if pressed, return
 		if(event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
 			return;
 		}
-		if(event.getModifierState("Alt") && (typeahead_value == false || that.isMediaWiki() == true )){
+		if(event.getModifierState("Alt") && (typeahead_value == false || isMediaWiki() == true )){
 			return;
 		}
 		
 		// order is important here
-		if(window.content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
+		if(document.hasFocus() && document.activeElement.tagName == "BODY"){
 			generic("prev");
 		}else{
 			return;
@@ -104,23 +103,43 @@ function generic(mode){
 	}
 	
 	if(location.indexOf("reddit.com") > -1){
-		var locationAfter = -1
-		var bodyhtml = content.document.body.innerHTML;
+		/*var locationAfter = -1;
+		var bodyhtml = document.body.innerHTML;
 		if(mode == "next"){
-			locationAfter = bodyhtml.indexOf("after=")
+			locationAfter = bodyhtml.indexOf("after=");
 		}else{
-			locationAfter = bodyhtml.indexOf("before=")
+			locationAfter = bodyhtml.indexOf("before=");
 		}
-		var locationCount = bodyhtml.indexOf("www.reddit.com/?count=", locationAfter - 30)
-		var locationCountEnd = bodyhtml.indexOf("\"", locationCount)
-		window.location.href = "http://" + this.cleanurl(bodyhtml.substring(locationCount, locationCountEnd))
-		return
+		var locationCount = bodyhtml.indexOf("www.reddit.com/?count=", locationAfter - 30);
+		var locationCountEnd = bodyhtml.indexOf("\"", locationCount);
+		
+		alert("http://" + cleanurl(bodyhtml.substring(locationCount, locationCountEnd)));
+		
+		window.location.href = "http://" + cleanurl(bodyhtml.substring(locationCount, locationCountEnd));
+		return;*/
+		var i = 0;
+		var match = false;
+		var atags = document.getElementsByTagName("a");
+		for(i = 0; i < atags.length; i++){
+		    try{
+    		    if(atags[i].getAttribute("rel").indexOf(mode) > -1){
+    		         match = true;
+    		         window.location.href = atags[i].href;
+    		    }
+    	   }catch(ex){
+    	       // this is normal
+    	   }
+		}
+		if(match){
+		    return;
+		}
+		
 	}
 	
 	if(location.indexOf("techradar.com") > -1){
 		if (mode == "next" && location.lastIndexOf("/") < location.length - 3){ // there is no page filled in, add it
-			window.location.href = window.location.href + "/2"
-			return
+			window.location.href = window.location.href + "/2";
+			return;
 		}
 
 		if(location.lastIndexOf("/") > -1 && location.lastIndexOf("/") > location.length - 3){
