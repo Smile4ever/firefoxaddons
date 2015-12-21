@@ -123,7 +123,6 @@
 				tb.style.setProperty("list-style-image", "url(chrome://multilinks/skin/ml.png)", "");
 			
 			MultiLinks_Wrapper.InitSBIcon();
-			window.setTimeout(MultiLinks_Wrapper.NavigateAdv, 1000);
 			
 			var wurls = MultiLinks_Wrapper.DataManager.GetTabsInNewWindowUrls();
 			MultiLinks_Wrapper.DataManager.SetTabsInNewWindowUrls("");
@@ -147,58 +146,6 @@
 		else
 			tb.style.setProperty("display", "none", "");
 	},
-	
-	NavigateAdv: function()
-	{
-		var emid = "multilinks@plugin";
-		if(Components.classes["@mozilla.org/extensions/manager;1"])
-		{
-			var em = Components.classes["@mozilla.org/extensions/manager;1"]
-								.getService(Components.interfaces.nsIExtensionManager);
-			var addon = em.getItemForID(emid);
-			var version = addon.version;
-
-			if(MultiLinks_Wrapper.DataManager.GetNavigated() == false || version != MultiLinks_Wrapper.DataManager.GetVersion())
-			{
-				MultiLinks_Wrapper.DataManager.SetNavigated(true);
-				MultiLinks_Wrapper.DataManager.SetVersion(version);
-			}
-		}
-		else
-		{
-			Components.utils.import("resource://gre/modules/AddonManager.jsm");  
-			AddonManager.getAddonByID(emid, function(addon){
-				var version = String(addon.version);
-				if(MultiLinks_Wrapper.DataManager.GetNavigated() == false || version != MultiLinks_Wrapper.DataManager.GetVersion())
-				{
-					MultiLinks_Wrapper.DataManager.SetNavigated(true);
-					MultiLinks_Wrapper.DataManager.SetVersion(version);
-				}
-			});
-			
-			var MLAddonListener = new Object();
-			MLAddonListener.onUninstalling = function(addon, needsRestart)
-			{
-				if(addon.id != "multilinks@plugin")
-					return;
-			}
-			
-			MLAddonListener.onUninstalled = function(addon)
-			{
-				if(addon.id != "multilinks@plugin")
-					return;
-					
-				var prefManager = Components.classes['@mozilla.org/preferences-service;1']
-										.getService(Components.interfaces.nsIPrefService);
-				var prefs = prefManager.getBranch('extensions.multilinks@plugin.');
-				
-				prefs.deleteBranch("");
-			}
-			
-			AddonManager.addAddonListener(MLAddonListener);
-		}
-	},
-	
 	Help: function()
 	{
 	},
@@ -434,8 +381,11 @@
 			
 			var doc = gBrowser.contentDocument;
 			
-			doc.MLLeft = 0;
-			doc.MLTop = 0;
+			/*
+			 * DISABLED to disable warnings
+			 * doc.MLLeft = 0; // is this needed?
+			doc.MLTop = 0; // is this needed?
+			*/
 			var b = MultiLinks_Wrapper.LinksManager.getSubDocPos(doc, parent);
 			if(b)
 			{
@@ -555,8 +505,9 @@
 			
 			if(MultiLinks_Wrapper.status == null)
 				MultiLinks_Wrapper.status = String(gBrowser.contentWindow.defaultStatus);
-			if(MultiLinks_Wrapper.LinksManager.calcStatusB() == true)
-				gBrowser.contentWindow.status = String(MultiLinks_Wrapper.LinksManager.calcStatus(gBrowser.contentDocument));
+			// DISABLED to disable warnings
+			//if(MultiLinks_Wrapper.LinksManager.calcStatusB() == true)
+			//	gBrowser.contentWindow.status = String(MultiLinks_Wrapper.LinksManager.calcStatus(gBrowser.contentDocument));
 			
 			var doc = gBrowser.contentDocument;
 			

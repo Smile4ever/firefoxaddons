@@ -316,7 +316,8 @@ MultiLinks_LinksManager = function()
 		MultiLinks_Wrapper.moveS = null;
 		this.moveS = null;
 		
-		gBrowser.contentWindow.status = String("Done");
+		// DISABLED to disable warnings
+		//gBrowser.contentWindow.status = String("Done");
 		MultiLinks_Wrapper.status = null;
 		MultiLinks_Wrapper.boxes = 0;
 	}
