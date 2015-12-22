@@ -1,38 +1,3 @@
-window.addEventListener("keyup", function (event) {
-  if (event.defaultPrevented) {
-    return;
-  }
-
-  switch (event.key) {
-    case "Delete":
-		// todo: implement an options window on what do to when the user presses delete
-		// possible options: delete a page, delete a page immediately, close the tab..
-		
-		// check if modifier is pressed (ctrl, shift)
-		// if pressed, return
-		if(event.getModifierState("Alt") || event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
-			return;
-		}
-		
-		// order is important here
-		//console.log("has focus " + content.document.hasFocus);
-		//console.log(window.content.document.activeElement.tagName == "BODY");
-		if(window.content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
-			//deletemw.closetab();
-			window.closetab();
-		}else{
-			return;
-		}
-				
-      break;
-    default:
-      return;
-  }
-
-  // don't allow for double actions for a single event
-  event.preventDefault();
-}, true);
-
 var deletemw = {
 	confirm: function() {
 		var str=window.content.location.href;
@@ -83,8 +48,12 @@ var deletemw = {
 		var talk = false;
 		var mwContentText = "";
 		
+		if(content.document.body.textContent.indexOf("This page has been deleted") > -1 || content.document.body.textContent.indexOf("There is currently no text in this page") > -1 || content.document.body.innerHTML.indexOf("noarticletext") > -1){
+			this.closetab();
+			return;
+		}
+		
 		if(str.indexOf("nl.wikipedia") > -1 && str.indexOf("Overleg") == -1){
-
 			var index = str.indexOf("wiki/");
 			var firstpart = str.substring(0, index + 5);
 			var lastpart = str.substring(index+5);
@@ -133,10 +102,34 @@ var deletemw = {
 		return false;
 	},
 	closetab: function(){
-		getBrowser().removeCurrentTab();
+		// only allow wiki pages to be closed
+		//if(this.isMediaWiki()){
+		if(window.content.location.href.indexOf("zoho.com") == -1){
+			getBrowser().removeCurrentTab();
+			return true;
+		}
+		//}
+		//return false;
+	},
+	isMediaWiki: function(){
+		//generator
+		var counter;
+		var metaTags = window.content.document.getElementsByTagName("meta");
+		
+		for(counter = 0; counter < metaTags.length; counter++){
+			if(metaTags[counter].getAttribute("name") == "generator"){
+				if(metaTags[counter].getAttribute("content").indexOf("MediaWiki") > -1){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
+		return false;
 	},
 	gotourl: function(str, mwContentText, talk, contentText){
-		var count = contentText.match(/mw-headline/g);
+		var count = mwContentText.match(/mw-headline/g);
+				
 		try {
 			var countDodeLink = contentText.match(/id=\"Dode_/g).length;
 		}
@@ -193,12 +186,15 @@ var deletemw = {
 		mwContentText = mwContentText.replace("<p><br /></p>",""); // fix for empty lines at the start
 		mwContentText = mwContentText.replace("<p></p>", ""); // fix for talk pages with TOC
 		var firstP = mwContentText.substring(0,3); // mw-content-text
-		
+				
 		if(str.indexOf("nl.wikipedia") == -1 && firstP != "<p>" || str.indexOf("nl.wikipedia") > -1 && this.weesoverleg() == true){
 			window.content.location.href = str+"delete";
 		}else{
 			if (str.indexOf("nl.wikipedia") > -1){
-				if((count.length == countDodeLink) && firstP != "<p>" || (firstP != "<p>" && count.length == 2 && mwContentText.indexOf("Afbeeldingsuggestie") > -1) || mwContentText.indexOf("<p>== Afbeeldingsuggestie ==</p>") > -1){
+				if(
+					(count.length == countDodeLink) && firstP != "<p>" ||
+					(firstP != "<p>" && count.length == 2 && mwContentText.indexOf("Afbeeldingsuggestie") > -1) ||
+					mwContentText.indexOf("<p>== Afbeeldingsuggestie ==</p>") > -1){
 					if(mwContentText.indexOf("<blockquote>") == -1){
 						window.content.location.href = str+"delete";
 					}else{
@@ -223,3 +219,41 @@ var deletemw = {
 		
 	},
 }
+window.addEventListener("keyup", function (event) {
+  if (event.defaultPrevented) {
+    return;
+  }
+
+  switch (event.key) {
+    case "Delete":
+		// todo: implement an options window on what do to when the user presses delete
+		// possible options: delete a page, delete a page immediately, close the tab..
+		
+		// check if modifier is pressed (ctrl, shift)
+		// if pressed, return
+		if(event.getModifierState("Alt") || event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
+			return;
+		}
+		
+		// order is important here
+		//console.log("has focus " + content.document.hasFocus);
+		//console.log(window.content.document.activeElement.tagName == "BODY");
+		if(window.content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
+			if(deletemw.isMediaWiki() == true){
+				deletemw.deletepage();
+			}else{
+				deletemw.closetab();
+			}
+		}else{
+			return;
+		}
+				
+      break;
+    default:
+      return;
+  }
+
+  // don't allow for double actions for a single event
+  event.preventDefault();
+  
+}, true);
