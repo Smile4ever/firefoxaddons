@@ -720,12 +720,12 @@
 	<!--<hbox>
 		<spacer flex="1"/>
 		<label value="Multi Links Instructions" class="text-link" onmouseup="MultyLinksOptionsHelp()"/>
-	</hbox>
+	</hbox>-->
 	
 	<hbox>
-		<button label="Donate" oncommand="Donate();"/>
+		<!--<button label="Donate" oncommand="Donate();"/>-->
 		<spacer flex="1"/>
 		<button label="OK" oncommand="MultyLinksOptionsaccept(); window.close();"/>
 		<button label="Cancel" oncommand="window.close();"/>
-	</hbox>-->
+	</hbox>
 </dialog>
