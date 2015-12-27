@@ -1,3 +1,4 @@
+var delete_reason = "";
 var deletemw = {
 	confirm: function() {
 		var str=window.content.location.href;
@@ -35,7 +36,13 @@ var deletemw = {
 					wpReason.value = "Afgehandelde botmelding";
 				}
 			}
-					
+			
+			// override
+			if(delete_reason.length > 0){
+				wpReason.value = delete_reason;
+				delete_reason = "";
+			}
+			
 			deleteForm.submit();
 			setTimeout(function(){getBrowser().removeCurrentTab();}, 1200);
 		}catch(err){
@@ -48,9 +55,25 @@ var deletemw = {
 		var talk = false;
 		var mwContentText = "";
 		
-		if(content.document.body.textContent.indexOf("This page has been deleted") > -1 || content.document.body.textContent.indexOf("There is currently no text in this page") > -1 || content.document.body.innerHTML.indexOf("noarticletext") > -1){
+		var bodyContent = content.document.body.textContent;
+		var bodyContentLower = content.document.body.textContent.toLowerCase();
+		var bodyInnerContent = content.document.body.innerHTML;
+		
+		if(bodyContent.indexOf("This page has been deleted") > -1 || bodyContent.indexOf("There is currently no text in this page") > -1 || bodyInnerContent.indexOf("noarticletext") > -1){
 			this.closetab();
 			return;
+		}
+		if(bodyInnerContent.indexOf("Categorie:Wikipedia:Nuweg") > -1){
+			if(bodyContent.indexOf("DOORVERWIJZING") > -1 || bodyContent.indexOf("REDIRECT") > -1){
+				delete_reason = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
+				window.content.location.href = this.getActionURL("delete", str);
+				return;
+			}
+			if(bodyContentLower.indexOf("onzin") > -1 || bodyContentLower.indexOf("zinvol") > -1 || bodyContentLower.indexOf("zinnig") > -1){
+				delete_reason = "Geen zinvolle inhoud";
+				window.content.location.href = this.getActionURL("delete", str);
+				return;
+			}
 		}
 		
 		if(str.indexOf("nl.wikipedia") > -1 && str.indexOf("Overleg") == -1){
@@ -126,6 +149,18 @@ var deletemw = {
 			}
 		}
 		return false;
+	},
+	getActionURL: function(action, partialurl){
+		t_permalink = content.document.getElementById("t-permalink");
+		if(t_permalink){
+			ahref = t_permalink.getElementsByTagName('a')[0];
+			if(ahref){
+				var locationoldid = ahref.href.indexOf("&oldid");
+				partialurl = ahref.href.substring(0, locationoldid);
+				partialurl = partialurl + "&action=" + action;
+			}
+		}
+		return partialurl;
 	},
 	gotourl: function(str, mwContentText, talk, contentText){
 		var count = mwContentText.match(/mw-headline/g);
