@@ -1,11 +1,15 @@
 var delete_reason = "";
+
 var deletemw = {
 	confirm: function() {
 		var str=window.content.location.href;
 		var deleteForm = content.document.getElementById("deleteconfirm");
-
+		var submit = true;
+		var bodyContent = content.document.body.textContent;
+		var bodyInnerContent = content.document.body.innerHTML;
+		
 		// content.document.body.innerHTML.indexOf("mw-logline-delete")
-		if(content.document.body.textContent.indexOf("This page has been deleted") > -1 || content.document.body.textContent.indexOf("There is currently no text in this page") > -1 || content.document.body.innerHTML.indexOf("noarticletext") > -1){
+		if(bodyContent.indexOf("This page has been deleted") > -1 || bodyContent.indexOf("There is currently no text in this page") > -1 || bodyInnerContent.indexOf("noarticletext") > -1){
 			this.closetab();
 			return;
 		}
@@ -25,52 +29,97 @@ var deletemw = {
 		
 		try{
 			var wpReason = content.document.getElementById("wpReason");
+			if(wpReason == null){
+				return;
+			}
+		}catch(err){
+			return;
+		}
 			
-			if(str.indexOf("wiki.lxde") > -1 || str.indexOf("oblivionmodwiki.com") > -1) {
-				wpReason.value = "Spam";
+		if(str.indexOf("wiki.lxde") > -1 || str.indexOf("oblivionmodwiki.com") > -1) {
+			wpReason.value = "Spam";
+		}else{
+			
+			if(bodyInnerContent.indexOf("Hoofdpagina") == -1 && bodyInnerContent.indexOf("Geschiedenis") == -1){
+				this.showMessage("This is not an unsupported wiki");
+				return;
 			}else{
+				// probably nl.wikipedia.org
 				var location=wpReason.value.indexOf(": \"");
 				if(wpReason.value.indexOf("#") > -1 && wpReason.value.indexOf("#") - location < 6){
 					wpReason.value = "Weesoverleg of overleg bij verwijderde pagina";
 				}else{
-					wpReason.value = "Afgehandelde botmelding";
+					if(delete_reason.length > 0){
+						wpReason.value = delete_reason;
+						delete_reason = "";
+					}else{
+						this.showMessage("De verwijderreden kon niet geraden worden.");
+						submit = false;						
+					}
+					//wpReason.value = "Afgehandelde botmelding";
 				}
 			}
-			
-			// override
-			if(delete_reason.length > 0){
-				wpReason.value = delete_reason;
-				delete_reason = "";
-			}
-			
+		}
+
+		if(submit){
 			deleteForm.submit();
 			setTimeout(function(){getBrowser().removeCurrentTab();}, 1200);
-		}catch(err){
-			// nothing to be done
 		}
+		
  	},
+ 	autoconfirm: function(){
+		var that=this;
+		var func = function(){
+			var wpReason = content.document.getElementById("wpReason");
+			if(wpReason == null){
+				window.setTimeout(func, 200);
+			}else{
+				that.showMessage("Autoconfirming..");
+				content.document.title = "Autoconfirming..";
+				that.confirm();
+			}
+		};
+		window.setTimeout(func, 600);
+	},
  	deletepage: function(){
 		var str=window.content.location.href;
-		var contentText = "";
 		var talk = false;
-		var mwContentText = "";
+		var contentText = content.document.documentElement.innerHTML;
+		var mwContentText = content.document.getElementById("mw-content-text").innerHTML;
 		
 		var bodyContent = content.document.body.textContent;
 		var bodyContentLower = content.document.body.textContent.toLowerCase();
 		var bodyInnerContent = content.document.body.innerHTML;
 		
-		if(bodyContent.indexOf("This page has been deleted") > -1 || bodyContent.indexOf("There is currently no text in this page") > -1 || bodyInnerContent.indexOf("noarticletext") > -1){
+		if(
+			bodyContent.indexOf("This page has been deleted") > -1 ||
+			bodyContent.indexOf("There is currently no text in this page") > -1 ||
+			bodyInnerContent.indexOf("noarticletext") > -1 ||
+			bodyInnerContent.indexOf("Handeling voltooid") > -1
+		){
 			this.closetab();
 			return;
 		}
 		if(bodyInnerContent.indexOf("Categorie:Wikipedia:Nuweg") > -1){
-			if(bodyContent.indexOf("DOORVERWIJZING") > -1 || bodyContent.indexOf("REDIRECT") > -1){
+			if(bodyContent.indexOf("DOORVERWIJZING") > -1 || bodyInnerContent.indexOf("<li>REDIRECT<a") > -1){
 				delete_reason = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
 				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
 				return;
 			}
 			if(bodyContentLower.indexOf("onzin") > -1 || bodyContentLower.indexOf("zinvol") > -1 || bodyContentLower.indexOf("zinnig") > -1){
 				delete_reason = "Geen zinvolle inhoud";
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}
+		}
+		
+		// check if the talk page exists
+		var talkPage = content.document.getElementById("ca-talk");
+		if(talkPage){
+			var attributenew = talkPage.getAttribute("class");
+			if(attributenew == "new"){
 				window.content.location.href = this.getActionURL("delete", str);
 				return;
 			}
@@ -107,9 +156,7 @@ var deletemw = {
 			//};
 			xmlhttp.send();
 		}else{
-			contentText = content.document.documentElement.innerHTML;
-			mwContentText = content.document.getElementById("mw-content-text").innerHTML;
-			this.gotourl(str, mwContentText, false, contentText);
+			this.gotourl(str, mwContentText, false, contentText); // afgehandelde botmelding
 		}		
 	},
 	weesoverleg: function(){
@@ -161,6 +208,12 @@ var deletemw = {
 			}
 		}
 		return partialurl;
+	},
+	showMessage: function(message){
+		var alertsService = Cc["@mozilla.org/alerts-service;1"].getService(Ci.nsIAlertsService);
+		var title = "Fast Delete";
+
+		alertsService.showAlertNotification("", title, message, true, "", this, "");
 	},
 	gotourl: function(str, mwContentText, talk, contentText){
 		var count = mwContentText.match(/mw-headline/g);
@@ -229,9 +282,14 @@ var deletemw = {
 				if(
 					(count.length == countDodeLink) && firstP != "<p>" ||
 					(firstP != "<p>" && count.length == 2 && mwContentText.indexOf("Afbeeldingsuggestie") > -1) ||
-					mwContentText.indexOf("<p>== Afbeeldingsuggestie ==</p>") > -1){
+					mwContentText.indexOf("<p>== Afbeeldingsuggestie ==</p>") > -1 ||
+					mwContentText.indexOf("<p>n== Afbeeldingsuggestie ==</p>") > -1 ||
+					mwContentText.indexOf("<p>= Afbeeldingsuggestie ==</p>") > -1
+					){
 					if(mwContentText.indexOf("<blockquote>") == -1){
+						delete_reason="Afgehandelde botmelding";
 						window.content.location.href = str+"delete";
+						this.autoconfirm();
 					}else{
 						content.document.title = "Loading... Not allowed to delete this page";
 						window.content.location.href = str+"edit";
