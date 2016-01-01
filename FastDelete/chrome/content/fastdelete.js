@@ -159,6 +159,21 @@ var deletemw = {
 		}
 		return true;
 	},
+	isRedirect: function(mwContentText, bodyInnerContent){
+		/*if(mwContentText.indexOf("DOORVERWIJZING") > -1 || mwContentText.indexOf("REDIRECT") > -1){
+			return true;
+		}*/
+		if(bodyInnerContent.indexOf("<p>#REDIRECT") > -1 || bodyInnerContent.indexOf("<p>#DOORVERWIJZING") > -1){
+			return true;
+		}
+		if(bodyInnerContent.indexOf("<li>doorverwijzing") > -1 || bodyInnerContent.indexOf("<li>REDIRECT") > -1 || bodyInnerContent.indexOf("<li>DOORVERWIJZING") > -1){
+			return true;
+		}
+		if(bodyInnerContent.indexOf("onzinnige redirect") > -1){
+			return true;
+		}
+		return false;
+	},
  	deletepage: function(){
 		var str=window.content.location.href;
 		var talk = false;
@@ -174,6 +189,8 @@ var deletemw = {
 			this.closetab();
 			return;
 		}
+		
+		var delete_reason_doorverwijzing = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
 		
 		if(bodyInnerContent.indexOf("Categorie:Wikipedia:Nuweg") > -1){
 			var reclamePos = mwContentText.toLowerCase().indexOf("reclame");
@@ -201,6 +218,24 @@ var deletemw = {
 				}
 			}
 			//  || bodyContentLower.indexOf("zinnig") > -1	<-- source: {{Nuweg}}
+			
+			if(this.isRedirect(mwContentText, bodyInnerContent)){
+				delete_reason = delete_reason_doorverwijzing;
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}
+		
+			var firstHeading = content.document.getElementById("firstHeading").innerHTML;
+			if(firstHeading.indexOf("Gebruiker:") > -1 && (mwContentText.toLowerCase().indexOf("eigen naamruimte") > -1)){
+				delete_reason = "Verzoek in eigen naamruimte aanvrager";
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}
+			
+			//return;
+			
 			if(bodyContentLower.indexOf("onzin") > -1 || bodyContentLower.indexOf("zinvol") > -1){
 				delete_reason = "Geen zinvolle inhoud";
 				window.content.location.href = this.getActionURL("delete", str);
@@ -247,13 +282,6 @@ var deletemw = {
 					var link = bodyInnerContent.substring(linkStart, linkEnd);
 					delete_reason += link;
 				}
-				window.content.location.href = this.getActionURL("delete", str);
-				this.autoconfirm();
-				return;
-			}
-			// TODO: fix this more
-			if(mwContentText.indexOf("DOORVERWIJZING") > -1 || bodyInnerContent.indexOf("<li>REDIRECT<a") > -1){
-				delete_reason = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
 				window.content.location.href = this.getActionURL("delete", str);
 				this.autoconfirm();
 				return;
