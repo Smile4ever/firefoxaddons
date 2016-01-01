@@ -77,6 +77,12 @@
 		key='x'
 		oncommand='deletemw.closetab();'
 		/>
+		<!-- Close window X 
+		<key id='deletemw-closetab-x'
+		modifiers=''
+		key='x'
+		oncommand='deletemw.closewindow();'
+		/>-->
 		<!-- Close tab DEL is implemented in JavaScript to circumvent a bug in Firefox (VK_DELETE does not fire an event) -->
 		<!--<key id='deletemw-closetab-deletekey'
 		keycode='VK_DELETE'

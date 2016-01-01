@@ -5,11 +5,11 @@ var deletemw = {
 		var str=window.content.location.href;
 		var deleteForm = content.document.getElementById("deleteconfirm");
 		var submit = true;
+		var autoconfirmwikipedia = true;
 		var bodyContent = content.document.body.textContent;
 		var bodyInnerContent = content.document.body.innerHTML;
 		
-		// content.document.body.innerHTML.indexOf("mw-logline-delete")
-		if(bodyContent.indexOf("This page has been deleted") > -1 || bodyContent.indexOf("There is currently no text in this page") > -1 || bodyInnerContent.indexOf("noarticletext") > -1){
+		if(!this.isThereText(true)){
 			this.closetab();
 			return;
 		}
@@ -19,11 +19,12 @@ var deletemw = {
 				this.deletepage();
 				return;
 			}else{
+				// do not close pages other than wiki pages
 				// unless the page has not yet finished loading
-				if(content.document.readyState == 'complete'){
+				/*if(content.document.readyState == 'complete'){
 					this.closetab();
 					return;
-				}
+				}*/
 			}
 		}
 		
@@ -53,8 +54,10 @@ var deletemw = {
 						wpReason.value = delete_reason;
 						delete_reason = "";
 					}else{
-						this.showMessage("De verwijderreden kon niet geraden worden.");
-						submit = false;						
+						if(bodyInnerContent.indexOf("<p>Toelichting: <b>") == -1){
+							this.showMessage("De verwijderreden kon niet geraden worden.");
+							submit = false;	
+						} // else: submit with reason given
 					}
 					//wpReason.value = "Afgehandelde botmelding";
 				}
@@ -62,8 +65,59 @@ var deletemw = {
 		}
 
 		if(submit){
-			deleteForm.submit();
-			setTimeout(function(){getBrowser().removeCurrentTab();}, 1200);
+			if(str.indexOf("wikipedia.org") == -1){
+				deleteForm.submit();
+			}else{
+				if(autoconfirmwikipedia == true){
+					// Waarschuwing: de pagina die u wilt verwijderen heeft ongeveer
+					if(bodyContent.indexOf("mw-delete-warning-revisions") == -1 || bodyContent.indexOf("Waarschuwing: de pagina die u wilt verwijderen heeft ongeveer 2") > -1){
+						deleteForm.submit();
+					}else{
+						this.showMessage("Pagina heeft > 2 versies geschiedenis, druk manueel op verwijderen");
+						submit = false;
+					}
+				}else{
+					submit = false; // do not close tab
+				}
+			}
+			
+			/*str = window.content.location.href;
+			var titlestring = "title=";
+			var titleloc = str.indexOf(titlestring);
+			var actionloc = str.indexOf("&action=");
+			var title = str.substring(titleloc + titlestring.length, actionloc);*/
+
+			if(submit){
+				var numberOfTries = 0;
+				var func = function(){
+					/*if(content.document.getElementById("firstHeading").innerHTML.indexOf(title) == -1){
+						alert("ja");
+					}*/
+					
+					// todo: make this more generic!
+					if(content.document.title.indexOf("Action complete") > -1 || content.document.title.indexOf("Handeling voltooid") > -1){
+						//this.showMessage("Closing..");
+						//this.closetab();
+						gBrowser.removeCurrentTab();
+					}else{
+						numberOfTries++;
+						if(numberOfTries < 11){
+							window.setTimeout(func, 200);
+						}
+					}
+				};
+				window.setTimeout(func, 100);
+			}
+			/*var that=this;
+			var check = function()
+			{
+				if(!that.isThereText(true)){
+					this.closetab();
+					return;
+				}
+			}
+			window.setTimeout(check, 1000);*/
+			
 		}
 		
  	},
@@ -74,47 +128,184 @@ var deletemw = {
 			if(wpReason == null){
 				window.setTimeout(func, 200);
 			}else{
-				that.showMessage("Autoconfirming..");
+				//that.showMessage("Autoconfirming..");
 				content.document.title = "Autoconfirming..";
 				that.confirm();
 			}
 		};
 		window.setTimeout(func, 600);
 	},
+	isThereText: function(isConfirm){
+		var bodyContent = content.document.body.textContent;
+		var bodyInnerContent = content.document.body.innerHTML;
+				
+		if(
+			bodyContent.indexOf("There is currently no text in this page") > -1 ||
+			bodyInnerContent.indexOf("noarticletext") > -1 ||
+			bodyContent.indexOf("Cannot delete page") > -1 ||
+			bodyContent.indexOf("kan niet verwijderd worden") > -1 ||
+			bodyInnerContent.indexOf("noarticletext") > -1 ||
+			bodyInnerContent.indexOf("Handeling voltooid") > -1
+			){
+			return false;
+		}
+		if(!isConfirm){
+			// bodyContent.indexOf("This page has been deleted") > -1 ||
+			// bodyContent.indexOf("Deze pagina is verwijderd.") > -1 ||
+			// bodyInnerContent.indexOf("mw-logevent-actionlink") > -1
+			if(bodyInnerContent.indexOf("mw-logline-delete") > -1){
+				return false;
+			}
+		}
+		return true;
+	},
  	deletepage: function(){
 		var str=window.content.location.href;
 		var talk = false;
 		var contentText = content.document.documentElement.innerHTML;
 		var mwContentText = content.document.getElementById("mw-content-text").innerHTML;
+		var i = 0;
 		
 		var bodyContent = content.document.body.textContent;
 		var bodyContentLower = content.document.body.textContent.toLowerCase();
 		var bodyInnerContent = content.document.body.innerHTML;
-		
-		if(
-			bodyContent.indexOf("This page has been deleted") > -1 ||
-			bodyContent.indexOf("There is currently no text in this page") > -1 ||
-			bodyInnerContent.indexOf("noarticletext") > -1 ||
-			bodyInnerContent.indexOf("Handeling voltooid") > -1
-		){
+			
+		if(!this.isThereText(false)){
 			this.closetab();
 			return;
 		}
+		
 		if(bodyInnerContent.indexOf("Categorie:Wikipedia:Nuweg") > -1){
-			if(bodyContent.indexOf("DOORVERWIJZING") > -1 || bodyInnerContent.indexOf("<li>REDIRECT<a") > -1){
-				delete_reason = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
-				window.content.location.href = this.getActionURL("delete", str);
-				this.autoconfirm();
-				return;
+			var reclamePos = mwContentText.toLowerCase().indexOf("reclame");
+			if(reclamePos > -1){
+				// /wiki/Categorie:Wikipedia:Weg
+				// 8048 7819
+				
+				//var me = document.getElementsByTagName("html")[0].innerHTML;
+				/*var me = contentText;
+				var rec = me.indexOf("reclame");
+				var ahrefbegin = me.indexOf("<a href=\"/wiki/Categorie:Wikipedia:Weg\"", rec - 80);
+				var ahrefend = me.indexOf("</a>",rec);
+				var reclamelinkzeus = me.substring(ahrefbegin,ahrefend+4);
+				if(ahrefbegin > -1){
+					// ZEUS mode is enabled, are we trusting this?
+				}*/
+				
+				
+				if(reclamePos > bodyContentLower.indexOf("chkqt7") + 400){ // fix false positive (origin: zeus mode)
+					delete_reason = "Expliciete reclame";
+					window.content.location.href = this.getActionURL("delete", str);
+					//alert(reclamePos + " " + bodyContentLower.indexOf("chkqt7"));
+					this.autoconfirm();
+					return;
+				}
 			}
-			if(bodyContentLower.indexOf("onzin") > -1 || bodyContentLower.indexOf("zinvol") > -1 || bodyContentLower.indexOf("zinnig") > -1){
+			//  || bodyContentLower.indexOf("zinnig") > -1	<-- source: {{Nuweg}}
+			if(bodyContentLower.indexOf("onzin") > -1 || bodyContentLower.indexOf("zinvol") > -1){
 				delete_reason = "Geen zinvolle inhoud";
 				window.content.location.href = this.getActionURL("delete", str);
 				this.autoconfirm();
 				return;
 			}
+			if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1){
+				delete_reason = "Afgehandelde botmelding";
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}
+			if(bodyContent.indexOf("Machinevertaling") > -1){
+				delete_reason = "Machinevertaling";
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}
+			if(bodyContent.indexOf("Verwijderingsnominatie") > -1){
+				delete_reason = "Botmelding afgehandeld";
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}
+			if(mwContentText.toLowerCase().indexOf("privacy") > -1){ // todo: fix
+				delete_reason = "Privacyschending";
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}
+			if(mwContentText.toLowerCase().indexOf("copyvio") > -1 || mwContentText.toLowerCase().indexOf("copyright") > -1 || mwContentText.toLowerCase().indexOf("auteursrecht") > -1){
+				var startSearch = bodyInnerContent.indexOf("<p>Toelichting:");
+				var endSearch = bodyInnerContent.indexOf(startSearch, "<br />");
+				
+				var linkStart = bodyInnerContent.indexOf("http", startSearch, endSearch);
+				var linkEnd = bodyInnerContent.indexOf("\"", linkStart, endSearch);
+				
+				delete_reason = "Schending van [[Wikipedia:Auteursrechten|auteursrechten]] of geplaatst zonder [[Help:Toestemming|toestemming]], link ";
+				
+				if(linkStart == -1){
+					// could not find the link
+					this.showMessage("Please add the copyvio link manually");
+				}else{
+					var link = bodyInnerContent.substring(linkStart, linkEnd);
+					delete_reason += link;
+				}
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}
+			// TODO: fix this more
+			if(mwContentText.indexOf("DOORVERWIJZING") > -1 || bodyInnerContent.indexOf("<li>REDIRECT<a") > -1){
+				delete_reason = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}
 		}
-		
+		if(str.indexOf("wiki.lxde") > -1) {
+			if(mwContentText == null){
+				this.showMessage("mwContentText is null");
+				window.setTimeout(this.closetab(), 2000);
+				return;
+			}
+			var mwContentTextLower = mwContentText.toLowerCase();
+			if((mwContentText.indexOf("/en/") == -1 || mwContentText.indexOf("/en/index.php") > -1) && mwContentTextLower.indexOf("lxde") == -1 && bodyInnerContent.indexOf("Category:") == -1 && bodyInnerContent.toLowerCase().indexOf("gtk") == -1 && mwContentTextLower.indexOf("linux") == -1 && mwContentTextLower.indexOf("ubuntu") == -1){
+				
+				var title = content.document.getElementById("firstHeading").childNodes[0].innerHTML;
+				var numberOfUpperCaseLetters = 0;
+				var numberOfNumbers = 0;
+				
+				for(i = 0; i < title.length; i++){
+					if(title[i] == title[i].toUpperCase()){
+						if(title[i] != ":" && title[i] != "." && title[i] != "/"){
+							if(isNaN(title[i])){
+								numberOfUpperCaseLetters++;
+							}else{
+								numberOfNumbers++;
+							}
+						}
+					}
+				}
+
+				/* 	numberOfUpperCaseLetters > 2 || */
+				if(
+					(numberOfUpperCaseLetters + numberOfNumbers) > 3 ||
+					(numberOfUpperCaseLetters == 3 && bodyInnerContent.indexOf("action=markpatrolled") > -1)
+				){
+					window.content.location.href = this.getActionURL("delete", str);
+					this.autoconfirm();
+				}else{
+					this.closetab();
+				}
+				return;
+			}else{
+				this.closetab();
+				return;
+			}
+		}
+		if(str.indexOf("oblivionmodwiki.com") > -1){
+			window.content.location.href = this.getActionURL("delete", str);
+			this.autoconfirm();
+			return;
+		}
+
 		// check if the talk page exists
 		var talkPage = content.document.getElementById("ca-talk");
 		if(talkPage){
@@ -181,6 +372,9 @@ var deletemw = {
 		//}
 		//return false;
 	},
+	closewindow: function(){
+		window.close();
+	},
 	isMediaWiki: function(){
 		//generator
 		var counter;
@@ -216,8 +410,11 @@ var deletemw = {
 		alertsService.showAlertNotification("", title, message, true, "", this, "");
 	},
 	gotourl: function(str, mwContentText, talk, contentText){
-		var count = mwContentText.match(/mw-headline/g);
-				
+		try{
+			var count = mwContentText.match(/mw-headline/g);
+		}catch(err){
+			var count = 0;
+		}	
 		try {
 			var countDodeLink = contentText.match(/id=\"Dode_/g).length;
 		}
@@ -317,6 +514,12 @@ window.addEventListener("keyup", function (event) {
     return;
   }
 
+  if (event.keyCode == 88 && event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
+    deletemw.closewindow();
+    event.preventDefault();
+    return;
+  }
+
   switch (event.key) {
     case "Delete":
 		// todo: implement an options window on what do to when the user presses delete
@@ -345,7 +548,7 @@ window.addEventListener("keyup", function (event) {
     default:
       return;
   }
-
+  
   // don't allow for double actions for a single event
   event.preventDefault();
   
