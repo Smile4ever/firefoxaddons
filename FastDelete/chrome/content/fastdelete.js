@@ -260,6 +260,7 @@ var deletemw = {
 				this.autoconfirm();
 				return;
 			}
+			//alert(mwContentText.toLowerCase().indexOf("privacy") );
 			if(mwContentText.toLowerCase().indexOf("privacy") > -1){ // todo: fix
 				delete_reason = "Privacyschending";
 				window.content.location.href = this.getActionURL("delete", str);
@@ -543,9 +544,11 @@ window.addEventListener("keyup", function (event) {
   }
 
   if (event.keyCode == 88 && event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
-    deletemw.closewindow();
-    event.preventDefault();
-    return;
+    if(window.content.document.hasFocus() && !content.document.activeElement.tagName.toLowerCase() == "textarea" && !content.document.activeElement.tagName.toLowerCase() == "input"){
+		deletemw.closewindow();
+		event.preventDefault();
+		return;
+	}
   }
 
   switch (event.key) {
