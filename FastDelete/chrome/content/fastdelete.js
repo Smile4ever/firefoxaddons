@@ -46,9 +46,14 @@ var deletemw = {
 				return;
 			}else{
 				// probably nl.wikipedia.org
+				if(wpReason.value.indexOf("afgehandeld") > -1 && delete_reason == ""){
+					delete_reason = "Afgehandelde botmelding";
+				}
+				
 				var location=wpReason.value.indexOf(": \"");
-				if(wpReason.value.indexOf("#") > -1 && wpReason.value.indexOf("#") - location < 6){
-					wpReason.value = "Weesoverleg of overleg bij verwijderde pagina";
+				if((wpReason.value.indexOf("#") > -1 && wpReason.value.indexOf("#") - location < 6) && !this.isSafeMode()){
+					//wpReason.value = "Weesoverleg of overleg bij verwijderde pagina";
+					wpReason.value = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
 				}else{
 					if(delete_reason.length > 0){
 						wpReason.value = delete_reason;
@@ -138,7 +143,7 @@ var deletemw = {
 	isThereText: function(isConfirm){
 		var bodyContent = content.document.body.textContent;
 		var bodyInnerContent = content.document.body.innerHTML;
-				
+		
 		if(
 			bodyContent.indexOf("There is currently no text in this page") > -1 ||
 			bodyInnerContent.indexOf("noarticletext") > -1 ||
@@ -190,58 +195,80 @@ var deletemw = {
 			return;
 		}
 		
+		var safemode = this.isSafeMode();		
 		var delete_reason_doorverwijzing = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
 		
 		if(bodyInnerContent.indexOf("Categorie:Wikipedia:Nuweg") > -1){
 			var reclamePos = mwContentText.toLowerCase().indexOf("reclame");
 			if(reclamePos > -1){
-				// /wiki/Categorie:Wikipedia:Weg
-				// 8048 7819
-				
-				//var me = document.getElementsByTagName("html")[0].innerHTML;
-				/*var me = contentText;
-				var rec = me.indexOf("reclame");
-				var ahrefbegin = me.indexOf("<a href=\"/wiki/Categorie:Wikipedia:Weg\"", rec - 80);
-				var ahrefend = me.indexOf("</a>",rec);
-				var reclamelinkzeus = me.substring(ahrefbegin,ahrefend+4);
-				if(ahrefbegin > -1){
-					// ZEUS mode is enabled, are we trusting this?
-				}*/
-				
-				
-				if(reclamePos > bodyContentLower.indexOf("chkqt7") + 400){ // fix false positive (origin: zeus mode)
-					delete_reason = "Expliciete reclame";
-					window.content.location.href = this.getActionURL("delete", str);
-					//alert(reclamePos + " " + bodyContentLower.indexOf("chkqt7"));
-					this.autoconfirm();
+				if(!safemode){
+					// /wiki/Categorie:Wikipedia:Weg
+					// 8048 7819
+					
+					//var me = document.getElementsByTagName("html")[0].innerHTML;
+					/*var me = contentText;
+					var rec = me.indexOf("reclame");
+					var ahrefbegin = me.indexOf("<a href=\"/wiki/Categorie:Wikipedia:Weg\"", rec - 80);
+					var ahrefend = me.indexOf("</a>",rec);
+					var reclamelinkzeus = me.substring(ahrefbegin,ahrefend+4);
+					if(ahrefbegin > -1){
+						// ZEUS mode is enabled, are we trusting this?
+					}*/
+					
+					
+					if(reclamePos > bodyContentLower.indexOf("chkqt7") + 400){ // fix false positive (origin: zeus mode)
+						delete_reason = "Expliciete reclame";
+						window.content.location.href = this.getActionURL("delete", str);
+						//alert(reclamePos + " " + bodyContentLower.indexOf("chkqt7"));
+						this.autoconfirm();
+						return;
+					}
+				}else{
+					this.closetab();
 					return;
 				}
 			}
 			//  || bodyContentLower.indexOf("zinnig") > -1	<-- source: {{Nuweg}}
 			
 			if(this.isRedirect(mwContentText, bodyInnerContent)){
-				delete_reason = delete_reason_doorverwijzing;
-				window.content.location.href = this.getActionURL("delete", str);
-				this.autoconfirm();
-				return;
+				if(!safemode){
+					delete_reason = delete_reason_doorverwijzing;
+					window.content.location.href = this.getActionURL("delete", str);
+					this.autoconfirm();
+					return;
+				}else{
+					this.closetab();
+					return;
+				}
 			}
 		
 			var firstHeading = content.document.getElementById("firstHeading").innerHTML;
 			if(firstHeading.indexOf("Gebruiker:") > -1 && (mwContentText.toLowerCase().indexOf("eigen naamruimte") > -1)){
-				delete_reason = "Verzoek in eigen naamruimte aanvrager";
-				window.content.location.href = this.getActionURL("delete", str);
-				this.autoconfirm();
-				return;
+				if(!safemode){
+					delete_reason = "Verzoek in eigen naamruimte aanvrager";
+					window.content.location.href = this.getActionURL("delete", str);
+					this.autoconfirm();
+					return;
+				}else{
+					this.closetab();
+					return;
+				}
 			}
 			
 			//return;
 			
 			if(bodyContentLower.indexOf("onzin") > -1 || bodyContentLower.indexOf("zinvol") > -1){
-				delete_reason = "Geen zinvolle inhoud";
-				window.content.location.href = this.getActionURL("delete", str);
-				this.autoconfirm();
-				return;
+				if(!safemode){
+					delete_reason = "Geen zinvolle inhoud";
+					window.content.location.href = this.getActionURL("delete", str);
+					this.autoconfirm();
+					return;
+				}else{
+					this.closetab();
+					return;
+				}
 			}
+
 			if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1){
 				delete_reason = "Afgehandelde botmelding";
 				window.content.location.href = this.getActionURL("delete", str);
@@ -254,38 +281,70 @@ var deletemw = {
 				this.autoconfirm();
 				return;
 			}
-			if(bodyContent.indexOf("Verwijderingsnominatie") > -1){
-				delete_reason = "Botmelding afgehandeld";
+			if(bodyContentLower.indexOf("niet-nederlandstalig") > -1){
+				delete_reason = "Niet-Nederlandstalig of resultaat van een computervertaling";
 				window.content.location.href = this.getActionURL("delete", str);
 				this.autoconfirm();
 				return;
 			}
-			//alert(mwContentText.toLowerCase().indexOf("privacy") );
-			if(mwContentText.toLowerCase().indexOf("privacy") > -1){ // todo: fix
-				delete_reason = "Privacyschending";
+			if(bodyContent.indexOf("Verwijderingsnominatie") > -1 || bodyContent.indexOf("Afbeeldingsuggestie") > -1){
+				delete_reason = "Afgehandelde botmelding";
 				window.content.location.href = this.getActionURL("delete", str);
 				this.autoconfirm();
 				return;
 			}
-			if(mwContentText.toLowerCase().indexOf("copyvio") > -1 || mwContentText.toLowerCase().indexOf("copyright") > -1 || mwContentText.toLowerCase().indexOf("auteursrecht") > -1){
-				var startSearch = bodyInnerContent.indexOf("<p>Toelichting:");
-				var endSearch = bodyInnerContent.indexOf(startSearch, "<br />");
+			// get link from template nuweg
+			var startSearch = bodyInnerContent.indexOf("<p>Toelichting:");
+			var endSearch = bodyInnerContent.indexOf(startSearch, "<br />");
 				
-				var linkStart = bodyInnerContent.indexOf("http", startSearch, endSearch);
-				var linkEnd = bodyInnerContent.indexOf("\"", linkStart, endSearch);
-				
-				delete_reason = "Schending van [[Wikipedia:Auteursrechten|auteursrechten]] of geplaatst zonder [[Help:Toestemming|toestemming]], link ";
-				
-				if(linkStart == -1){
-					// could not find the link
-					this.showMessage("Please add the copyvio link manually");
+			var linkStart = bodyInnerContent.indexOf("http", startSearch, endSearch);
+			var linkEnd = bodyInnerContent.indexOf("\"", linkStart, endSearch);
+			
+			// check if the nuweg reason contains a link. If this is the case, privacy is probably not the delete reason we're looking for
+			if(mwContentText.toLowerCase().indexOf("privacy") > -1 && linkStart == -1){
+				if(!safemode){
+					delete_reason = "Privacyschending";
+					window.content.location.href = this.getActionURL("delete", str);
+					this.autoconfirm();
+					return;
 				}else{
-					var link = bodyInnerContent.substring(linkStart, linkEnd);
-					delete_reason += link;
+					this.closetab();
+					return;
 				}
-				window.content.location.href = this.getActionURL("delete", str);
-				this.autoconfirm();
-				return;
+			}
+			if(mwContentText.indexOf("Onjuist gebruik OP") > -1 || mwContentText.indexOf("Onjuist gebruik overlegpagina") > -1){
+				if(!safemode){
+					delete_reason = "Onjuist gebruik [[Wikipedia:Overlegpagina|overlegpagina]]";
+					window.content.location.href = this.getActionURL("delete", str);
+					this.autoconfirm();
+					return;
+				}else{
+					this.closetab();
+					return;
+				}
+			}
+			if(
+				(mwContentText.toLowerCase().indexOf("copyvio") > -1 || mwContentText.toLowerCase().indexOf("copyright") > -1 || mwContentText.toLowerCase().indexOf("auteursrecht") > -1)
+			){
+				if(!safemode){
+					delete_reason = "Schending van [[Wikipedia:Auteursrechten|auteursrechten]] of geplaatst zonder [[Help:Toestemming|toestemming]], link ";
+					
+					if(linkStart == -1){
+						// could not find the link
+						this.showMessage("Please add the copyvio link manually");
+						window.content.location.href = this.getActionURL("delete", str);
+					}else{
+						var link = bodyInnerContent.substring(linkStart, linkEnd);
+						delete_reason += link;
+						window.content.location.href = this.getActionURL("delete", str);
+						this.autoconfirm();
+					}
+									
+					return;
+				}else{
+					this.closetab();
+					return;
+				}
 			}
 		}
 		if(str.indexOf("wiki.lxde") > -1) {
@@ -334,49 +393,51 @@ var deletemw = {
 			this.autoconfirm();
 			return;
 		}
-
 		// check if the talk page exists
-		var talkPage = content.document.getElementById("ca-talk");
+		// disabled code to prevent bot from getting stuck
+		/*var talkPage = content.document.getElementById("ca-talk");
 		if(talkPage){
 			var attributenew = talkPage.getAttribute("class");
 			if(attributenew == "new"){
 				window.content.location.href = this.getActionURL("delete", str);
 				return;
 			}
-		}
+		}*/
 		
-		if(str.indexOf("nl.wikipedia") > -1 && str.indexOf("Overleg") == -1){
-			var index = str.indexOf("wiki/");
-			var firstpart = str.substring(0, index + 5);
-			var lastpart = str.substring(index+5);
-			if(lastpart.indexOf(":")){
-				str = firstpart + "Overleg " + lastpart;
-			}else{
-				str = firstpart + "Overleg:" + lastpart;
-			}
-			talk = true;
-			
-			xmlhttp=new XMLHttpRequest();
+		if(!safemode){
+			if(str.indexOf("nl.wikipedia") > -1 && str.indexOf("Overleg") == -1){
+				var index = str.indexOf("wiki/");
+				var firstpart = str.substring(0, index + 5);
+				var lastpart = str.substring(index+5);
+				if(lastpart.indexOf(":")){
+					str = firstpart + "Overleg " + lastpart;
+				}else{
+					str = firstpart + "Overleg:" + lastpart;
+				}
+				talk = true;
+				
+				xmlhttp=new XMLHttpRequest();
 
-			xmlhttp.open("GET", str, true);
-			var that=this;
-			xmlhttp.onload = function (e) {
-			  if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-				  contentText=xmlhttp.responseText;
-				  
-				  var position = contentText.indexOf("mw-content-text");
-				  var position2 = contentText.indexOf(">", position);
-				  var position3 = contentText.indexOf("</div>", position2)
-				  mwContentText = contentText.substring(position2+1, position3);
-				  that.gotourl(str, mwContentText, true, contentText);
-			  }
-			};
-			//xmlhttp.onerror = function (e) {
-			//  console.error(xmlhttp.statusText);
-			//};
-			xmlhttp.send();
-		}else{
-			this.gotourl(str, mwContentText, false, contentText); // afgehandelde botmelding
+				xmlhttp.open("GET", str, true);
+				var that=this;
+				xmlhttp.onload = function (e) {
+				  if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+					  contentText=xmlhttp.responseText;
+					  
+					  var position = contentText.indexOf("mw-content-text");
+					  var position2 = contentText.indexOf(">", position);
+					  var position3 = contentText.indexOf("</div>", position2)
+					  mwContentText = contentText.substring(position2+1, position3);
+					  that.gotourl(str, mwContentText, true, contentText);
+				  }
+				};
+				//xmlhttp.onerror = function (e) {
+				//  console.error(xmlhttp.statusText);
+				//};
+				xmlhttp.send();
+			}else{
+				this.gotourl(str, mwContentText, false, contentText); // afgehandelde botmelding
+			}
 		}		
 	},
 	weesoverleg: function(){
@@ -536,6 +597,18 @@ var deletemw = {
 			}	
 		},1400);
 		
+	},
+	prefs: function(){
+		return Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
+	},
+	isSafeMode: function(){
+		try{
+			value = this.prefs().getBoolPref("extensions.fastdelete.safemode");
+		}
+		catch(err){
+			value = false;
+		}
+		return value;
 	},
 }
 window.addEventListener("keyup", function (event) {

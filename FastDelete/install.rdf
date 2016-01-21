@@ -4,13 +4,14 @@
     <em:id>fastdelete@hugsmile.eu</em:id>
     <em:name>Fast Delete</em:name>
     <em:type>2</em:type>
-    <em:version>3.5.2</em:version>
+    <em:version>3.6.0</em:version>
     <em:creator>Geoffrey De Belie</em:creator>
     <em:contributor></em:contributor>
     <em:description>Quickly deletes pages with a default reason on MediaWiki websites with many shortcuts.</em:description>
 	<em:homepageURL>http://hugsmile.eu</em:homepageURL> 
 	<em:aboutURL>http://hugsmile.eu</em:aboutURL>
 	<em:iconURL>chrome://fastdelete/content/icon32.png</em:iconURL><!-- thanks to http://neurovit.deviantart.com/ for this icon: https://www.iconfinder.com/iconsets/simplicio -->
+	<em:optionsURL>chrome://fastdelete/content/options.xul</em:optionsURL>
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
@@ -23,6 +24,13 @@
 		<em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id> <!-- Pale Moon -->
 		<em:minVersion>16.0</em:minVersion>
 		<em:maxVersion>36.0</em:maxVersion>
+	  </Description>
+    </em:targetApplication>
+    <em:targetApplication>
+	  <Description>
+		<em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id> <!-- SeaMonkey -->
+		<em:minVersion>2.0</em:minVersion>
+		<em:maxVersion>2.43</em:maxVersion>
 	  </Description>
     </em:targetApplication>
   </Description>

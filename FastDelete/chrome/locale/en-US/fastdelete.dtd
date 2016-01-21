@@ -1,11 +1,2 @@
-<!ENTITY img2tabContext.actual "Actual Images">
-<!ENTITY img2tabContext.actual.single "Actual Images (single tab)">
-
-<!ENTITY img2tabContext.linked "Linked Images">
-<!ENTITY img2tabContext.linked.single "Linked Images (single tab)">
-
-<!ENTITY img2tabContext.accesskey_linked "img2tab_linked">
-<!ENTITY img2tabContext.accesskey_linked_single "img2tab_linked_single">
-
-<!ENTITY img2tabContext.accesskey_actual "img2tab_actual">
-<!ENTITY img2tabContext.accesskey_actual_single "img2tab_actual_single">
+<!ENTITY pref_title "Preferences for Fast Delete">
+<!ENTITY pref_safemode "Safe Mode">
