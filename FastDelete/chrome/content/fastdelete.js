@@ -269,7 +269,7 @@ var deletemw = {
 				}
 			}
 
-			if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1){
+			if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1 || bodyContent.indexOf("Foto's van interwiki") > -1){
 				delete_reason = "Afgehandelde botmelding";
 				window.content.location.href = this.getActionURL("delete", str);
 				this.autoconfirm();
@@ -293,6 +293,14 @@ var deletemw = {
 				this.autoconfirm();
 				return;
 			}
+			
+			if(bodyContentLower.indexOf("tekstdump") > -1){
+				delete_reason = "Tekstdump";
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}
+			
 			// get link from template nuweg
 			var startSearch = bodyInnerContent.indexOf("<p>Toelichting:");
 			var endSearch = bodyInnerContent.indexOf(startSearch, "<br />");
@@ -312,9 +320,17 @@ var deletemw = {
 					return;
 				}
 			}
-			if(mwContentText.indexOf("Onjuist gebruik OP") > -1 || mwContentText.indexOf("Onjuist gebruik overlegpagina") > -1){
+			if(mwContentText.toLowerCase().indexOf("onjuist gebruik") > -1){
 				if(!safemode){
-					delete_reason = "Onjuist gebruik [[Wikipedia:Overlegpagina|overlegpagina]]";
+					if(str.indexOf("Overleg") > -1){
+						delete_reason = "Onjuist gebruik [[Wikipedia:Overlegpagina|overlegpagina]]";
+					}
+					if(str.indexOf("Kladblok") > -1){
+						delete_reason = "Onjuist gebruik van kladblok";
+					}
+					if(str.indexOf("Gebruiker") > -1){
+						delete_reason = "Onjuist gebruik [[Wikipedia:Gebruikerspagina|gebruikerspagina]]";
+					}
 					window.content.location.href = this.getActionURL("delete", str);
 					this.autoconfirm();
 					return;
@@ -323,6 +339,7 @@ var deletemw = {
 					return;
 				}
 			}
+			
 			if(
 				(mwContentText.toLowerCase().indexOf("copyvio") > -1 || mwContentText.toLowerCase().indexOf("copyright") > -1 || mwContentText.toLowerCase().indexOf("auteursrecht") > -1)
 			){
@@ -438,6 +455,8 @@ var deletemw = {
 			}else{
 				this.gotourl(str, mwContentText, false, contentText); // afgehandelde botmelding
 			}
+		}else{
+			this.closetab();
 		}		
 	},
 	weesoverleg: function(){

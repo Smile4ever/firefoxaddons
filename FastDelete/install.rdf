@@ -4,7 +4,7 @@
     <em:id>fastdelete@hugsmile.eu</em:id>
     <em:name>Fast Delete</em:name>
     <em:type>2</em:type>
-    <em:version>3.6.0</em:version>
+    <em:version>3.7.0</em:version>
     <em:creator>Geoffrey De Belie</em:creator>
     <em:contributor></em:contributor>
     <em:description>Quickly deletes pages with a default reason on MediaWiki websites with many shortcuts.</em:description>
