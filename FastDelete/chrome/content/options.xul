@@ -10,10 +10,14 @@
 	<prefpane>
 		<preferences>
 			<preference id="fastdelete-safemode" name="extensions.fastdelete.safemode" type="bool" />
+			<preference id="fastdelete-onlybotnotifications" name="extensions.fastdelete.onlybotnotifications" type="bool" />
 		</preferences>
 		<vbox align="start">
 			<hbox align="center">
 				<checkbox label="&pref_safemode;" preference="fastdelete-safemode" id="fastdelete-safemode"/>
+			</hbox>
+			<hbox align="center">
+				<checkbox label="&pref_onlybotnotifications;" preference="fastdelete-onlybotnotifications" id="fastdelete-onlybotnotifications"/>
 			</hbox>
 		</vbox>
 	</prefpane>

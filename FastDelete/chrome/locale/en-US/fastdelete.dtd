@@ -1,2 +1,3 @@
 <!ENTITY pref_title "Preferences for Fast Delete">
 <!ENTITY pref_safemode "Safe Mode">
+<!ENTITY pref_onlybotnotifications "Only delete talk pages with bot notifications">

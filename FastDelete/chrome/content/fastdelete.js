@@ -1,4 +1,5 @@
 var delete_reason = "";
+var doSubmit = true;
 
 var deletemw = {
 	confirm: function() {
@@ -40,7 +41,7 @@ var deletemw = {
 		if(str.indexOf("wiki.lxde") > -1 || str.indexOf("oblivionmodwiki.com") > -1) {
 			wpReason.value = "Spam";
 		}else{
-			
+			// Waarschuwing: andere pagina's verwijzen naar
 			if(bodyInnerContent.indexOf("Hoofdpagina") == -1 && bodyInnerContent.indexOf("Geschiedenis") == -1){
 				this.showMessage("This is not an unsupported wiki");
 				return;
@@ -71,61 +72,71 @@ var deletemw = {
 
 		if(submit){
 			if(str.indexOf("wikipedia.org") == -1){
-				deleteForm.submit();
+				if(doSubmit){
+					deleteForm.submit();
+				}
 			}else{
 				if(autoconfirmwikipedia == true){
 					// Waarschuwing: de pagina die u wilt verwijderen heeft ongeveer
-					if(bodyContent.indexOf("mw-delete-warning-revisions") == -1 || bodyContent.indexOf("Waarschuwing: de pagina die u wilt verwijderen heeft ongeveer 2") > -1){
-						deleteForm.submit();
+					if(bodyInnerContent.indexOf("mw-delete-warning-revisions") == -1 || bodyInnerContent.indexOf("de pagina die u wilt verwijderen heeft ongeveer 2 ") > -1){
+						if(doSubmit){
+							deleteForm.submit();
+							this.closeWhenReady(submit);
+						}else{
+							this.showMessage("onee");
+						}
 					}else{
-						this.showMessage("Pagina heeft > 2 versies geschiedenis, druk manueel op verwijderen");
-						submit = false;
+						if(bodyInnerContent.indexOf("de pagina die u wilt verwijderen heeft ongeveer ") > -1){
+							// check history.
+							this.showMessage("checking history");
+							this.checkHistory();
+							return;
+						}
+						/*if(!historyCheck){
+							this.showMessage("Pagina heeft > 2 versies geschiedenis, druk manueel op verwijderen");
+							submit = false;
+						}else{
+							if(doSubmit){
+								deleteForm.submit();
+							}
+						}*/
 					}
+					
 				}else{
 					submit = false; // do not close tab
+					this.closeWhenReady(submit);
 				}
 			}
-			
-			/*str = window.content.location.href;
-			var titlestring = "title=";
-			var titleloc = str.indexOf(titlestring);
-			var actionloc = str.indexOf("&action=");
-			var title = str.substring(titleloc + titlestring.length, actionloc);*/
 
-			if(submit){
-				var numberOfTries = 0;
-				var func = function(){
-					/*if(content.document.getElementById("firstHeading").innerHTML.indexOf(title) == -1){
-						alert("ja");
-					}*/
-					
-					// todo: make this more generic!
-					if(content.document.title.indexOf("Action complete") > -1 || content.document.title.indexOf("Handeling voltooid") > -1){
-						//this.showMessage("Closing..");
-						//this.closetab();
-						gBrowser.removeCurrentTab();
-					}else{
-						numberOfTries++;
-						if(numberOfTries < 11){
-							window.setTimeout(func, 200);
-						}
-					}
-				};
-				window.setTimeout(func, 100);
-			}
-			/*var that=this;
-			var check = function()
-			{
-				if(!that.isThereText(true)){
-					this.closetab();
-					return;
-				}
-			}
-			window.setTimeout(check, 1000);*/
 			
 		}
 		
  	},
+ 	submitDeleteForm: function(){
+		var deleteForm = content.document.getElementById("deleteconfirm");
+		if(doSubmit){
+			deleteForm.submit();
+		}
+	},
+ 	closeWhenReady: function(submit){
+		// https://nl.wikipedia.org/w/index.php?title=Speciaal:Terugplaatsen&target=Overleg%3AFredrik_Reinfeldt
+		
+		if(submit){
+			var numberOfTries = 0;
+			var func = function(){
+				// todo: make this more generic!
+				if(content.document.title.indexOf("Action complete") > -1 || content.document.title.indexOf("Handeling voltooid") > -1){
+					gBrowser.removeCurrentTab();
+				}else{
+					numberOfTries++;
+					if(numberOfTries < 11){
+						window.setTimeout(func, 200);
+					}
+				}
+			};
+			window.setTimeout(func, 100);
+		}
+	},
  	autoconfirm: function(){
 		var that=this;
 		var func = function(){
@@ -269,32 +280,32 @@ var deletemw = {
 				}
 			}
 
-			if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1 || bodyContent.indexOf("Foto's van interwiki") > -1){
-				delete_reason = "Afgehandelde botmelding";
-				window.content.location.href = this.getActionURL("delete", str);
-				this.autoconfirm();
-				return;
+			// Wikipedia:Wikiproject/Afbeeldingsuggestie
+			if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1 || bodyContent.indexOf("Foto's van interwiki") > -1 || bodyContent.indexOf("Verwijderingsnominatie") > -1 || bodyContent.indexOf("Afbeeldingsuggestie") > -1){
+				if(str.indexOf("Overleg:") > -1){
+					delete_reason = "Afgehandelde botmelding";
+					window.content.location.href = this.getActionURL("delete", str);
+					this.autoconfirm();
+					return;
+				}else{
+					this.closetab(); // not safe enough
+					return;
+				}
 			}
-			if(bodyContent.indexOf("Machinevertaling") > -1){
+			if(bodyContent.indexOf("Machinevertaling") > -1 && !this.isOnlyBotNotifications()){
 				delete_reason = "Machinevertaling";
 				window.content.location.href = this.getActionURL("delete", str);
 				this.autoconfirm();
 				return;
 			}
-			if(bodyContentLower.indexOf("niet-nederlandstalig") > -1){
+			if((bodyContentLower.indexOf("niet-nederlandstalig") > -1 || bodyContentLower.indexOf("computervertaling") || bodyContentLower.indexOf("niet nederlandstalig") > -1) && !this.isOnlyBotNotifications()){
 				delete_reason = "Niet-Nederlandstalig of resultaat van een computervertaling";
 				window.content.location.href = this.getActionURL("delete", str);
 				this.autoconfirm();
 				return;
 			}
-			if(bodyContent.indexOf("Verwijderingsnominatie") > -1 || bodyContent.indexOf("Afbeeldingsuggestie") > -1){
-				delete_reason = "Afgehandelde botmelding";
-				window.content.location.href = this.getActionURL("delete", str);
-				this.autoconfirm();
-				return;
-			}
 			
-			if(bodyContentLower.indexOf("tekstdump") > -1){
+			if(bodyContentLower.indexOf("tekstdump") > -1 && !this.isOnlyBotNotifications()){
 				delete_reason = "Tekstdump";
 				window.content.location.href = this.getActionURL("delete", str);
 				this.autoconfirm();
@@ -620,6 +631,14 @@ var deletemw = {
 	prefs: function(){
 		return Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
 	},
+	isOnlyBotNotifications: function(){
+		try{
+			value = this.prefs().getBoolPref("extensions.fastdelete.onlybotnotifications");
+		}catch(err){
+			// not set
+		}
+		return value;
+	},
 	isSafeMode: function(){
 		try{
 			value = this.prefs().getBoolPref("extensions.fastdelete.safemode");
@@ -627,8 +646,82 @@ var deletemw = {
 		catch(err){
 			value = false;
 		}
+		if(this.isOnlyBotNotifications()){
+			return true;
+		}
+		
 		return value;
 	},
+	checkHistory: function(){
+		var str = window.content.location.href;
+		// https://nl.wikipedia.org/w/index.php?title=Speciaal:Terugplaatsen&target=Overleg%3APaksi_SE
+		
+		var historyURL = this.getActionURL("history", str);
+		
+		xmlhttp=new XMLHttpRequest();
+
+		xmlhttp.open("GET", historyURL, true);
+		var that=this;
+		xmlhttp.onload = function (e) {
+			if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+				//contentText=xmlhttp.responseText;
+				xmlContentText = (new DOMParser()).parseFromString(xmlhttp.responseText, "text/xml");
+				
+				/*
+				var position = contentText.indexOf("mw-content-text");
+				var position2 = contentText.indexOf(">", position);
+				var position3 = contentText.indexOf("</div>", position2)
+				mwContentText = contentText.substring(position2+1, position3);*/
+				
+				// check history here
+				//var historyEntries = content.document.getElementsByClassName("history-user");
+				var historyEntries = xmlContentText.getElementsByClassName("history-user");
+				
+				var i = 0;
+				var j = 0;
+				var otherUsernames = [];
+				var userNames = ["Lsjbot", "RomaineBot", "CommonsTicker", "Smile4ever"];
+
+				for(i = 0; i < historyEntries.length; i++){
+					var match = false;
+					var historyEntry = historyEntries[i].innerHTML;
+					for(j = 0; j < userNames.length; j++){
+						if(historyEntry.indexOf(userNames[j]) > -1){
+							match = true;
+						}
+					}
+					if(!match){
+					   var mwUserLink = "mw-userlink";
+					   var otherUsernameStart = historyEntry.indexOf(mwUserLink) + 2 + mwUserLink.length;
+					   otherUsernameStart = historyEntry.indexOf(">", mwUserLink + mwUserLink.length)+1;
+					   
+					   var otherUsernameEnd = historyEntry.indexOf("<", otherUsernameStart);
+					   var otherUsername = historyEntry.substring(otherUsernameStart, otherUsernameEnd);
+
+					   otherUsernames.push(otherUsername);
+					}
+				}
+
+				otherUsernames = that.uniq(otherUsernames);
+								
+				if(otherUsernames.length < 2){
+					that.showMessage("History checked: everything ok.");
+					that.submitDeleteForm();
+					that.closeWhenReady(true);
+				}else{
+					that.showMessage("We don't know if this page is deletable.");
+				}
+				
+			}
+		};
+		xmlhttp.send();
+
+	},
+	uniq: function(a){
+		return a.sort().filter(function(item, pos, ary) {
+			return !pos || item != ary[pos - 1];
+		})
+	}
 }
 window.addEventListener("keyup", function (event) {
   if (event.defaultPrevented) {
