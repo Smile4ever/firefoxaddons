@@ -209,6 +209,21 @@ var deletemw = {
 		var safemode = this.isSafeMode();		
 		var delete_reason_doorverwijzing = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
 		
+		if(!safemode){
+			// non-bot mode (skip nuweg requirement)
+			if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1 || bodyContent.indexOf("Foto's van interwiki") > -1 || bodyContent.indexOf("Verwijderingsnominatie") > -1 || bodyContent.indexOf("Afbeeldingsuggestie") > -1){
+				if(str.indexOf("Overleg:") > -1){
+					delete_reason = "Afgehandelde botmelding";
+					window.content.location.href = this.getActionURL("delete", str);
+					this.autoconfirm();
+					return;
+				}else{
+					this.closetab(); // not safe enough
+					return;
+				}
+			}
+		}
+		
 		if(bodyInnerContent.indexOf("Categorie:Wikipedia:Nuweg") > -1){
 			var reclamePos = mwContentText.toLowerCase().indexOf("reclame");
 			if(reclamePos > -1){
