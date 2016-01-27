@@ -313,7 +313,7 @@ var deletemw = {
 				this.autoconfirm();
 				return;
 			}
-			if((bodyContentLower.indexOf("niet-nederlandstalig") > -1 || bodyContentLower.indexOf("computervertaling") || bodyContentLower.indexOf("niet nederlandstalig") > -1) && !this.isOnlyBotNotifications()){
+			if((bodyContentLower.indexOf("niet-nederlandstalig") > -1 || bodyContentLower.indexOf("computervertaling") > -1 || bodyContentLower.indexOf("niet nederlandstalig") > -1) && !this.isOnlyBotNotifications()){
 				delete_reason = "Niet-Nederlandstalig of resultaat van een computervertaling";
 				window.content.location.href = this.getActionURL("delete", str);
 				this.autoconfirm();
