@@ -211,6 +211,7 @@ var deletemw = {
 		var talk = false;
 		var contentText = content.document.documentElement.innerHTML;
 		var mwContentText = content.document.getElementById("mw-content-text").innerHTML;
+		var mwContentTextLower = content.document.getElementById("mw-content-text").innerHTML.toLowerCase();
 		var i = 0;
 		
 		var bodyContent = content.document.body.textContent;
@@ -286,7 +287,7 @@ var deletemw = {
 			}
 		
 			var firstHeading = content.document.getElementById("firstHeading").innerHTML;
-			if(firstHeading.indexOf("Gebruiker:") > -1 && (mwContentText.toLowerCase().indexOf("eigen naamruimte") > -1)){
+			if(firstHeading.indexOf("Gebruiker:") > -1 && mwContentTextLower.indexOf("eigen naamruimte") > -1){
 				if(!safemode){
 					delete_reason = "Verzoek in eigen naamruimte aanvrager";
 					window.content.location.href = this.getActionURL("delete", str);
@@ -329,14 +330,7 @@ var deletemw = {
 				this.autoconfirm();
 				return;
 			}
-			
-			if((bodyContentLower.indexOf("niet-nederlandstalig") > -1 || bodyContentLower.indexOf("computervertaling") > -1 || bodyContentLower.indexOf("niet nederlandstalig") > -1) && !this.isOnlyBotNotifications()){
-				delete_reason = "Niet-Nederlandstalig of resultaat van een computervertaling";
-				window.content.location.href = this.getActionURL("delete", str);
-				this.autoconfirm();
-				return;
-			}
-			
+						
 			if(bodyContentLower.indexOf("tekstdump") > -1 && !this.isOnlyBotNotifications()){
 				delete_reason = "Tekstdump";
 				window.content.location.href = this.getActionURL("delete", str);
@@ -363,6 +357,13 @@ var deletemw = {
 					return;
 				}
 			}
+			if((mwContentTextLower.indexOf("niet-nederlandstalig") > -1 || mwContentTextLower.indexOf("computervertaling") > -1 || mwContentTextLower.indexOf("niet nederlandstalig") > -1) && !this.isOnlyBotNotifications()){
+				delete_reason = "Niet-Nederlandstalig of resultaat van een computervertaling";
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}
+			
 			if(mwContentText.toLowerCase().indexOf("onjuist gebruik") > -1){
 				if(!safemode){
 					if(str.indexOf("Overleg") > -1){
