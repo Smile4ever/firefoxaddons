@@ -51,9 +51,16 @@ var deletemw = {
 				return;
 			}else{
 				// probably nl.wikipedia.org
-				if(wpReason.value.indexOf("afgehandeld") > -1 && delete_reason == ""){
+				if(wpReason.value.toLowerCase().indexOf("afgehandeld") > -1 && delete_reason == ""){
 					this.showMessage("Made a guess based on the nuweg reason.");
 					delete_reason = "Afgehandelde botmelding";
+				}
+				
+				// extra check
+				if(delete_reason == "Afgehandelde botmelding"){
+					if(str.indexOf("Overleg:") == -1){
+						delete_reason = ""; // this is not what we're looking for
+					}
 				}
 				
 				if(delete_reason.length > 0){
@@ -64,12 +71,18 @@ var deletemw = {
 					if((wpReason.value.indexOf("#") > -1 && wpReason.value.indexOf("#") - location < 6) && !this.isSafeMode()){
 						wpReason.value = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
 					}
-					if(bodyInnerContent.indexOf("<p>Toelichting: <b>") == -1){
+					if(wpReason.value.indexOf("De inhoud was:") > -1){
 						if(!safemode){
 							this.showMessage("De verwijderreden kon niet geraden worden.");
 						}
 						submit = false;	
-					} // else: submit with reason given
+					}
+					/*if(bodyInnerContent.indexOf("<p>Toelichting: <b>") == -1){
+						if(!safemode){
+							this.showMessage("De verwijderreden kon niet geraden worden.");
+						}
+						submit = false;	
+					}*/
 				}
 			}
 		}
@@ -271,21 +284,6 @@ var deletemw = {
 		}
 		
 		if(bodyInnerContent.indexOf("Categorie:Wikipedia:Nuweg") > -1){
-			var reclamePos = mwContentText.toLowerCase().indexOf("reclame");
-			if(reclamePos > -1){
-				if(!safemode){
-					if(reclamePos > bodyContentLower.indexOf("chkqt7") + 400){ // fix false positive (origin: zeus mode)
-						delete_reason = "Expliciete reclame";
-						window.content.location.href = this.getActionURL("delete", str);
-						this.autoconfirm();
-						return;
-					}
-				}else{
-					this.closetab();
-					return;
-				}
-			}
-		
 			var firstHeading = content.document.getElementById("firstHeading").innerHTML;
 			if(firstHeading.indexOf("Gebruiker:") > -1 && mwContentTextLower.indexOf("eigen naamruimte") > -1){
 				if(!safemode){
@@ -338,15 +336,24 @@ var deletemw = {
 				return;
 			}
 			
-			// get link from template nuweg
-			var startSearch = bodyInnerContent.indexOf("<p>Toelichting:");
-			var endSearch = bodyInnerContent.indexOf(startSearch, "<br />");
-				
-			var linkStart = bodyInnerContent.indexOf("http", startSearch, endSearch);
-			var linkEnd = bodyInnerContent.indexOf("\"", linkStart, endSearch);
+			if(mwContentTextLower.indexOf("privacyschending") > -1){
+				if(!safemode){
+					delete_reason = "Privacyschending";
+					window.content.location.href = this.getActionURL("delete", str);
+					this.autoconfirm();
+					return;
+				}
+			}
 			
+			// get link from template nuweg
+			var startSearch = mwContentTextLower.indexOf("<p>Toelichting:");
+			var endSearch = mwContentTextLower.indexOf(startSearch, "<br />");
+				
+			var linkStart = mwContentTextLower.indexOf("http", startSearch, endSearch);
+			var linkEnd = mwContentTextLower.indexOf("\"", linkStart, endSearch);
+						
 			// check if the nuweg reason contains a link. If this is the case, privacy is probably not the delete reason we're looking for
-			if(mwContentText.toLowerCase().indexOf("privacy") > -1 && linkStart == -1){
+			if(mwContentTextLower.indexOf("privacy") > -1 && linkStart == -1){
 				if(!safemode){
 					delete_reason = "Privacyschending";
 					window.content.location.href = this.getActionURL("delete", str);
@@ -357,6 +364,7 @@ var deletemw = {
 					return;
 				}
 			}
+
 			if((mwContentTextLower.indexOf("niet-nederlandstalig") > -1 || mwContentTextLower.indexOf("computervertaling") > -1 || mwContentTextLower.indexOf("niet nederlandstalig") > -1) && !this.isOnlyBotNotifications()){
 				delete_reason = "Niet-Nederlandstalig of resultaat van een computervertaling";
 				window.content.location.href = this.getActionURL("delete", str);
@@ -395,13 +403,31 @@ var deletemw = {
 						this.showMessage("Please add the copyvio link manually");
 						window.content.location.href = this.getActionURL("delete", str);
 					}else{
-						var link = bodyInnerContent.substring(linkStart, linkEnd);
+						var link = mwContentTextLower.substring(linkStart, linkEnd);
 						delete_reason += link;
 						window.content.location.href = this.getActionURL("delete", str);
 						this.autoconfirm();
 					}
 									
 					return;
+				}else{
+					this.closetab();
+					return;
+				}
+			}
+			// Genomineerd wegens reclame
+			var reclamePos = mwContentTextLower.indexOf("reclame");
+			if(reclamePos == -1){
+				reclamePos = mwContentTextLower.indexOf("promo");
+			}
+			if(reclamePos > -1){
+				if(!safemode){
+					if(reclamePos > bodyContentLower.indexOf("chkqt7") + 400){ // fix false positive (origin: zeus mode)
+						delete_reason = "Expliciete reclame";
+						window.content.location.href = this.getActionURL("delete", str);
+						this.autoconfirm();
+						return;
+					}
 				}else{
 					this.closetab();
 					return;
