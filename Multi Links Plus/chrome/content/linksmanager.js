@@ -75,7 +75,7 @@ MultiLinks_LinksManager = function()
 		this.swidth = MultiLinks_Wrapper.DataManager.GetSWidth();
 		this.smart = MultiLinks_Wrapper.DataManager.GetSmart();
 		
-		var body = doc.body;
+		//var body = doc.body; // variable not used
 		this.aLinks = new Array();
 		doc.MLLeft = 0;
 		doc.MLTop = 0;
@@ -277,7 +277,9 @@ MultiLinks_LinksManager = function()
 			doc = doc.getElementById("canvas_frame").contentDocument;
 			
 		var body = doc.body;
-		body.style.setProperty("-moz-user-select", "text", "");
+		if(body){
+			body.style.setProperty("-moz-user-select", "text", "");
+		}
 		var div = doc.getElementById("multilinks-links-container");
 		var urls = new Array();
 		if(div)
@@ -294,12 +296,14 @@ MultiLinks_LinksManager = function()
 				}
 			}
 			
-			body.removeChild(div);
+			if(body){
+				body.removeChild(div);
+			}
 		}
 		var div = doc.getElementById("multilinks-selection-container");
-		if(div)
+		if(div && body)
 			body.removeChild(div);
-		
+				
 		this.smarted = false;
 		
 		if(manage &&  urls.length)
