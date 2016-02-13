@@ -8,12 +8,16 @@
 
   <!-- context menu --> 
   <popup id="contentAreaContextMenu">
+	<!--<menuitem id="getarchive-openurl" label="Open URL" insertbefore="context-undo"
+	class="menu-iconic" image="chrome://getarchive/content/opentab16.png" onclick="getarchive.openurl();hidePopup();">
+	</menuitem>-->
 	<menuitem id="getarchive" label="Get Archive.org" insertbefore="context-undo"
 	class="menu-iconic" image="chrome://getarchive/content/icon16.png" onclick="getarchive.getarchiveorglink(event.button);hidePopup();">
 	</menuitem>
 	<menuitem id="gettodayarchive" label="Get Archive.is" insertbefore="context-undo"
 	class="menu-iconic" image="chrome://getarchive/content/16x16today.png" onclick="getarchive.gettodayarchive(event.button);hidePopup();">
 	</menuitem>
+
    </popup>
    
    <keyset id="mainKeyset">

@@ -2,7 +2,23 @@ var wait = 200;
 var getarchive_website = "";
 
 var getarchive = {
-   
+    /*openurl: function(){
+		var currentLocation=gBrowser.contentDocument.location.href;
+		var pageLocation = "";
+		
+		try{
+			pageLocation = gContextMenu.linkURL;
+		}catch(err){
+			pageLocation = "";
+		}
+		
+		pageLocation = this.getLinkFromMediaWikiSelection(currentLocation, pageLocation);
+		
+		if(pageLocation != ""){
+			gBrowser.selectedTab = gBrowser.addTab(pageLocation);
+		}
+	},*/
+	
 	getarchiveorglink: function(buttoncode) {
 		var currentLocation=gBrowser.contentDocument.location.href;
 		var archiveOrgBaseURL = "http://web.archive.org/web/2005/"; //0000000000
@@ -31,23 +47,7 @@ var getarchive = {
 			pageLocation = linkToPage;
 		}
 		
-		if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
-			var content = readFromClipboard();
-			if(content != undefined){
-				var protocolPos = content.indexOf("://");
-				var ampersand = content.indexOf("&");
-				if(ampersand == -1){
-					ampersand = content.length;
-				}
-				var otherPos = this.getInnerBody().indexOf(content.substring(0,ampersand));
-				
-				if(protocolPos > -1 && otherPos > -1){  // sometimes copying to clipboard fails (for no reason)
-					pageLocation = content;
-				}
-			}else{
-				showMessage("Try again after reloading the page");
-			}
-		}
+		pageLocation = this.getLinkFromMediaWikiSelection(currentLocation, pageLocation);
 
 		if(currentLocation.indexOf("Overleg:") > -1 && gContextMenu == null){
 			temp = this.getPageLocation();
@@ -87,47 +87,46 @@ var getarchive = {
 	},
 	getPageLocation: function(){
 		// this should only work on talk pages -> ca-talk with class selected indicates this is a talk page
-		talkPageObject=content.document.getElementById("ca-talk");
-		isTalkPage = false;
-
+		var talkPageObject=content.document.getElementById("ca-talk");
+		var pageLocation = "NONE";
+		
 		if(talkPageObject != null && talkPageObject != undefined){
 			if(talkPageObject.getAttribute("class") == "selected"){
-				isTalkPage = true;
+				return pageLocation; // archive.is is fooling us, this is not a talk page
 			}
 		}
-		pageLocation = "NONE";
 
-		if(isTalkPage){
-			contentText = content.document.getElementById("mw-content-text").innerHTML;
-			if(contentText != undefined){
-				var count = contentText.match(/mw-headline/g).length;
-				try {
-					var countDodeLink = contentText.match(/id=\"Dode_/g).length;
-				}
-				catch(err){
-					var countDodeLink = 0;
-				}
-				try {
-					var countLinks = contentText.match(/external/g).length;
-				}catch(err){
-					var countLinks = 0;
-				}
+		contentText = content.document.getElementById("mw-content-text").innerHTML;
+		if(contentText != undefined){
+			var count = contentText.match(/mw-headline/g).length;
+			try {
+				var countDodeLink = contentText.match(/id=\"Dode_/g).length;
+			}
+			catch(err){
+				var countDodeLink = 0;
+			}
+			try {
+				var countLinks = contentText.match(/external/g).length;
+			}catch(err){
+				var countLinks = 0;
+			}
 
-				if (countDodeLink == 1 && (count == 1 || count == undefined || countLinks == 1)){
-					var startExternalLink = contentText.indexOf("external free");
+			if (countDodeLink == 1 && (count == 1 || count == undefined || countLinks == 1)){
+				var startExternalLink = contentText.indexOf("external free");
+				var endExternalLink = contentText.indexOf(">",startExternalLink);
+				pageLocation = contentText.substring(startExternalLink + 21, endExternalLink - 1);
+			}else{
+				if(countDodeLink == 1 && countLinks > 1){
+					var startHeadline = contentText.indexOf("\"Dode_");
+					var startExternalLink = contentText.indexOf("external free", startHeadline)
 					var endExternalLink = contentText.indexOf(">",startExternalLink);
 					pageLocation = contentText.substring(startExternalLink + 21, endExternalLink - 1);
-				}else{
-					if(countDodeLink == 1 && countLinks > 1){
-						var startHeadline = contentText.indexOf("\"Dode_");
-						var startExternalLink = contentText.indexOf("external free", startHeadline)
-						var endExternalLink = contentText.indexOf(">",startExternalLink);
-						pageLocation = contentText.substring(startExternalLink + 21, endExternalLink - 1);
-					}
 				}
 			}
-			//else: not a talk page after all (archive.is is fooling us)
+		}else{
+			return pageLocation;
 		}
+		
 		return pageLocation.split('amp;').join('');
 	},
 	isurlloaded: function(){
@@ -178,12 +177,11 @@ var getarchive = {
 	},
 	isurlvalid: function(){
 		// Checks if page is valid. Used to stop the counter on invalid pages.
-		var that=this;
 		
 		try{
 			var documentTitle = content.document.title.toLowerCase();
-			var contentText = that.getcontenttext();
-			var contentTextLower = that.getcontenttext().toLowerCase();
+			var contentText = this.getcontenttext();
+			var contentTextLower = contentText.toLowerCase();
 			
 			if(documentTitle.indexOf("404 not found") > -1){
 				return false;
@@ -219,6 +217,9 @@ var getarchive = {
 				return false;
 			}
 			if(contentTextLower.indexOf("buy this domain") > -1){
+				return false;
+			}
+			if(contentText.indexOf("404 Not Found") > -1){
 				return false;
 			}
 		}catch(ex){
@@ -332,38 +333,7 @@ var getarchive = {
 		}
 		return pageLocation;
 	},
-	gettodayarchive: function(buttoncode){
-		var pageLocation = "";
-		var linkToPage = null;
-		
-		getarchive_website="archive.is"
-		try{
-			pageLocation = gContextMenu.linkURL;
-		}catch(err){
-		    pageLocation = "";
-		}
-		var currentLocation=gBrowser.contentDocument.location.href;
-		
-		currentLocation = currentLocation.replace("http://archive.today/", "");
-		currentLocation = currentLocation.replace("https://archive.today/", "");
-		currentLocation = currentLocation.replace("http://archive.is/", "");
-		currentLocation = currentLocation.replace("https://archive.is/", "");
-		//currentLocation = currentLocation.replace("http://web.archive.org/web/");
-				
-		if(this.getcontenttext().indexOf("No results") > -1 && gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
-			return; // no need for this
-		}
-		
-		// http://archive.is/http://link-to.url/page -> http://archive.is/ixIyjm		
-		if(gBrowser.contentDocument.location.href.indexOf("archive.today") > -1 || gBrowser.contentDocument.location.href.indexOf("archive.is") > -1){
-			try{
-				linkToPage = window.content.document.getElementsByClassName("TEXT-BLOCK")[0].getElementsByTagName("a")[0].getAttribute("href");
-				window.content.location.href = linkToPage;
-				this.copytoclipboard();
-				return;
-			}catch(e){}
-		}
-			
+	getLinkFromMediaWikiSelection: function(currentLocation, pageLocation){
 		if((currentLocation.indexOf("action=submit") > -1 || currentLocation.indexOf("action=edit") > -1) && pageLocation == "") {
 			var content = readFromClipboard();
 			if(content != undefined){
@@ -378,9 +348,48 @@ var getarchive = {
 					pageLocation = content;
 				}
 			}else{
-				showMessage("Try again after reloading the page");
+				this.showMessage("Try again after reloading the page");
 			}
 		}
+		return pageLocation;
+	},
+	gettodayarchive: function(buttoncode){
+		var pageLocation = "";
+		var linkToPage = null;
+		var currentLocation=gBrowser.contentDocument.location.href;
+
+		getarchive_website="archive.is"
+		try{
+			pageLocation = gContextMenu.linkURL;
+		}catch(err){
+		    pageLocation = "";
+		}
+		
+		/*currentLocation = currentLocation.replace("http://archive.today/", "");
+		currentLocation = currentLocation.replace("https://archive.today/", "");
+		currentLocation = currentLocation.replace("http://archive.is/", "");
+		currentLocation = currentLocation.replace("https://archive.is/", "");*/
+		//currentLocation = currentLocation.replace("http://web.archive.org/web/");
+				
+		if(this.getcontenttext().indexOf("No results") > -1 && currentLocation.indexOf("archive.is") > -1){
+			return; // no need for this
+		}
+		
+		// http://archive.is/http://link-to.url/page -> http://archive.is/ixIyjm		
+		if(currentLocation.indexOf("archive.today") > -1 || currentLocation.indexOf("archive.is") > -1){
+			try{
+				//linkToPage = content.document.getElementsByClassName("TEXT-BLOCK")[0].getElementsByTagName("a")[0].getAttribute("href");
+				linkToPage = content.document.getElementsByClassName("THUMBS-BLOCK")[0].getElementsByTagName("a")[0].getAttribute("href");
+				window.content.location.href = linkToPage;
+				this.copytoclipboard();
+				return;
+			}catch(e){
+				
+			}
+		}
+		
+		pageLocation = this.getLinkFromMediaWikiSelection(currentLocation, pageLocation);
+
 		var indexLocation = pageLocation; // make a new variable that won't conflict with the code below
 		if (pageLocation == ""){
 			indexLocation = currentLocation;
@@ -435,7 +444,12 @@ var getarchive = {
 			}
 		}
 
-		var engine = this.prefs().getCharPref("extensions.getarchive.engine");
+		var engine = "google";
+		try{
+			engine = this.prefs().getCharPref("extensions.getarchive.engine");
+		}catch(ex){
+			this.showMessage("Please set your favorite search engine in the GetArchive preferences.");
+		}
 		var baseURL = "";
 		
 		switch(engine){
@@ -510,11 +524,13 @@ var getarchive = {
 		if(url.indexOf("[") == 0){
 			url = url.substring(1);
 		}
-		if(url.indexOf(" ") == 0){
-			url = url.substring(1);
+		if(url.indexOf("ttp") == 0 && url.indexOf("://") > -1){
+			url = "h" + url;
+		}
+		if(url.indexOf("tp") == 0 && url.indexOf("://") > -1){
+			url = "ht" + url;
 		}
 		
-		// todo: add ht to tp://...
 		return url.trim();
 	},
 	showMessage: function(message){
