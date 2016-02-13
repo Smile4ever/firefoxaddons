@@ -9,7 +9,7 @@ var deletemw = {
 		var deleteForm = content.document.getElementById("deleteconfirm");
 		var submit = true;
 		var autoconfirmwikipedia = true;
-		var bodyContent = content.document.body.textContent;
+		//var bodyContent = content.document.body.textContent;
 		var bodyInnerContent = content.document.body.innerHTML;
 		//var historyCheck = false;
 		var doSubmit = this.isDoSubmit();
@@ -68,7 +68,7 @@ var deletemw = {
 					delete_reason = "";
 				}else{
 					var location=wpReason.value.indexOf(": \"");
-					if((wpReason.value.indexOf("#") > -1 && wpReason.value.indexOf("#") - location < 6) && !this.isSafeMode()){
+					if((wpReason.value.indexOf("#") > -1 && wpReason.value.indexOf("#") - location < 6) && (!this.isSafeMode() || this.isWeesRedirect() && !this.isOnlyBotNotifications())){
 						wpReason.value = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
 					}
 					if(wpReason.value.indexOf("De inhoud was:") > -1){
@@ -208,10 +208,10 @@ var deletemw = {
 		if(bodyInnerContent.indexOf("redirectMsg") > -1){
 			return true;
 		}
-		if(bodyInnerContent.indexOf("<p>#REDIRECT") > -1 || bodyInnerContent.indexOf("<p>#DOORVERWIJZING") > -1){
+		if(bodyInnerContent.indexOf("<p>#REDIRECT") > -1 || bodyInnerContent.indexOf("<p>#DOORVERWIJZING") > -1 || bodyInnerContent.indexOf("<p>#redirect") > -1 || bodyInnerContent.indexOf("<p>#doorverwijzing") > -1){
 			return true;
 		}
-		if(bodyInnerContent.indexOf("<li>doorverwijzing") > -1 || bodyInnerContent.indexOf("<li>REDIRECT") > -1 || bodyInnerContent.indexOf("<li>DOORVERWIJZING") > -1){
+		if(bodyInnerContent.indexOf("<li>doorverwijzing") > -1 || bodyInnerContent.indexOf("<li>REDIRECT") > -1 || bodyInnerContent.indexOf("<li>DOORVERWIJZING") > -1 || bodyInnerContent.indexOf("<li>redirect") > -1){
 			return true;
 		}
 		if(bodyInnerContent.indexOf("onzinnige redirect") > -1){
@@ -260,6 +260,42 @@ var deletemw = {
 				}
 			}
 		}
+
+		// works on nl.wikipedia.org, en.wikipedia.org and wiki.lxde.org (at least)
+		if(contentText.indexOf("BrokenRedirects") > -1){
+			var links = content.document.getElementsByTagName("link");
+			for(i = 0; i < links.length; i++){
+				var linkhref = links[i].getAttribute("href");
+				var positionIndexPHP = linkhref.indexOf("index.php");
+				var positionApiPHP = linkhref.indexOf("api.php");
+				if(links[i].getAttribute("rel").indexOf("canonical") > -1 && positionIndexPHP > -1){
+					rootURL = linkhref.substring(0, positionIndexPHP); //https://nl.wikipedia.org/w/
+				}
+				if(links[i].getAttribute("rel").indexOf("EditURI") > -1 && positionApiPHP > -1){
+					if(linkhref.indexOf("http://") == -1){
+						rootURL = "https://";
+					}
+					rootURL += linkhref.substring(0, positionApiPHP); //https://nl.wikipedia.org/w/
+					//<link rel="EditURI" type="application/rsd+xml" href="//en.wikipedia.org/w/api.php?action=rsd" />
+					//<link rel="EditURI" type="application/rsd+xml" href="http://wiki.lxde.org/en/api.php?action=rsd" />
+				}
+			}
+			
+			var mwContentTextContainer = content.document.getElementById("mw-content-text")
+			var lis = mwContentTextContainer.getElementsByTagName("li");
+			for(i = 0; i < lis.length; i++){
+				if(lis[i].innerHTML.indexOf("<del>") > -1){
+					// do not open a tab
+				}else{
+					var ahref = lis[i].getElementsByTagName("a")[0].getAttribute("href");
+					var indexPHP = ahref.indexOf("index.php");
+					ahref = rootURL + ahref.substring(indexPHP);
+					gBrowser.selectedTab = gBrowser.addTab(ahref);
+				}
+			}
+			this.closetab();
+			return;
+		}
 		
 		// redirects
 		var isPageRedirect = this.isRedirect(mwContentText, bodyInnerContent);
@@ -270,8 +306,14 @@ var deletemw = {
 				this.autoconfirm();
 				return;
 			}else{
-				var new_count = content.document.getElementsByClassName("redirectText")[0].getElementsByClassName("new");
-				if(new_count == 1){
+				// isWeesRedirect
+				try{
+					var new_count = content.document.getElementsByClassName("redirectText")[0].getElementsByClassName("new").length;
+				}catch(e){
+					var new_count = 0;
+				}
+												
+				if(new_count == 1 || (new_count == 0 && bodyInnerContent.indexOf("&amp;action=edit&amp;redlink=1") > -1)){
 					delete_reason = delete_reason_doorverwijzing;
 					window.content.location.href = this.getActionURL("delete", str);
 					this.autoconfirm();
@@ -300,6 +342,18 @@ var deletemw = {
 			if(bodyContentLower.indexOf("onzin") > -1 || bodyContentLower.indexOf("zinvol") > -1){
 				if(!safemode){
 					delete_reason = "Geen zinvolle inhoud";
+					window.content.location.href = this.getActionURL("delete", str);
+					this.autoconfirm();
+					return;
+				}else{
+					this.closetab();
+					return;
+				}
+			}
+			
+			if(bodyContentLower.indexOf("experiment") > -1){
+				if(!safemode){
+					delete_reason = "Experimenteerpagina";
 					window.content.location.href = this.getActionURL("delete", str);
 					this.autoconfirm();
 					return;
@@ -481,16 +535,20 @@ var deletemw = {
 			return;
 		}
 		// check if the talk page exists
-		// disabled code to prevent bot from getting stuck
-		/*var talkPage = content.document.getElementById("ca-talk");
+		var talkPage = content.document.getElementById("ca-talk");
+		var talkExists = false;
 		if(talkPage){
 			var attributenew = talkPage.getAttribute("class");
-			if(attributenew == "new"){
-				window.content.location.href = this.getActionURL("delete", str);
+			if(attributenew.indexOf("new") > -1){
 				return;
+			}else{
+				talkExists = true;
 			}
-		}*/
-		
+		}else{
+			// does not exist
+			return;
+		}
+				
 		if(!safemode){
 			if(str.indexOf("nl.wikipedia") > -1 && str.indexOf("Overleg") == -1){
 				var index = str.indexOf("wiki/");
@@ -505,7 +563,11 @@ var deletemw = {
 				
 				xmlhttp=new XMLHttpRequest();
 
-				xmlhttp.open("GET", str, true);
+				try{
+					xmlhttp.open("GET", str, true);
+				}catch(e){
+					this.showMessage("Access to restricted URL denied at " + str);
+				}
 				var that=this;
 				xmlhttp.onload = function (e) {
 				  if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
@@ -529,16 +591,16 @@ var deletemw = {
 			this.closetab();
 		}		
 	},
-	weesoverleg: function(){
+	isWeesRedirect: function(){
 		var redirect = content.document.getElementById("mw-content-text").innerHTML;
 		if(redirect.indexOf("redirectMsg") > -1 && redirect.indexOf("redirectMsg") < 20){
 			if(redirect.indexOf("redlink=1") > -1){
 				return true;
 			}
 		}
-		if(redirect.indexOf("#DOORVERWIJZING") > -1 || redirect.indexOf("#REDIRECT") > -1){
+		/*if(redirect.indexOf("#DOORVERWIJZING") > -1 || redirect.indexOf("#REDIRECT") > -1){
 			return true;
-		}
+		}*/
 		return false;
 	},
 	closetab: function(){
@@ -651,7 +713,7 @@ var deletemw = {
 		mwContentText = mwContentText.replace("<p></p>", ""); // fix for talk pages with TOC
 		var firstP = mwContentText.substring(0,3); // mw-content-text
 				
-		if(str.indexOf("nl.wikipedia") == -1 && firstP != "<p>" || str.indexOf("nl.wikipedia") > -1 && this.weesoverleg() == true){
+		if(str.indexOf("nl.wikipedia") == -1 && firstP != "<p>"){
 			window.content.location.href = str+"delete";
 		}else{
 			if (str.indexOf("nl.wikipedia") > -1){
