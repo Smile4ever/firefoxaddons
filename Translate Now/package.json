@@ -1,7 +1,7 @@
 {
   "title": "Translate Now",
   "name": "translatenow",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Right click a selection to translate words in Firefox.",
   "main": "index.js",
   "author": "Geoffrey De Belie",
@@ -12,7 +12,7 @@
   "preferences": [{
         "name": "destination_language",
         "title": "Destination language",
-        "description": "Destionation language",
+        "description": "Destination language",
         "type": "menulist",
         "value": "en",
         "options": [
