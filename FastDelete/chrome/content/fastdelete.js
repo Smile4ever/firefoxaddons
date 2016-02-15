@@ -58,7 +58,7 @@ var deletemw = {
 				
 				// extra check
 				if(delete_reason == "Afgehandelde botmelding"){
-					if(str.indexOf("Overleg:") == -1){
+					if(str.indexOf("Overleg") == -1){
 						delete_reason = ""; // this is not what we're looking for
 					}
 				}
@@ -219,6 +219,17 @@ var deletemw = {
 		}
 		return false;
 	},
+	openPages: function(){
+		var mwPages = content.document.getElementById("mw-pages");
+		if(mwPages == null){
+			return;
+		}
+		var i = 0;
+		var ahrefs = mwPages.getElementsByTagName("a");
+		for(i = 0; i < ahrefs.length; i++){
+			gBrowser.selectedTab = gBrowser.addTab("https://nl.wikipedia.org" + ahrefs[i].getAttribute("href"));
+		}
+	},
  	deletepage: function(){
 		var str=window.content.location.href;
 		var talk = false;
@@ -235,6 +246,10 @@ var deletemw = {
 			this.openTalkRedirects();
 			return;
 		}
+		if(str.indexOf("Categorie:Wikipedia:Nuweg") > -1){
+			this.openPages();
+			return;
+		}
 		if(!this.isThereText(false)){
 			this.closetab();
 			return;
@@ -244,7 +259,7 @@ var deletemw = {
 		var delete_reason_doorverwijzing = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
 		
 		// Afbeeldingsuggestie (manual & bot)
-		if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1 || bodyContent.indexOf("Foto's van interwiki") > -1 || bodyContent.indexOf("Verwijderingsnominatie") > -1 || bodyContent.indexOf("Afbeeldingsuggestie") > -1){
+		if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1 || bodyContent.indexOf("Foto's van interwiki") > -1 || bodyContent.indexOf("Verwijderingsnominatie") > -1 || bodyContent.indexOf("Afbeeldingsuggestie") > -1 || bodyContent.indexOf("Suggestie voor afbeelding") > -1){
 			if(!safemode || (bodyInnerContent.indexOf("Categorie:Wikipedia:Nuweg") > -1 && str.indexOf("Overleg:") > -1)){
 				delete_reason = "Afgehandelde botmelding";
 				window.content.location.href = this.getActionURL("delete", str);
@@ -791,12 +806,16 @@ var deletemw = {
 				}
 			}catch(ex){}
 		}
-		for(i = 0; i < redirects.length; i++){
-			if(redirects[i].length > 0){
+		
+		if(redirects.length == 1){
+			alert(redirects[0]);
+			window.content.location.href = "https://nl.wikipedia.org/wiki/" + redirects[0];
+		}else{
+			for(i = 0; i < redirects.length; i++){
 				gBrowser.addTab("https://nl.wikipedia.org/wiki/" + redirects[i]);
 			}
-		}
-		this.closetab();
+			this.closetab();
+		}		
 	},
 	checkHistory: function(linksToHere){
 		var str = window.content.location.href;
@@ -818,7 +837,7 @@ var deletemw = {
 				var i = 0;
 				var j = 0;
 				var otherUsernames = [];
-				var userNames = ["Lsjbot", "RomaineBot", "CommonsTicker", "E85Bot"];
+				var userNames = ["Lsjbot", "RomaineBot", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot"];
 
 				for(i = 0; i < historyEntries.length; i++){
 					var match = false;
