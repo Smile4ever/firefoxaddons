@@ -413,7 +413,7 @@ var deletemw = {
 					return;
 				}
 			}
-			
+
 			// get link from template nuweg
 			var startSearch = mwContentTextLower.indexOf("<p>Toelichting:");
 			var endSearch = mwContentTextLower.indexOf(startSearch, "<br />");
@@ -485,9 +485,29 @@ var deletemw = {
 				}
 			}
 			// Genomineerd wegens reclame
-			var reclamePos = mwContentTextLower.indexOf("reclame");
+
+			var startSearch = mwContentTextLower.indexOf("<p>Toelichting:");
+			var endSearch = mwContentTextLower.indexOf(startSearch, "<br />");
+				
+			var reclamePos = mwContentTextLower.indexOf("reclame", startSearch, endSearch);
 			if(reclamePos == -1){
-				reclamePos = mwContentTextLower.indexOf("promo");
+				reclamePos = mwContentTextLower.indexOf("promo", startSearch, endSearch);
+			}
+			if(reclamePos > -1){
+				if(!safemode){
+					delete_reason = "Expliciete reclame";
+					window.content.location.href = this.getActionURL("delete", str);
+					this.autoconfirm();
+					return;
+				}else{
+					this.closetab();
+					return;
+				}
+			}
+			
+			/*var reclamePos = mwContentTextLower.indexOf("reclame");
+			if(reclamePos == -1){
+				reclamePos = mwContentTextLower.indexOf("promo ");
 			}
 			if(reclamePos > -1){
 				if(!safemode){
@@ -501,7 +521,8 @@ var deletemw = {
 					this.closetab();
 					return;
 				}
-			}
+			}*/
+
 		}
 		if(str.indexOf("wiki.lxde") > -1) {
 			if(mwContentText == null){
@@ -555,15 +576,17 @@ var deletemw = {
 		if(talkPage){
 			var attributenew = talkPage.getAttribute("class");
 			if(attributenew.indexOf("new") > -1){
+				this.closetab();
 				return;
 			}else{
 				talkExists = true;
 			}
 		}else{
 			// does not exist
+			this.closetab();
 			return;
 		}
-				
+
 		if(!safemode){
 			if(str.indexOf("nl.wikipedia") > -1 && str.indexOf("Overleg") == -1){
 				var index = str.indexOf("wiki/");
