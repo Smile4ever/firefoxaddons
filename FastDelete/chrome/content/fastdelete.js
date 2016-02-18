@@ -831,7 +831,6 @@ var deletemw = {
 		}
 		
 		if(redirects.length == 1){
-			alert(redirects[0]);
 			window.content.location.href = "https://nl.wikipedia.org/wiki/" + redirects[0];
 		}else{
 			for(i = 0; i < redirects.length; i++){
