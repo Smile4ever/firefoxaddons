@@ -97,7 +97,7 @@ var deletemw = {
 					var linksToHere = this.getLinksToHereURL();
 										
 					// Waarschuwing: de pagina die u wilt verwijderen heeft ongeveer
-					if(bodyInnerContent.indexOf("mw-delete-warning-revisions") == -1 || bodyInnerContent.indexOf("de pagina die u wilt verwijderen heeft ongeveer 2 ") > -1){
+					if(bodyInnerContent.indexOf("mw-delete-warning-revisions") == -1){
 						if(doSubmit){
 							deleteForm.submit();
 							this.closeWhenReady(submit, linksToHere);
@@ -111,14 +111,6 @@ var deletemw = {
 							this.checkHistory(linksToHere);
 							return;
 						}
-						/*if(!historyCheck){
-							this.showMessage("Pagina heeft > 2 versies geschiedenis, druk manueel op verwijderen");
-							submit = false;
-						}else{
-							if(doSubmit){
-								deleteForm.submit();
-							}
-						}*/
 					}
 					
 				}
@@ -258,6 +250,11 @@ var deletemw = {
 		var safemode = this.isSafeMode();		
 		var delete_reason_doorverwijzing = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
 		
+		if(bodyContent.indexOf("Bij dit artikel is nog geen afbeelding of foto geplaatst.") > -1){
+			this.closetab();
+			return;
+		}
+		
 		// Afbeeldingsuggestie (manual & bot)
 		if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1 || bodyContent.indexOf("Foto's van interwiki") > -1 || bodyContent.indexOf("Verwijderingsnominatie") > -1 || bodyContent.indexOf("Afbeeldingsuggestie") > -1 || bodyContent.indexOf("Suggestie voor afbeelding") > -1){
 			if(!safemode || (bodyInnerContent.indexOf("Categorie:Wikipedia:Nuweg") > -1 && str.indexOf("Overleg:") > -1)){
@@ -270,6 +267,7 @@ var deletemw = {
 					this.showMessage("Not safe enough to delete automatically. Please verify and manually click delete.");
 					return;
 				}else{
+					this.showMessage("Not safe enough to delete automatically.");
 					this.closetab();
 					return;
 				}
@@ -575,6 +573,10 @@ var deletemw = {
 		var talkExists = false;
 		if(talkPage){
 			var attributenew = talkPage.getAttribute("class");
+			if(attributenew == null){
+				this.closetab();
+				return;
+			}
 			if(attributenew.indexOf("new") > -1){
 				this.closetab();
 				return;
@@ -680,6 +682,11 @@ var deletemw = {
 				partialurl = partialurl + "&action=" + action;
 			}
 		}
+		if(partialurl.indexOf("action=") > -1){
+			var actionlocation = partialurl.indexOf("&action");
+			partialurl = partialurl.substring(0, actionlocation);
+			partialurl = partialurl + "&action=" + action;
+		}
 		return partialurl;
 	},
 	showMessage: function(message){
@@ -689,10 +696,15 @@ var deletemw = {
 		alertsService.showAlertNotification("", title, message, true, "", this, "");
 	},
 	gotourl: function(str, mwContentText, talk, contentText){
+		var count = 0;
+		
 		try{
-			var count = mwContentText.match(/mw-headline/g);
+			count = mwContentText.match(/mw-headline/g);
 		}catch(err){
-			var count = 0;
+			count = 0;
+		}
+		if(count == null){
+			count = 0;
 		}	
 		try {
 			var countDodeLink = contentText.match(/id=\"Dode_/g).length;
@@ -767,12 +779,14 @@ var deletemw = {
 						window.content.location.href = str+"delete";
 						this.autoconfirm();
 					}else{
-						content.document.title = "Loading... Not allowed to delete this page";
-						window.content.location.href = str+"edit";
+						this.closetab();
+						//content.document.title = "Loading... Not allowed to delete this page";
+						//window.content.location.href = str+"edit";
 					}
 				}else{
-					content.document.title = "Loading... Not allowed to delete this page";
-					window.content.location.href = str+"edit";
+					this.closetab();
+					//content.document.title = "Loading... Not allowed to delete this page";
+					//window.content.location.href = str+"edit";
 				}
 			}else{
 				window.content.location.href = str+"delete";
@@ -844,51 +858,83 @@ var deletemw = {
 		// https://nl.wikipedia.org/w/index.php?title=Speciaal:Terugplaatsen&target=Overleg%3APaksi_SE
 		
 		var historyURL = this.getActionURL("history", str);
-		
 		xmlhttp=new XMLHttpRequest();
 
 		xmlhttp.open("GET", historyURL, true);
 		var that=this;
 		xmlhttp.onload = function (e) {
 			if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-				xmlContentText = (new DOMParser()).parseFromString(xmlhttp.responseText, "text/xml");
-
-				// check history here
-				var historyEntries = xmlContentText.getElementsByClassName("history-user");
+				//xmlContentText = (new DOMParser()).parseFromString(xmlhttp.responseText, "text/xml");
+				// pagehistory to </ul>
+				var beginHistoryPage = xmlhttp.responseText.indexOf("mw-content-text");
+				var endHistoryPage = xmlhttp.responseText.lastIndexOf("Speciaal:Bijdragen");
+				var historyPage = xmlhttp.responseText.substring(beginHistoryPage, endHistoryPage);
+				
+				//alert(beginHistoryPage + " -> " + endHistoryPage + "(" + (endHistoryPage - beginHistoryPage) + ")");
+				//alert(historyPage);
+				
+				try{
+					var users = historyPage.match(/\/Speciaal:Bijdragen\/.*\"/g);
+				}catch(e){
+					var users = [];
+				}
+				
+				if(users == null){
+					that.showMessage("users = null");
+				}
 				
 				var i = 0;
+				for(i = 0; i < users.length; i++){
+					var locationQuote = users[i].indexOf("\"");
+					users[i] = users[i].substring(1, locationQuote);
+				}
+				
 				var j = 0;
 				var otherUsernames = [];
-				var userNames = ["Lsjbot", "RomaineBot", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot"];
+				var userNames = ["Lsjbot", "RomaineBot", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot", "Jeroenbot", "RobotJcb"];
 
-				for(i = 0; i < historyEntries.length; i++){
+				for(i = 0; i < users.length; i++){
 					var match = false;
-					var historyEntry = historyEntries[i].innerHTML;
+					var historyEntry = users[i];
 					for(j = 0; j < userNames.length; j++){
 						if(historyEntry.indexOf(userNames[j]) > -1){
 							match = true;
 						}
 					}
 					if(!match){
-					   var mwUserLink = "mw-userlink";
-					   var otherUsernameStart = historyEntry.indexOf(mwUserLink) + 2 + mwUserLink.length;
-					   otherUsernameStart = historyEntry.indexOf(">", mwUserLink + mwUserLink.length)+1;
-					   
-					   var otherUsernameEnd = historyEntry.indexOf("<", otherUsernameStart);
-					   var otherUsername = historyEntry.substring(otherUsernameStart, otherUsernameEnd);
-
-					   otherUsernames.push(otherUsername);
+					   otherUsernames.push(historyEntry);
 					}
 				}
 
 				otherUsernames = that.uniq(otherUsernames);
-								
-				if(otherUsernames.length < 2){
-					that.showMessage("History checked: everything ok.");
+
+				var trustedCount = 0;
+				var trustedUsers = ["Linkin", "Machaerus"]; // , "Cycn"
+				for(i = 0; i < otherUsernames.length; i++){
+					for(j = 0; j < trustedUsers.length; j++){
+						if(otherUsernames[i].indexOf(trustedUsers[j]) > -1){
+							trustedCount++;
+						}
+					}
+				}
+
+				var nuweg = false;
+				var bodyText = content.document.getElementsByTagName("body")[0].innerHTML;
+				if(otherUsernames.length == 1){
+					if(bodyText.indexOf("Categorie:Wikipedia:Nuweg") > -1){
+						nuweg = true;
+					}
+				}
+				if(xmlhttp.responseText.indexOf("Titel van") > -1){
+					trustedCount++;
+				}
+
+				if(otherUsernames.length == 1 && nuweg == true || (otherUsernames.length - trustedCount == 0) ){
+					that.showMessage("History checked: everything ok (" + otherUsernames.length + ", " + trustedCount + " trusted" + ")");
 					that.submitDeleteForm();
 					that.closeWhenReady(true,linksToHere);
 				}else{
-					that.showMessage("We don't know whether this page is deletable.");
+					that.showMessage("Warning: " + otherUsernames.length + " non-bot user(s) edited this page.");
 					if(safemode){
 						this.closetab();
 					}
