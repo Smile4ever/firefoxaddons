@@ -891,7 +891,7 @@ var deletemw = {
 				
 				var j = 0;
 				var otherUsernames = [];
-				var userNames = ["Lsjbot", "RomaineBot", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot", "Jeroenbot", "RobotJcb"];
+				var userNames = ["Lsjbot", "RomaineBot", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot", "Jeroenbot", "RobotJcb",  "GrashoofdBot"];
 
 				for(i = 0; i < users.length; i++){
 					var match = false;
