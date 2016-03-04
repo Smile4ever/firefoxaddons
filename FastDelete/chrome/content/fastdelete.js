@@ -11,8 +11,8 @@ var deletemw = {
 		var autoconfirmwikipedia = true;
 		//var bodyContent = content.document.body.textContent;
 		var bodyInnerContent = content.document.body.innerHTML;
-		//var historyCheck = false;
 		var doSubmit = this.isDoSubmit();
+		var safemode = this.isSafeMode();
 		
 		if(!this.isThereText(true)){
 			this.closetab();
@@ -23,13 +23,6 @@ var deletemw = {
 			if(str.indexOf("wiki") > -1){
 				this.deletepage();
 				return;
-			}else{
-				// do not close pages other than wiki pages
-				// unless the page has not yet finished loading
-				/*if(content.document.readyState == 'complete'){
-					this.closetab();
-					return;
-				}*/
 			}
 		}
 		
@@ -68,7 +61,7 @@ var deletemw = {
 					delete_reason = "";
 				}else{
 					var location=wpReason.value.indexOf(": \"");
-					if((wpReason.value.indexOf("#") > -1 && wpReason.value.indexOf("#") - location < 6) && (!this.isSafeMode() || this.isWeesRedirect() && !this.isOnlyBotNotifications())){
+					if((wpReason.value.indexOf("#") > -1 && wpReason.value.indexOf("#") - location < 6) && (safemode || this.isWeesRedirect() && !this.isOnlyBotNotifications())){
 						wpReason.value = "Doorverwijzing naar niet-bestaande of verwijderde pagina, overbodige of onjuiste doorverwijzing";
 					}
 					if(wpReason.value.indexOf("De inhoud was:") > -1){
@@ -95,7 +88,7 @@ var deletemw = {
 			}else{
 				if(autoconfirmwikipedia == true){
 					var linksToHere = this.getLinksToHereURL();
-										
+
 					// Waarschuwing: de pagina die u wilt verwijderen heeft ongeveer
 					if(bodyInnerContent.indexOf("mw-delete-warning-revisions") == -1){
 						if(doSubmit){
@@ -106,19 +99,30 @@ var deletemw = {
 						}
 					}else{
 						if(bodyInnerContent.indexOf("de pagina die u wilt verwijderen heeft ongeveer ") > -1){
-							// check history.
-							this.showMessage("checking history");
-							this.checkHistory(linksToHere);
-							return;
+							if(wpReason.value.toLowerCase().indexOf("afgehandeld") > -1){
+								// check history.
+								this.showMessage("geschiedenis controleren");
+								this.checkHistory(linksToHere);
+								return;
+							}
+							if(wpReason.value.toLowerCase().indexOf("doorverwijzing") > -1 || wpReason.value.toLowerCase().indexOf("redirect") > -1){
+								this.showMessage("doorverwijzing checken");
+								this.checkRedirect(linksToHere);
+								return;
+							}
+							if(safemode){
+								this.showMessage("This page is not safe to delete.");
+								this.closetab();
+							}else{
+								deleteForm.submit();
+								this.closeWhenReady(submit, linksToHere);
+							}
 						}
 					}
 					
 				}
 			}
-
-			
 		}
-		
  	},
  	getLinksToHereURL: function(){
 		var mwWarnings = content.document.getElementsByClassName("mw-warning");
@@ -244,6 +248,11 @@ var deletemw = {
 		}
 		if(!this.isThereText(false)){
 			this.closetab();
+			return;
+		}
+		if(str.indexOf("Wikimedia Foundation") > -1){
+			//Our servers are currently experiencing a technical problem.
+			window.content.location.reload();
 			return;
 		}
 		
@@ -853,6 +862,68 @@ var deletemw = {
 			this.closetab();
 		}		
 	},
+	checkRedirect: function(linksToHere){
+		var str = window.content.location.href;
+		var historyURL = this.getActionURL("history", str);
+		xmlhttp=new XMLHttpRequest();
+
+		xmlhttp.open("GET", historyURL, true);
+		var that=this;
+		xmlhttp.onload = function (e) {
+			if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+				var beginPage = xmlhttp.responseText.indexOf("mw-content-text");
+				var endPage = xmlhttp.responseText.lastIndexOf("Speciaal:Bijdragen");
+				var page = xmlhttp.responseText.substring(beginPage, endPage);
+				
+				try{
+					var history_sizes = page.match(/history-size\".*\"/g);
+				}catch(e){
+					var history_sizes = [];
+				}
+
+				if(history_sizes.length == 0){
+					var nomatch = true;
+				}
+				
+				var i = 0;
+				var ok = true;
+				
+				/*if(history_sizes.length == 0){
+					ok = false;
+				}*/
+				
+				for(i = 0; i < history_sizes.length; i++){
+					var locationBegin = history_sizes[i].indexOf("(");
+					var locationEnd = history_sizes[i].indexOf(" bytes");
+					history_sizes[i] = history_sizes[i].substring(locationBegin+1, locationEnd);
+					
+					if(parseInt(history_sizes[i]) > 200 && ok){
+						ok = false;
+					}
+				}
+
+				if(nomatch){
+					that.showMessage("Could not check the page.");
+					if(this.isSafeMode()){
+						this.closetab();
+					}
+				}else{
+					if(ok){
+						that.showMessage("Redirect checked: everything ok (<200 bytes)");
+						that.submitDeleteForm();
+						that.closeWhenReady(true,linksToHere);
+					}else{
+						that.showMessage("Warning: not secure to delete. Page contains a history entry > 200 bytes.");
+						if(this.isSafeMode()){
+							this.closetab();
+						}
+					}
+				}
+				
+			}
+		};
+		xmlhttp.send();
+	},
 	checkHistory: function(linksToHere){
 		var str = window.content.location.href;
 		// https://nl.wikipedia.org/w/index.php?title=Speciaal:Terugplaatsen&target=Overleg%3APaksi_SE
@@ -891,7 +962,7 @@ var deletemw = {
 				
 				var j = 0;
 				var otherUsernames = [];
-				var userNames = ["Lsjbot", "RomaineBot", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot", "Jeroenbot", "RobotJcb",  "GrashoofdBot"];
+				var userNames = ["Lsjbot", "RomaineBot", "CommonsDelinker", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot", "Jeroenbot", "RobotJcb", "GrashoofdBot"];
 
 				for(i = 0; i < users.length; i++){
 					var match = false;
@@ -909,7 +980,7 @@ var deletemw = {
 				otherUsernames = that.uniq(otherUsernames);
 
 				var trustedCount = 0;
-				var trustedUsers = ["Linkin", "Machaerus"]; // , "Cycn"
+				var trustedUsers = ["Linkin", "Machaerus", "MartinD"]; // , "Cycn"
 				for(i = 0; i < otherUsernames.length; i++){
 					for(j = 0; j < trustedUsers.length; j++){
 						if(otherUsernames[i].indexOf(trustedUsers[j]) > -1){
@@ -918,24 +989,24 @@ var deletemw = {
 					}
 				}
 
-				var nuweg = false;
-				var bodyText = content.document.getElementsByTagName("body")[0].innerHTML;
+				//var nuweg = false;
+				/*var bodyText = content.document.getElementsByTagName("body")[0].innerHTML;
 				if(otherUsernames.length == 1){
 					if(bodyText.indexOf("Categorie:Wikipedia:Nuweg") > -1){
 						nuweg = true;
 					}
-				}
+				}*/
 				if(xmlhttp.responseText.indexOf("Titel van") > -1){
 					trustedCount++;
 				}
-
-				if(otherUsernames.length == 1 && nuweg == true || (otherUsernames.length - trustedCount == 0) ){
+				//  && nuweg == true
+				if(otherUsernames.length == 1 || (otherUsernames.length - trustedCount == 0) ){
 					that.showMessage("History checked: everything ok (" + otherUsernames.length + ", " + trustedCount + " trusted" + ")");
 					that.submitDeleteForm();
 					that.closeWhenReady(true,linksToHere);
 				}else{
 					that.showMessage("Warning: " + otherUsernames.length + " non-bot user(s) edited this page.");
-					if(safemode){
+					if(this.isSafeMode()){
 						this.closetab();
 					}
 				}
