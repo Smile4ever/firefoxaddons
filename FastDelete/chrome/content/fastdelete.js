@@ -927,6 +927,7 @@ var deletemw = {
 	checkHistory: function(linksToHere){
 		var str = window.content.location.href;
 		// https://nl.wikipedia.org/w/index.php?title=Speciaal:Terugplaatsen&target=Overleg%3APaksi_SE
+		// https://nl.wikipedia.org/w/index.php?title=Overleg:Anten_%28volk%29&action=history
 		
 		var historyURL = this.getActionURL("history", str);
 		xmlhttp=new XMLHttpRequest();
@@ -963,7 +964,9 @@ var deletemw = {
 				var j = 0;
 				var otherUsernames = [];
 				var userNames = ["Lsjbot", "RomaineBot", "CommonsDelinker", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot", "Jeroenbot", "RobotJcb", "GrashoofdBot"];
-
+				
+				// Bodhisattwa is https://commons.wikimedia.org/wiki/Commons:File_renaming/Global_replace
+				
 				for(i = 0; i < users.length; i++){
 					var match = false;
 					var historyEntry = users[i];
@@ -979,8 +982,10 @@ var deletemw = {
 
 				otherUsernames = that.uniq(otherUsernames);
 
+				/* DragonflySixtyseven
+(huidig | vorige) 18 aug 2015 15:37‎ DragonflySixtyseven (Overleg | bijdragen | blokkeren)‎ k . . (991 bytes) (+12)‎ . . ((GR) File renamed: File:Higuita.jpg → File:René Higuita, 2007.jpg this is not Cristian Higuita) (ongedaan maken | bedanken)*/
 				var trustedCount = 0;
-				var trustedUsers = ["Linkin", "Machaerus", "MartinD"]; // , "Cycn"
+				var trustedUsers = ["Linkin", "Machaerus", "MartinD", "Hobbema", "Bodhisattwa", "Materialscientist", "DragonflySixtyseven"]; // , "Cycn"
 				for(i = 0; i < otherUsernames.length; i++){
 					for(j = 0; j < trustedUsers.length; j++){
 						if(otherUsernames[i].indexOf(trustedUsers[j]) > -1){
@@ -1006,8 +1011,8 @@ var deletemw = {
 					that.closeWhenReady(true,linksToHere);
 				}else{
 					that.showMessage("Warning: " + otherUsernames.length + " non-bot user(s) edited this page.");
-					if(this.isSafeMode()){
-						this.closetab();
+					if(that.isSafeMode()){
+						that.closetab();
 					}
 				}
 				
