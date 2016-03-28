@@ -839,6 +839,9 @@ var deletemw = {
 	openTalkRedirects: function(){
 		mwWhatlinkshereList = content.document.getElementById("mw-whatlinkshere-list");
 		lis = mwWhatlinkshereList.getElementsByTagName("li");
+		if(lis == null){
+			return;
+		}
 		i = 0;
 		redirects = [];
 		for(i = 0; i < lis.length; i++){
