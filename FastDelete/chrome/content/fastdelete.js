@@ -84,6 +84,8 @@ var deletemw = {
 			if(str.indexOf("wikipedia.org") == -1){
 				if(doSubmit){
 					deleteForm.submit();
+				}else{
+					this.showMessage("doSubmit is false");
 				}
 			}else{
 				if(autoconfirmwikipedia == true){
@@ -114,8 +116,12 @@ var deletemw = {
 								this.showMessage("This page is not safe to delete.");
 								this.closetab();
 							}else{
-								deleteForm.submit();
-								this.closeWhenReady(submit, linksToHere);
+								if(doSubmit){
+									deleteForm.submit();
+									this.closeWhenReady(submit, linksToHere);
+								}else{
+									this.showMessage("doSubmit is false");
+								}
 							}
 						}
 					}
@@ -944,10 +950,7 @@ var deletemw = {
 				var beginHistoryPage = xmlhttp.responseText.indexOf("mw-content-text");
 				var endHistoryPage = xmlhttp.responseText.lastIndexOf("Speciaal:Bijdragen");
 				var historyPage = xmlhttp.responseText.substring(beginHistoryPage, endHistoryPage);
-				
-				//alert(beginHistoryPage + " -> " + endHistoryPage + "(" + (endHistoryPage - beginHistoryPage) + ")");
-				//alert(historyPage);
-				
+		
 				try{
 					var users = historyPage.match(/\/Speciaal:Bijdragen\/.*\"/g);
 				}catch(e){
@@ -959,7 +962,20 @@ var deletemw = {
 				}
 				
 				var i = 0;
+				var globalReplaceCount = 0;
+
 				for(i = 0; i < users.length; i++){
+					// For GlobalReplace, two formats are detected.
+					// Bodhisattwa is https://commons.wikimedia.org/wiki/Commons:File_renaming/Global_replace
+					// "Bodhisattwa", "Materialscientist", "DragonflySixtyseven"
+					if(users[i].indexOf("GlobalReplace") > -1){
+						globalReplaceCount++;
+					}else{
+						if(users[i].indexOf("commons.wikimedia.org/wiki/GR") > -1){
+							globalReplaceCount++;
+						}
+					}
+					
 					var locationQuote = users[i].indexOf("\"");
 					users[i] = users[i].substring(1, locationQuote);
 				}
@@ -967,8 +983,6 @@ var deletemw = {
 				var j = 0;
 				var otherUsernames = [];
 				var userNames = ["Lsjbot", "RomaineBot", "CommonsDelinker", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot", "Jeroenbot", "RobotJcb", "GrashoofdBot"];
-				
-				// Bodhisattwa is https://commons.wikimedia.org/wiki/Commons:File_renaming/Global_replace
 				
 				for(i = 0; i < users.length; i++){
 					var match = false;
@@ -985,10 +999,9 @@ var deletemw = {
 
 				otherUsernames = that.uniq(otherUsernames);
 
-				/* DragonflySixtyseven
-(huidig | vorige) 18 aug 2015 15:37‎ DragonflySixtyseven (Overleg | bijdragen | blokkeren)‎ k . . (991 bytes) (+12)‎ . . ((GR) File renamed: File:Higuita.jpg → File:René Higuita, 2007.jpg this is not Cristian Higuita) (ongedaan maken | bedanken)*/
 				var trustedCount = 0;
-				var trustedUsers = ["Linkin", "Machaerus", "MartinD", "Hobbema", "Bodhisattwa", "Materialscientist", "DragonflySixtyseven"]; // , "Cycn"
+				var trustedUsers = ["Linkin", "Machaerus", "MartinD", "Hobbema"]; // , "Cycn"
+				
 				for(i = 0; i < otherUsernames.length; i++){
 					for(j = 0; j < trustedUsers.length; j++){
 						if(otherUsernames[i].indexOf(trustedUsers[j]) > -1){
@@ -1008,12 +1021,12 @@ var deletemw = {
 					trustedCount++;
 				}
 				//  && nuweg == true
-				if(otherUsernames.length == 1 || (otherUsernames.length - trustedCount == 0) ){
-					that.showMessage("History checked: everything ok (" + otherUsernames.length + ", " + trustedCount + " trusted" + ")");
+				if(otherUsernames.length == 1 || (otherUsernames.length - trustedCount - globalReplaceCount == 0) || (otherUsernames.length - globalReplaceCount == 1) ){
+					that.showMessage("History checked: everything ok (" + (users.length - otherUsernames.length) + " bot(s), " + otherUsernames.length + " normal user(s), " + trustedCount + " trusted, " + globalReplaceCount + " GlobalReplace" + ")");
 					that.submitDeleteForm();
 					that.closeWhenReady(true,linksToHere);
 				}else{
-					that.showMessage("Warning: " + otherUsernames.length + " non-bot user(s) edited this page.");
+					that.showMessage("Warning: " + (otherUsernames.length - trustedCount - globalReplaceCount) + " non-trusted users have edited this page. Summary: " + otherUsernames.length + " non-bot users, " + trustedCount + " trusted user(s) and " + globalReplaceCount + " GlobalReplace user(s)");
 					if(that.isSafeMode()){
 						that.closetab();
 					}
