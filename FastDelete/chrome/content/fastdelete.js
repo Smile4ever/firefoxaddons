@@ -890,7 +890,11 @@ var deletemw = {
 					var history_sizes = [];
 				}
 
-				if(history_sizes.length == 0){
+				if(history_sizes != null){
+					if(history_sizes.length == 0){
+						var nomatch = true;
+					}
+				}else{
 					var nomatch = true;
 				}
 				
@@ -900,21 +904,22 @@ var deletemw = {
 				/*if(history_sizes.length == 0){
 					ok = false;
 				}*/
-				
-				for(i = 0; i < history_sizes.length; i++){
-					var locationBegin = history_sizes[i].indexOf("(");
-					var locationEnd = history_sizes[i].indexOf(" bytes");
-					history_sizes[i] = history_sizes[i].substring(locationBegin+1, locationEnd);
-					
-					if(parseInt(history_sizes[i]) > 200 && ok){
-						ok = false;
+				if(!nomatch){
+					for(i = 0; i < history_sizes.length; i++){
+						var locationBegin = history_sizes[i].indexOf("(");
+						var locationEnd = history_sizes[i].indexOf(" bytes");
+						history_sizes[i] = history_sizes[i].substring(locationBegin+1, locationEnd);
+						
+						if(parseInt(history_sizes[i]) > 200 && ok){
+							ok = false;
+						}
 					}
 				}
-
+				
 				if(nomatch){
 					that.showMessage("Could not check the page.");
-					if(this.isSafeMode()){
-						this.closetab();
+					if(that.isSafeMode()){
+						that.closetab();
 					}
 				}else{
 					if(ok){
@@ -923,8 +928,8 @@ var deletemw = {
 						that.closeWhenReady(true,linksToHere);
 					}else{
 						that.showMessage("Warning: not secure to delete. Page contains a history entry > 200 bytes.");
-						if(this.isSafeMode()){
-							this.closetab();
+						if(that.isSafeMode()){
+							that.closetab();
 						}
 					}
 				}
