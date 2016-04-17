@@ -57,6 +57,11 @@ var deletemw = {
 				}
 				
 				if(delete_reason.length > 0){
+					if(delete_reason != "Afgehandelde botmelding" && this.isOnlyBotNotifications()){
+						this.showMessage("De pagina mag niet verwijderd worden volgens de instellingen van Fast Delete.");
+						this.closetab();
+						return;
+					}
 					wpReason.value = delete_reason;
 					delete_reason = "";
 				}else{
@@ -84,6 +89,7 @@ var deletemw = {
 			if(str.indexOf("wikipedia.org") == -1){
 				if(doSubmit){
 					deleteForm.submit();
+					this.closeWhenReady(true,null);
 				}else{
 					this.showMessage("doSubmit is false");
 				}
@@ -103,7 +109,6 @@ var deletemw = {
 						if(bodyInnerContent.indexOf("de pagina die u wilt verwijderen heeft ongeveer ") > -1){
 							if(wpReason.value.toLowerCase().indexOf("afgehandeld") > -1){
 								// check history.
-								this.showMessage("geschiedenis controleren");
 								this.checkHistory(linksToHere);
 								return;
 							}
@@ -153,7 +158,49 @@ var deletemw = {
 			var numberOfTries = 0;
 			var func = function(){
 				// todo: make this more generic!
-				if(content.document.title.indexOf("Action complete") > -1 || content.document.title.indexOf("Handeling voltooid") > -1){
+				var titleMatch = false;
+				
+				/*if(content.document.title.indexOf("Action complete") > -1 || content.document.title.indexOf("Handeling voltooid") > -1){
+					titlematch = true;
+				}*/
+				if(content.document.title.indexOf("\"") == -1){
+					titlematch = true;
+				}
+				//titleMatch = false;
+				// generic
+				/*if(!titlematch){
+					// read https://nl.wikipedia.org/wiki/MediaWiki:Actioncomplete
+					str = "https://nl.wikipedia.org/wiki/MediaWiki:Actioncomplete";
+					xmlhttp=new XMLHttpRequest();
+
+					try{
+						xmlhttp.open("GET", str, true);
+					}catch(e){
+						this.showMessage("Access to restricted URL denied at " + str);
+					}
+					var that=this;
+					xmlhttp.onload = function (e) {
+						if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+							contentText=xmlhttp.responseText;
+							  
+							var position = contentText.indexOf("mw-content-text");
+							var position2 = contentText.indexOf(">", position);
+							var position3 = contentText.indexOf("</div><p>", position2)
+							var position4 = contentText.indexOf("</p>", position3)
+							mwContentText = contentText.substring(position3+9, position4);
+							
+							if(content.document.title.indexOf(mwContentText) > -1){
+								if(linksToHere == "" || linksToHere == undefined){
+									gBrowser.removeCurrentTab();
+								}else{
+									window.content.location.href = linksToHere;
+								}
+							}
+						}
+					};
+					xmlhttp.send();
+				}*/
+				if(titlematch){
 					if(linksToHere == "" || linksToHere == undefined){
 						gBrowser.removeCurrentTab();
 					}else{
@@ -518,33 +565,32 @@ var deletemw = {
 				}
 			}
 			
-			/*var reclamePos = mwContentTextLower.indexOf("reclame");
-			if(reclamePos == -1){
-				reclamePos = mwContentTextLower.indexOf("promo ");
+			var hasFourRepeats = (/([a-zA-Z]).*?\1\1\1/).test(mwContentTextLower);      
+			if(hasFourRepeats){
+				delete_reason = "Geen zinvolle inhoud";
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
 			}
-			if(reclamePos > -1){
-				if(!safemode){
-					if(reclamePos > bodyContentLower.indexOf("chkqt7") + 400){ // fix false positive (origin: zeus mode)
-						delete_reason = "Expliciete reclame";
-						window.content.location.href = this.getActionURL("delete", str);
-						this.autoconfirm();
-						return;
-					}
-				}else{
-					this.closetab();
-					return;
-				}
-			}*/
-
+			if(mwContentTextLower.indexOf("ik ben") > -1 || mwContentTextLower.indexOf("ik heb") > -1){
+				delete_reason = "Geen zinvolle inhoud";
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}
 		}
+		
 		if(str.indexOf("wiki.lxde") > -1) {
 			if(mwContentText == null){
 				this.showMessage("mwContentText is null");
 				window.setTimeout(this.closetab(), 2000);
 				return;
 			}
+			var russian = /[а-яА-ЯЁё]/.test(mwContentTextLower);
+			
 			var mwContentTextLower = mwContentText.toLowerCase();
-			if((mwContentText.indexOf("/en/") == -1 || mwContentText.indexOf("/en/index.php") > -1) && mwContentTextLower.indexOf("lxde") == -1 && bodyInnerContent.indexOf("Category:") == -1 && bodyInnerContent.toLowerCase().indexOf("gtk") == -1 && mwContentTextLower.indexOf("linux") == -1 && mwContentTextLower.indexOf("ubuntu") == -1){
+			//(mwContentText.indexOf("/en/") == -1 || mwContentText.indexOf("/en/index.php") > -1) && 
+			if(bodyInnerContent.indexOf("Category:") == -1 && bodyInnerContent.toLowerCase().indexOf("gtk") == -1 && mwContentTextLower.indexOf("linux") == -1 && mwContentTextLower.indexOf("ubuntu") == -1 && mwContentTextLower.indexOf("action=markpatrolled") > -1){
 				
 				var title = content.document.getElementById("firstHeading").childNodes[0].innerHTML;
 				var numberOfUpperCaseLetters = 0;
@@ -561,11 +607,13 @@ var deletemw = {
 						}
 					}
 				}
-
-				/* 	numberOfUpperCaseLetters > 2 || */
+			
 				if(
 					(numberOfUpperCaseLetters + numberOfNumbers) > 3 ||
-					(numberOfUpperCaseLetters == 3 && bodyInnerContent.indexOf("action=markpatrolled") > -1)
+					(numberOfUpperCaseLetters == 3 && mwContentTextLower.indexOf("action=markpatrolled") > -1 ||
+					mwContentTextLower.indexOf("a href") > -1 ||
+					russian
+					)
 				){
 					window.content.location.href = this.getActionURL("delete", str);
 					this.autoconfirm();
