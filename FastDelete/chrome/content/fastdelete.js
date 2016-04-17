@@ -318,7 +318,7 @@ var deletemw = {
 		}
 		
 		// Afbeeldingsuggestie (manual & bot)
-		if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1 || bodyContent.indexOf("Foto's van interwiki") > -1 || bodyContent.indexOf("Verwijderingsnominatie") > -1 || bodyContent.indexOf("Afbeeldingsuggestie") > -1 || bodyContent.indexOf("Suggestie voor afbeelding") > -1){
+		if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1 || bodyContent.indexOf("Foto's van interwiki") > -1 || bodyContent.indexOf("Verwijderingsnominatie") > -1 || bodyContent.indexOf("Afbeeldingsuggestie") > -1 || bodyContent.indexOf("Suggestie voor afbeelding") > -1 || bodyContent.indexOf("Notificatie onbereikbare link weghaald") > -1){
 			if(!safemode || (bodyInnerContent.indexOf("Categorie:Wikipedia:Nuweg") > -1 && str.indexOf("Overleg:") > -1)){
 				delete_reason = "Afgehandelde botmelding";
 				window.content.location.href = this.getActionURL("delete", str);
@@ -1035,7 +1035,7 @@ var deletemw = {
 				
 				var j = 0;
 				var otherUsernames = [];
-				var userNames = ["Lsjbot", "RomaineBot", "CommonsDelinker", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot", "Jeroenbot", "RobotJcb", "GrashoofdBot"];
+				var userNames = ["Lsjbot", "RomaineBot", "CommonsDelinker", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot", "Jeroenbot", "RobotJcb", "GrashoofdBot", "RobotMichiel1972"];
 				
 				for(i = 0; i < users.length; i++){
 					var match = false;
