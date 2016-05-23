@@ -16,6 +16,7 @@
 				<label value="Search engine" minwidth="150px"/>
 				<menulist preference="getarchive-engine">
 				  <menupopup>
+					<menuitem label="Auto (browser default)" value="auto"/>
 					<menuitem label="Bing" value="bing"/>
 				    <menuitem label="DuckDuckGo" value="duckduckgo"/>
 					<menuitem label="Google" value="google"/>

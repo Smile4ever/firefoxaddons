@@ -245,7 +245,8 @@ var getarchive = {
 					window.setTimeout(func, wait);
 				}else{
 					if(that.isurlvalid()){
-						if(content.document.title == "Internet Archive Wayback Machine"){
+						// (content.document.contentType == "application/pdf" && content.document.getElementById("splitToolbarButtonSeparator") == null)
+						if(content.document.title == "Internet Archive Wayback Machine" || content.document.title.indexOf("PDF.js") > -1){
 							// let's hope this is "Redirecting to..." (no reliable way to check)
 							tries++;
 							window.setTimeout(func, wait);
@@ -429,6 +430,18 @@ var getarchive = {
 	prefs: function(){
 		return Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
 	},
+	urldecode: function(encoded){
+		// http://stackoverflow.com/questions/4292914/javascript-url-decode-function
+		  encoded=encoded.replace(/\+/g, '%20');
+		  var str=encoded.split("%");
+		  var cval=str[0];
+		  for (var i=1;i<str.length;i++)
+		  {
+			cval+=String.fromCharCode(parseInt(str[i].substring(0,2),16))+str[i].substring(2);
+		  }
+
+		  return cval;
+	},
 	gosearch: function(buttoncode){
 		var currentLocation=gBrowser.contentDocument.location.href;
 		
@@ -444,46 +457,136 @@ var getarchive = {
 			}
 		}
 
-		var engine = "google";
+		var linkToPage = this.getlocationfrompage(); //archive.today
+		if(linkToPage != ""){
+			currentLocation = linkToPage;
+		}
+		currentLocation = currentLocation.replace(/\_/g, ' ');
+		currentLocation = currentLocation.replace(/\-/g, ' ');
+		
+		if(currentLocation.indexOf("nu.nl") > -1){
+			var lashSlash = currentLocation.lastIndexOf("/");
+			var html = currentLocation.indexOf(".html");
+			currentLocation = currentLocation.substring(lashSlash + 1, html);
+			currentLocation = this.urldecode(currentLocation);
+		}
+		
+		/* from one search engine to another */
+		var getLocation = function(href) {
+			var l = content.document.createElement("a");
+			l.href = href;
+			return l;
+		};
+		var l = getLocation(currentLocation);
+		var hostname = l.hostname;
+		if(hostname.indexOf(".") < hostname.lastIndexOf(".")){
+			// two or more dots
+			if(hostname.indexOf(".") < (hostname.length / 2)){
+				hostname = hostname.substring(hostname.indexOf(".") + 1);
+			}
+		}
+		hostname = hostname.substring(0, hostname.indexOf("."));
+
+		switch(hostname){
+			case "google":
+				currentLocation = content.document.getElementById("lst-ib").value;
+				break;
+			case "duckduckgo":
+				currentLocation = content.document.getElementById("search_form_input").value;
+				 break;
+			case "ecosia":
+				currentLocation = content.document.getElementById("searchInput").value;
+				break;
+			default:
+				var startOfSearchEngineName = content.document.title.lastIndexOf(" -");
+				var matchObject = content.document.body.innerHTML.match(/search/g);
+				if(matchObject != null && matchObject.length > 20){ //isSearchPage
+				var currentTitleLower = content.document.title.toLowerCase();
+					if(startOfSearchEngineName > -1){
+						if(currentTitleLower.indexOf(hostname) > -1){
+							currentLocation = content.document.title.substring(0, currentTitleLower.indexOf(hostname) - 2);
+						}
+					}
+				}
+				break;
+		}
+		
+		
+		var engine = "auto";
 		try{
 			engine = this.prefs().getCharPref("extensions.getarchive.engine");
 		}catch(ex){
 			this.showMessage("Please set your favorite search engine in the GetArchive preferences.");
 		}
-		var baseURL = "";
+		var browserengine = "google";
+		try{
+			browserengine = this.prefs().getCharPref("browser.search.defaultenginename");
+		}catch(e){
+			this.showMessage("You don't seem to have search engines installed. Defaulting to Google.");
+		}
 		
+		// chrome://browser-region/locale/region-properties
+		if(browserengine.indexOf("chrome://") > -1){
+			try{
+				var branch = this.prefs().getBranch("browser.search.");
+				var value = branch.getComplexValue("defaultenginename",Components.interfaces.nsIPrefLocalizedString).data;
+				browserengine = value;
+			}catch(e){
+				this.showMessage("Failed to retrieve the default search engine.");
+			}
+		}
+		browserengine = browserengine.toLowerCase();
+
+		var bss = Components.classes["@mozilla.org/browser/search-service;1"].getService(Components.interfaces.nsIBrowserSearchService);
+		var engines = bss.getVisibleEngines({});
+		var i = 0;
+
 		switch(engine){
 			case "auto":
-				// TODO: get current search engine URL
+				// get current search engine URL
 				//browser.search.defaultenginename
-				//baseURL =
+				
+				for(i = 0; i < engines.length; i++){
+					//alert(engines[i].searchForm);
+					if(engines[i].name.toLowerCase() == browserengine){
+						// we don't have the URL of browser.search.defaultenginename, but we can get it now!
+						// http://superuser.com/questions/960177/how-to-get-the-url-to-the-current-search-engine-in-firefox
+						//alert(engines[i].getSubmission(currentLocation, null).uri.spec);
+						currentLocation = engines[i].getSubmission(currentLocation, null).uri.spec;
+					}
+					//alert(engines[i].name + " " + engines[i].getSubmission(currentLocation, null).uri.spec);
+				}
+												
 				break;
 			case "duckduckgo":
-				baseURL = "https://duckduckgo.com/?q="; break;
+				currentLocation = "https://duckduckgo.com/?q=" + currentLocation; break;
 			case "google":
-				baseURL = "https://google.com/search?q="; break;
+				currentLocation = "https://google.com/search?q=" + currentLocation; break;
 			case "bing":
-				baseURL = "https://bing.com/search?q="; break;
+				currentLocation = "https://bing.com/search?q=" + currentLocation; break;
 			default:
 				if(engine.indexOf("http") > -1){
-					baseURL = engine;
+					currentLocation = engine + currentLocation;
 				}
 				break;
 		}
 		
-		var linkToPage = this.getlocationfrompage(); //archive.today
-		if(linkToPage != ""){
-			currentLocation = linkToPage;
-		}
-		
 		if(window.content.location.href.indexOf("wiki") > -1 || buttoncode > 0){
-			gBrowser.selectedTab = gBrowser.addTab(baseURL+currentLocation);
+			gBrowser.selectedTab = gBrowser.addTab(currentLocation);
 		}else{
-			window.content.location.href = baseURL + currentLocation;
+			window.content.location.href = currentLocation;
 		}     
 	},
 	paste: function(){
+		if(content.getSelection().toString().indexOf("[") == 0){
+			var clipboardContent = this.readclipboardv2();
+			var newClipboardContent = "[" + clipboardContent;
+			this.copytoclipboardv2(newClipboardContent);
+		}
 		goDoCommand('cmd_paste');
+		if(newClipboardContent != null || newClipboardContent != undefined){
+			this.copytoclipboardv2(clipboardContent);
+		}
 	},
 	readclipboardv2: function(){
 		var trans = Cc["@mozilla.org/widget/transferable;1"].createInstance(Ci.nsITransferable);
@@ -515,13 +618,16 @@ var getarchive = {
 			}else{
 				goDoCommand('cmd_paste');
 			}
-		}	
+		}
 	},
 	getInnerBody: function(){
 		return window.content.document.body.innerHTML;
 	},
 	cleanurl: function(url){
 		if(url.indexOf("[") == 0){
+			url = url.substring(1);
+		}
+		if(url.indexOf("=") == 0){
 			url = url.substring(1);
 		}
 		if(url.indexOf("ttp") == 0 && url.indexOf("://") > -1){
@@ -533,10 +639,40 @@ var getarchive = {
 		
 		return url.trim();
 	},
-	showMessage: function(message){
+	showMessage: function(message,title){
 		var alertsService = Cc["@mozilla.org/alerts-service;1"].getService(Ci.nsIAlertsService);
-		var title = "Get Archive";
-
-		alertsService.showAlertNotification("", "Get Archive", message, true, "", this, "");
-	},
+		if(title == null){
+			title = "Get Archive";
+		}
+		alertsService.showAlertNotification("", title, message, true, "", this, "");
+	}
 }
+var urlbarElement = document.getElementById("urlbar");
+
+
+window.addEventListener("keydown", function (event) {
+  if (event.defaultPrevented) {
+    return;
+  }
+
+  if (event.keyCode == 67 && !event.shiftKey && event.ctrlKey && !event.altKey && !event.metaKey) {
+
+    if(document.hasFocus() && content.document.hasFocus() == false){
+		// leave, we're working on the chrome (browser window), not its contents
+		return;
+	}
+    
+    if(window.content.getSelection().toString().length == 0 && content.document.activeElement.tagName.toLowerCase() != "textarea" && content.document.activeElement.tagName.toLowerCase() != "input"){
+		//
+		getarchive.showMessage(getarchive.urldecode(window.content.location.href), "Copied URL to clipboard");
+		getarchive.copytoclipboardv2(window.content.location.href);
+		if(content.document.title.indexOf("+") != 0){
+			content.document.title = "+" + content.document.title;
+		}
+	    // don't allow for double actions for a single event
+		event.preventDefault();
+		return;
+	}
+  }
+ 
+}, true);
