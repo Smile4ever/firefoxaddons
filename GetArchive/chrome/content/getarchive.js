@@ -647,7 +647,7 @@ var getarchive = {
 		alertsService.showAlertNotification("", title, message, true, "", this, "");
 	}
 }
-var urlbarElement = document.getElementById("urlbar");
+//var urlbarElement = document.getElementById("urlbar");
 
 
 window.addEventListener("keydown", function (event) {
@@ -662,7 +662,7 @@ window.addEventListener("keydown", function (event) {
 		return;
 	}
     
-    if(window.content.getSelection().toString().length == 0 && content.document.activeElement.tagName.toLowerCase() != "textarea" && content.document.activeElement.tagName.toLowerCase() != "input"){
+    if(window.content.getSelection().toString().length == 0 && content.document.activeElement.tagName.toLowerCase() != "textarea" && content.document.activeElement.tagName.toLowerCase() != "input" && gBrowser.contentDocument.location.href.indexOf("about:") == -1){
 		//
 		getarchive.showMessage(getarchive.urldecode(window.content.location.href), "Copied URL to clipboard");
 		getarchive.copytoclipboardv2(window.content.location.href);
