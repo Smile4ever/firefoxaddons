@@ -11,6 +11,7 @@
 		<preferences>
 			<preference id="getarchive-engine" name="extensions.getarchive.engine" type="string" />
 			<preference id="getarchive-enablectrlc" name="extensions.getarchive.enablectrlc" type="bool" />
+			<preference id="getarchive-requirefocus" name="extensions.getarchive.requirefocus" type="bool" />
 		</preferences>
 		<vbox align="start">
 			<!--<hbox align="center">-->
@@ -32,6 +33,10 @@
 			<hbox align="start">
 				<checkbox preference="getarchive-enablectrlc"/>
 				<label value="CTRL+C copies the URL if no text is selected"/>
+			</hbox>
+			<hbox align="start">
+				<checkbox preference="getarchive-requirefocus"/>
+				<label value="CTRL+C requires focus on page element"/>
 			</hbox>
 		</vbox>
 	</prefpane>

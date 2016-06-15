@@ -667,8 +667,13 @@ window.addEventListener("keydown", function (event) {
 			var i = 0;
 			for(i = 0; i < iframes.length; i++){
 				var iframe = iframes[i];
-				var idoc= iframe.contentDocument || iframe.contentWindow.document; // ie compatibility
-				if(idoc.getSelection().toString().length > 0){
+				var idoc= iframe.contentDocument || iframe.contentWindow.document;
+				var selection = idoc.getSelection();
+				if(selection == null){
+					continue;
+				}
+				
+				if(selection.toString().length > 0){
 					return;
 				}
 			}
@@ -679,7 +684,12 @@ window.addEventListener("keydown", function (event) {
 			return;
 		}
 
-		if(window.content.getSelection().toString().length == 0 && content.document.activeElement.tagName.toLowerCase() != "textarea" && content.document.activeElement.tagName.toLowerCase() != "input" && gBrowser.contentDocument.location.href.indexOf("about:") == -1){
+		var requirefocus = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch).getBoolPref("extensions.getarchive.enablectrlc");
+		if(requirefocus && (content.document.activeElement.tagName.toLowerCase() == "textarea" || content.document.activeElement.tagName.toLowerCase() == "input")){
+			return;
+		}
+
+		if(content.getSelection().toString().length == 0 && gBrowser.contentDocument.location.href.indexOf("about:") == -1){
 			
 			getarchive.showMessage(getarchive.urldecode(window.content.location.href), "Copied URL to clipboard");
 			getarchive.copytoclipboardv2(window.content.location.href);
