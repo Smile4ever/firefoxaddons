@@ -10,6 +10,7 @@
 	<prefpane>
 		<preferences>
 			<preference id="getarchive-engine" name="extensions.getarchive.engine" type="string" />
+			<preference id="getarchive-enablectrlc" name="extensions.getarchive.enablectrlc" type="bool" />
 		</preferences>
 		<vbox align="start">
 			<!--<hbox align="center">-->
@@ -23,6 +24,15 @@
 				  </menupopup>
 				</menulist>
 			<!--</hbox>-->
+		</vbox>
+		<vbox align="start">
+			<hbox align="start">
+				<label value="Options" minwidth="150px"/>
+			</hbox>
+			<hbox align="start">
+				<checkbox preference="getarchive-enablectrlc"/>
+				<label value="CTRL+C copies the URL if no text is selected"/>
+			</hbox>
 		</vbox>
 	</prefpane>
 

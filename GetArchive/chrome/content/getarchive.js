@@ -645,34 +645,51 @@ var getarchive = {
 			title = "Get Archive";
 		}
 		alertsService.showAlertNotification("", title, message, true, "", this, "");
-	}
+	},
+	
 }
 //var urlbarElement = document.getElementById("urlbar");
 
-
 window.addEventListener("keydown", function (event) {
-  if (event.defaultPrevented) {
-    return;
-  }
-
-  if (event.keyCode == 67 && !event.shiftKey && event.ctrlKey && !event.altKey && !event.metaKey) {
-
-    if(document.hasFocus() && content.document.hasFocus() == false){
-		// leave, we're working on the chrome (browser window), not its contents
+	if (event.defaultPrevented) {
 		return;
 	}
-    
-    if(window.content.getSelection().toString().length == 0 && content.document.activeElement.tagName.toLowerCase() != "textarea" && content.document.activeElement.tagName.toLowerCase() != "input" && gBrowser.contentDocument.location.href.indexOf("about:") == -1){
-		//
-		getarchive.showMessage(getarchive.urldecode(window.content.location.href), "Copied URL to clipboard");
-		getarchive.copytoclipboardv2(window.content.location.href);
-		if(content.document.title.indexOf("+") != 0){
-			content.document.title = "+" + content.document.title;
+
+	if (event.keyCode == 67 && !event.shiftKey && event.ctrlKey && !event.altKey && !event.metaKey) {
+
+		if(document.hasFocus() && content.document.hasFocus() == false){
+			// leave, we're working on the chrome (browser window), not its contents
+			return;
 		}
-	    // don't allow for double actions for a single event
-		event.preventDefault();
-		return;
+
+		var iframes = content.document.getElementsByTagName("iframe");
+		if(iframes.length > 0){
+			var i = 0;
+			for(i = 0; i < iframes.length; i++){
+				var iframe = iframes[i];
+				var idoc= iframe.contentDocument || iframe.contentWindow.document; // ie compatibility
+				if(idoc.getSelection().toString().length > 0){
+					return;
+				}
+			}
+		}
+
+		var enablectrlc = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch).getBoolPref("extensions.getarchive.enablectrlc");
+		if(!enablectrlc){
+			return;
+		}
+
+		if(window.content.getSelection().toString().length == 0 && content.document.activeElement.tagName.toLowerCase() != "textarea" && content.document.activeElement.tagName.toLowerCase() != "input" && gBrowser.contentDocument.location.href.indexOf("about:") == -1){
+			
+			getarchive.showMessage(getarchive.urldecode(window.content.location.href), "Copied URL to clipboard");
+			getarchive.copytoclipboardv2(window.content.location.href);
+			if(content.document.title.indexOf("+") != 0){
+				content.document.title = "+" + content.document.title;
+			}
+			// don't allow for double actions for a single event
+			event.preventDefault();
+			return;
+			
+		}
 	}
-  }
- 
-}, true);
+}, true);	
