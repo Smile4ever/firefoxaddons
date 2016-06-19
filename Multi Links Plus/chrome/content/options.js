@@ -392,12 +392,3 @@ ResetToDefaults = function()
 			break;
 	}
 }
-
-Donate = function()
-{
-	var mainWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"].
-			getService(Components.interfaces.nsIWindowMediator).
-			getMostRecentWindow("navigator:browser");
-	mainWindow.getBrowser().selectedTab = mainWindow.getBrowser().addTab('http://www.grizzlyape.com/donate/');
-	window.close();
-}

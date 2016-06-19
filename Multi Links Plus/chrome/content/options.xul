@@ -717,10 +717,10 @@
 		</tabpanels>
 	</tabbox>
 	
-	<!--<hbox>
+	<hbox>
 		<spacer flex="1"/>
 		<label value="Multi Links Instructions" class="text-link" onmouseup="MultyLinksOptionsHelp()"/>
-	</hbox>-->
+	</hbox>
 	
 	<hbox>
 		<!--<button label="Donate" oncommand="Donate();"/>-->

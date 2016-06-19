@@ -148,12 +148,8 @@
 	},
 	Help: function()
 	{
+		getBrowser().selectedTab = getBrowser().addTab("https://github.com/Smile4ever/firefoxaddons/tree/master/Multi%20Links%20Plus");
 	},
-	
-	Donate: function()
-	{
-	},
-	
 	OnShowPopup: function(aEvent)
 	{
 		//MultiLinks_Wrapper.debug("Show popup" + aEvent.originalTarget);

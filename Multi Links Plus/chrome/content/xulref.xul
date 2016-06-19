@@ -29,9 +29,6 @@
 			<menuitem id="MultiLinks-menuInstr"
                 label="Instructions"
 				oncommand="MultiLinks_Wrapper.Help();"/>
-			<menuitem id="MultiLinks-menuDonate"
-                label="Donate"
-				oncommand="MultiLinks_Wrapper.Donate();"/>
         </menupopup>
 		<menupopup id="MultiLinks-OperationContextMenu"
 					onpopuphidden = "MultiLinks_Wrapper.OpContext(0);"
