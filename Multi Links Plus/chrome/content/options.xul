@@ -129,7 +129,7 @@
 				<vbox>
 					<spacer height="10"/>
 					<checkbox id="allways-copy-to-clipboard"
-								label="Allways copy to clipboard" 
+								label="Always copy to clipboard" 
 								checked="false"
 								onclick="AllwaysCopyCLick();"/>
 						<radiogroup id="MultiLinks-CopyTC-Operation" style="margin-left:35px">

@@ -4,7 +4,7 @@
 	LinksManager: null,
 	m_down: false,
 	m_popup: false,
-	hide_popup: false,
+	hide_popup: true,
 	control: false,
 	iScroll: null,
 	dHScroll: 0,
@@ -111,7 +111,8 @@
 				
 			var snaplContextPopup = document.getElementById("contentAreaContextMenu");
 			snaplContextPopup.addEventListener("popupshowing", MultiLinks_Wrapper.OnShowPopup, true);
-	
+			//window.addEventListener("contextmenu", MultiLinks_Wrapper.HugsmileOnContextMenu, true);
+		
 			MultiLinks_Wrapper.DataManager = new MultiLinks_DataManager();
 			MultiLinks_Wrapper.LinksManager = new MultiLinks_LinksManager();
 			
@@ -150,9 +151,12 @@
 	{
 		getBrowser().selectedTab = getBrowser().addTab("https://github.com/Smile4ever/firefoxaddons/tree/master/Multi%20Links%20Plus");
 	},
+	
 	OnShowPopup: function(aEvent)
 	{
 		//MultiLinks_Wrapper.debug("Show popup" + aEvent.originalTarget);
+		//aEvent.originalTarget.hidePopup();
+
 		if(MultiLinks_Wrapper.hide_popup == true)
 		{
 			aEvent.preventDefault();
@@ -160,7 +164,13 @@
 			return false;
 		}
 	},
-	
+	HugsmileOnContextMenu: function(aEvent){
+		//ContextMenuEvent = aEvent;
+		//MultiLinks_Wrapper.debug("context menu!");
+		
+		//aEvent.preventDefault();
+	},
+
 	OnMenuContextMenu: function(aEvent)
 	{
 		aEvent.preventDefault();
@@ -343,7 +353,7 @@
 				key = "M";
 			if(aEvent.which == 3)
 				key = "R";
-			
+				
 			if(MultiLinks_Wrapper.DataManager.GetActivated() != true)
 				return;
 			
@@ -356,7 +366,7 @@
 			
 			if(!parent.body)
 				return;
-				
+					
 			if(MultiLinks_Wrapper.moveS && aEvent.which == 1)
 			{
 				if(aEvent.originalTarget == gBrowser.contentDocument.getElementById("multilinks-selection"))
@@ -392,13 +402,18 @@
 			if(doc.completed != true)
 				return;
 
+			var aElementTag = doc.activeElement.tagName.toLowerCase();
+			if (aElementTag == "textarea" || aElementTag == "input"){
+				return;
+			}
+
 			/*var skey = MultiLinks_Wrapper.DataManager.GetSelectKey();
 			var nkey = 1;
 			if(skey == "middle")
 				nkey = 2;
 			if(skey == "right")
 				nkey = 3;*/
-				
+			
 			if((aEvent.which != MultiLinks_Wrapper.OPNKey) && MultiLinks_Wrapper.OPNKey != null)
 			{
 				if(EX > MultiLinks_Wrapper.docClientWidth(doc) || EX < 0)
@@ -518,7 +533,7 @@
 				dH = 1;
 			if(X - MultiLinks_Wrapper.docScrollLeft(doc) < 5)
 				dH = -1;
-	
+		
 			if(dH == 0 && dV == 0)
 				MultiLinks_Wrapper.StopScroll();
 			else
@@ -576,10 +591,13 @@
 	
 	ConfirmMax: function()
 	{
+		var bundleSvc = Cc["@mozilla.org/intl/stringbundle;1"].getService(Ci.nsIStringBundleService);
+		var brandBundle = bundleSvc.createBundle("chrome://branding/locale/brand.properties");
+		var brandShortName = brandBundle.GetStringFromName("brandShortName");
 		var ret = new Object();
 		window.openDialog("chrome://multilinks/content/confirm.xul", 
 							"Multi Links", "chrome, modal, centerscreen", 
-							"Opening more than " + MultiLinks_Wrapper.DataManager.GetMaxLNumber() + " links may cause firefox to run extremely slow or crash. Are you sure?", ret);
+							"Opening more than " + MultiLinks_Wrapper.DataManager.GetMaxLNumber() + " links may cause " + brandShortName + " to run extremely slow or crash. Are you sure?", ret);
 		if(ret.value == 'true')
 			return true;
 		return false;
@@ -613,6 +631,8 @@
 
 	StartScroll: function(dH, dV)
 	{
+		//ContextMenuEvent.preventDefault();
+
 		MultiLinks_Wrapper.dHScroll = dH;
 		MultiLinks_Wrapper.dVScroll = dV;
 		if(MultiLinks_Wrapper.iScroll == null)

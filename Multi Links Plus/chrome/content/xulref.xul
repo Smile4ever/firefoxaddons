@@ -74,8 +74,8 @@
 				oncommand="MultiLinks_Wrapper.OpContext(0);"/>
         </menupopup>
     </statusbar>
-<!--
-	<statusbar id="status-bar">
+
+	<!--<statusbar id="status-bar">
 		<statusbarpanel id="status-bar-sample-1" label="Hello World" tooltiptext="Sample status bar">
 			<hbox 	id="artik-debug-bar"
 					height="100"
@@ -94,6 +94,6 @@
 			<toolbarbutton 	label="Show/Hide Debug"
 							oncommand="document.getElementById('artik-debug-bar').hidden = !document.getElementById('artik-debug-bar').hidden;"/>
 		</statusbarpanel>
-	</statusbar>
--->
+	</statusbar>-->
+
 </overlay>

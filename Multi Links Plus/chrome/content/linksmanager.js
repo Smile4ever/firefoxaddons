@@ -270,7 +270,7 @@ MultiLinks_LinksManager = function()
 			this.MarkAllLinks(doc);
 		}
 	}
-	
+
 	this.StopSelect = function(doc, manage, op, cp)
 	{
 		if(String(doc.location).indexOf("mail.google.com") != -1 && doc.getElementById("canvas_frame"))
@@ -320,12 +320,10 @@ MultiLinks_LinksManager = function()
 		MultiLinks_Wrapper.moveS = null;
 		this.moveS = null;
 		
-		// DISABLED to disable warnings
-		//gBrowser.contentWindow.status = String("Done");
 		MultiLinks_Wrapper.status = null;
 		MultiLinks_Wrapper.boxes = 0;
 	}
-	
+
 	this.MarkAllLinks = function(doc) 
 	{
 		if(String(doc.location).indexOf("mail.google.com") != -1 && doc.getElementById("canvas_frame"))
@@ -371,6 +369,64 @@ MultiLinks_LinksManager = function()
 			}*/			
 			
 			this.smarted = found;
+			
+			// ContextMenuEvent
+
+			var div = doc.getElementById("multilinks-links-container");
+			var urls = new Array();
+
+			if(div)
+			{
+				var links2 = div.childNodes;
+				for(var i = 0; i < links2.length; i++)
+				{
+					if(links[i].style.getPropertyValue("visibility") != "hidden")
+					{
+						var l = new Object();
+						l.href = links2[i].getAttribute("lhref");
+						l.text = links2[i].getAttribute("ltext");
+						urls.push(l);
+					}
+				}
+			}
+			var hugsmile_count = urls.length;
+			
+			var selectionCount = doc.getElementById("multilinks-selectioncount");
+			if(!selectionCount){
+				selectionCount = doc.createElement("div");
+				selectionCount.setAttribute("id", "multilinks-selectioncount");
+				selectionCount.style.setProperty("position", "absolute", "");
+				selectionCount.style.setProperty("bottom", "0", "");
+				selectionCount.style.setProperty("right", "0", "");
+				
+				selectionCount.style.setProperty("padding", "4px", "");
+				selectionCount.style.setProperty("margin", "0px", "");
+				
+				selectionCount.style.setProperty("outline", MultiLinks_Wrapper.DataManager.GetSStyle(MultiLinks_Wrapper.OPKey) + " " + MultiLinks_Wrapper.DataManager.GetSWidth(MultiLinks_Wrapper.OPKey) + "px " + MultiLinks_Wrapper.DataManager.GetSColor(MultiLinks_Wrapper.OPKey), "");
+				
+				selectionCount.style.color = "green";
+				selectionCount.style.background = "white";
+				selectionCount.style.fontSize = "0.7em";
+				
+				var selection = doc.getElementById("multilinks-selection");
+
+				if(selection)
+					selection.appendChild(selectionCount);
+			}
+			
+			// remove old value
+			try{
+				while (selectionCount.firstChild) {
+					selectionCount.removeChild(selectionCount.firstChild);
+				}
+				
+				// add new value
+				var selectionCountText = document.createTextNode(hugsmile_count);
+				selectionCount.appendChild(selectionCountText);
+			}catch(err_inside){
+				// none
+			}
+			//MultiLinks_Wrapper.debug("length is " + links.length + " and calculated length is " + hugsmile_count);
 		}catch(err)
 		{
 			MultiLinks_Wrapper.OnError(err);
@@ -1035,34 +1091,7 @@ MultiLinks_LinksManager = function()
 	
 	this.AddToBookmarks = function(links)
 	{
-		if(this.AddToBookmarksFF2(links) == false)
-			this.AddToBookmarksFF3(links);
-	}
-	
-	this.AddToBookmarksFF2 = function(links)
-	{
-		try
-		{
-			var linksInfo = [];
-			
-			for(var i = 0; i < links.length; i++)
-			{
-				var name = links[i].text.replace(/^\s+|\s+$/g, '').replace(/\s{2,}/g, ' ');
-				var url = links[i].href;
-				linksInfo[i] = { name: name, url: url };
-			}
-			var dialogArgs;
-			dialogArgs = { name: gNavigatorBundle.getString("bookmarkAllTabsDefault") };
-			dialogArgs.bBookmarkAllTabs = true;
-			dialogArgs.objGroup = linksInfo;
-			openDialog("chrome://browser/content/bookmarks/addBookmark2.xul", "", ADD_BM_DIALOG_FEATURES, dialogArgs); 
-		}catch(err)
-		{
-			MultiLinks_Wrapper.OnError(err);
-			return false;
-		}
-		
-		return true;
+		this.AddToBookmarksFF3(links);
 	}
 	
 	this.AddToBookmarksFF3 = function(links)

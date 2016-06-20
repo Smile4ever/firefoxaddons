@@ -9,7 +9,7 @@
         orient="vertical"
         onload="MLDialogLoad();"
         width="350"
-        height="150">
+        height="165">
 
 	<script type="application/x-javascript"
         src="chrome://multilinks/content/datamanager.js" />
