@@ -277,9 +277,13 @@ MultiLinks_LinksManager = function()
 			doc = doc.getElementById("canvas_frame").contentDocument;
 			
 		var body = doc.body;
-		if(body){
+		// was enabled
+		/*if(body){
 			body.style.setProperty("-moz-user-select", "text", "");
-		}
+		}*/
+		
+		//MultiLinks_Wrapper.debug("StopSelect");
+		
 		var div = doc.getElementById("multilinks-links-container");
 		var urls = new Array();
 		if(div)
@@ -374,7 +378,7 @@ MultiLinks_LinksManager = function()
 
 			var div = doc.getElementById("multilinks-links-container");
 			var urls = new Array();
-
+			
 			if(div)
 			{
 				var links2 = div.childNodes;
@@ -395,19 +399,20 @@ MultiLinks_LinksManager = function()
 			if(!selectionCount){
 				selectionCount = doc.createElement("div");
 				selectionCount.setAttribute("id", "multilinks-selectioncount");
-				selectionCount.style.setProperty("position", "absolute", "");
-				selectionCount.style.setProperty("bottom", "0", "");
-				selectionCount.style.setProperty("right", "0", "");
-				
-				selectionCount.style.setProperty("padding", "4px", "");
-				selectionCount.style.setProperty("margin", "0px", "");
-				
-				selectionCount.style.setProperty("outline", MultiLinks_Wrapper.DataManager.GetSStyle(MultiLinks_Wrapper.OPKey) + " " + MultiLinks_Wrapper.DataManager.GetSWidth(MultiLinks_Wrapper.OPKey) + "px " + MultiLinks_Wrapper.DataManager.GetSColor(MultiLinks_Wrapper.OPKey), "");
-				
-				selectionCount.style.color = "green";
-				selectionCount.style.background = "white";
-				selectionCount.style.fontSize = "0.7em";
-				
+				if(selectionCount.style != null){
+					selectionCount.style.setProperty("position", "absolute", "");
+					selectionCount.style.setProperty("bottom", "0", "");
+					selectionCount.style.setProperty("right", "0", "");
+					
+					selectionCount.style.setProperty("padding", "4px", "");
+					selectionCount.style.setProperty("margin", "0px", "");
+					
+					selectionCount.style.setProperty("outline", MultiLinks_Wrapper.DataManager.GetSStyle(MultiLinks_Wrapper.OPKey) + " " + MultiLinks_Wrapper.DataManager.GetSWidth(MultiLinks_Wrapper.OPKey) + "px " + MultiLinks_Wrapper.DataManager.GetSColor(MultiLinks_Wrapper.OPKey), "");
+					
+					selectionCount.style.color = "green";
+					selectionCount.style.background = "white";
+					selectionCount.style.fontSize = "0.7em";
+				}
 				var selection = doc.getElementById("multilinks-selection");
 
 				if(selection)

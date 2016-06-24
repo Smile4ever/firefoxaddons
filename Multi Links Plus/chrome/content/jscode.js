@@ -4,7 +4,7 @@
 	LinksManager: null,
 	m_down: false,
 	m_popup: false,
-	hide_popup: true,
+	hide_popup: false,
 	control: false,
 	iScroll: null,
 	dHScroll: 0,
@@ -112,7 +112,7 @@
 			var snaplContextPopup = document.getElementById("contentAreaContextMenu");
 			snaplContextPopup.addEventListener("popupshowing", MultiLinks_Wrapper.OnShowPopup, true);
 			//window.addEventListener("contextmenu", MultiLinks_Wrapper.HugsmileOnContextMenu, true);
-		
+			
 			MultiLinks_Wrapper.DataManager = new MultiLinks_DataManager();
 			MultiLinks_Wrapper.LinksManager = new MultiLinks_LinksManager();
 			
@@ -157,16 +157,31 @@
 		//MultiLinks_Wrapper.debug("Show popup" + aEvent.originalTarget);
 		//aEvent.originalTarget.hidePopup();
 
+		/*var element = aEvent.target.triggerNode;
+		var isImage = (element instanceof Components.interfaces.nsIImageLoadingContent &&
+                 element.currentURI != "");
+       
+		MultiLinks_Wrapper.debug("isImage" + isImage);
+		MultiLinks_Wrapper.debug(element.toString());
+		var activeElement = content.document.activeElement;
+		MultiLinks_Wrapper.debug(activeElement);
+		
+		var isBody = (activeElement instanceof HTMLBodyElement);
+        MultiLinks_Wrapper.debug("isBody" + isBody);*/
+
 		if(MultiLinks_Wrapper.hide_popup == true)
 		{
+			MultiLinks_Wrapper.debug("popup hiding");
 			aEvent.preventDefault();
 			MultiLinks_Wrapper.hide_popup = false;
 			return false;
+		}else{
+			MultiLinks_Wrapper.debug("popup showing");
 		}
 	},
 	HugsmileOnContextMenu: function(aEvent){
 		//ContextMenuEvent = aEvent;
-		//MultiLinks_Wrapper.debug("context menu!");
+		MultiLinks_Wrapper.debug("context menu!");
 		
 		//aEvent.preventDefault();
 	},
@@ -403,7 +418,7 @@
 				return;
 
 			var aElementTag = doc.activeElement.tagName.toLowerCase();
-			if (aElementTag == "textarea" || aElementTag == "input"){
+			if (aElementTag != "body"){
 				return;
 			}
 
@@ -459,7 +474,8 @@
 				doc.body.style.setProperty("-moz-user-select", "none", "");
 			MultiLinks_Wrapper.m_down = true;
 			
-			window.addEventListener("mousemove", MultiLinks_Wrapper.OnMouseMove, true);
+			// was window
+			doc.addEventListener("mousemove", MultiLinks_Wrapper.OnMouseMove, true);
 			//window._content.document.addEventListener("mousemove", MultiLinks_Wrapper.OnMouseMove, true);
 			MultiLinks_Wrapper.m_menu = false;
 			MultiLinks_Wrapper.OPNKey = Number(aEvent.which);

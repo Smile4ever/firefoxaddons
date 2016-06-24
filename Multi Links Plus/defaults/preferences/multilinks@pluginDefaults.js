@@ -20,7 +20,7 @@ pref("extensions.multilinks@plugin.MaxLNumber", 40);
 pref("extensions.multilinks@plugin.Delay", 0);
 pref("extensions.multilinks@plugin.MaxConfirm", true);
 pref("extensions.multilinks@plugin.SelectWD", false);
-pref("extensions.multilinks@plugin.BlockSameLinks", true);
+pref("extensions.multilinks@plugin.BlockSameLinks", false);
 pref("extensions.multilinks@plugin.ScrollSpeed", 10);
 pref("extensions.multilinks@plugin.AllwaysCopy", false);
 pref("extensions.multilinks@plugin.ReverseOrder", false);
