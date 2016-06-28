@@ -19,7 +19,7 @@ var deletemw = {
 			return;
 		}
 		
-		if(deleteForm == null){
+		if(deleteForm == null && content.document.readyState == "complete"){
 			if(str.indexOf("wiki") > -1){
 				this.deletepage();
 				return;
@@ -283,7 +283,13 @@ var deletemw = {
 		var str=window.content.location.href;
 		var talk = false;
 		var contentText = content.document.documentElement.innerHTML;
-		var mwContentText = content.document.getElementById("mw-content-text").innerHTML;
+		var mwContentText = content.document.getElementById("mw-content-text");
+		if(mwContentText == null){
+			this.closetab();
+			return;
+		}
+		mwContentText = mwContentText.innerHTML;
+		
 		var mwContentTextLower = content.document.getElementById("mw-content-text").innerHTML.toLowerCase();
 		var i = 0;
 		
@@ -582,20 +588,29 @@ var deletemw = {
 		
 		if(str.indexOf("wiki.lxde") > -1) {
 			if(mwContentText == null){
-				this.showMessage("mwContentText is null");
+				//this.showMessage("mwContentText is null");
 				window.setTimeout(this.closetab(), 2000);
 				return;
 			}
 			var russian = /[а-яА-ЯЁё]/.test(mwContentTextLower);
-			
+
+			var loc = content.location.href;
+			if(loc.indexOf("Special:Contributions") > -1 || loc.indexOf("Special:Block") > -1 || loc.indexOf("redlink=1") > -1){
+				this.closetab();
+				return;
+			}
+											
 			var mwContentTextLower = mwContentText.toLowerCase();
-			//(mwContentText.indexOf("/en/") == -1 || mwContentText.indexOf("/en/index.php") > -1) && 
-			if(bodyInnerContent.indexOf("Category:") == -1 && bodyInnerContent.toLowerCase().indexOf("gtk") == -1 && mwContentTextLower.indexOf("linux") == -1 && mwContentTextLower.indexOf("ubuntu") == -1 && mwContentTextLower.indexOf("action=markpatrolled") > -1){
-				
+			if(bodyInnerContent.indexOf("/en/Category:") == -1 || bodyInnerContent.indexOf("/en/Category:Spam") > -1){
+				/*if(mwContentTextLower.indexOf("$$$$$") > -1 || mwContentTextLower.indexOf("@@") > -1 || mwContentTextLower.indexOf(")))") > -1){
+					window.content.location.href = this.getActionURL("delete", str);
+					this.autoconfirm();
+					return;
+				}*/
 				var title = content.document.getElementById("firstHeading").childNodes[0].innerHTML;
 				var numberOfUpperCaseLetters = 0;
 				var numberOfNumbers = 0;
-				
+								
 				for(i = 0; i < title.length; i++){
 					if(title[i] == title[i].toUpperCase()){
 						if(title[i] != ":" && title[i] != "." && title[i] != "/"){
@@ -606,14 +621,14 @@ var deletemw = {
 							}
 						}
 					}
-				}
+				}	
 			
 				if(
-					(numberOfUpperCaseLetters + numberOfNumbers) > 3 ||
-					(numberOfUpperCaseLetters == 3 && mwContentTextLower.indexOf("action=markpatrolled") > -1 ||
+					numberOfUpperCaseLetters + numberOfNumbers > 3 ||
+					numberOfUpperCaseLetters == 3 && mwContentTextLower.indexOf("action=markpatrolled") > -1 ||
 					mwContentTextLower.indexOf("a href") > -1 ||
-					russian
-					)
+					russian ||
+					bodyInnerContent.indexOf("Category:Spam") > -1
 				){
 					window.content.location.href = this.getActionURL("delete", str);
 					this.autoconfirm();
@@ -691,6 +706,7 @@ var deletemw = {
 				this.gotourl(str, mwContentText, false, contentText); // afgehandelde botmelding
 			}
 		}else{
+			// document.readyState
 			this.closetab();
 		}		
 	},
@@ -1099,6 +1115,13 @@ var deletemw = {
 window.addEventListener("keyup", function (event) {
   if (event.defaultPrevented) {
     return;
+  }
+
+  var myspaceLoc = window.content.location.href.indexOf("myspace.com");
+  if((myspaceLoc < 10 && myspaceLoc > -1) && event.keyCode == 88){
+	 deletemw.closetab();
+	 event.preventDefault();
+	 return;
   }
 
   if (event.keyCode == 88 && event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
