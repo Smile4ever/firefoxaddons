@@ -74,7 +74,13 @@
 				oncommand="MultiLinks_Wrapper.OpContext(0);"/>
         </menupopup>
     </statusbar>
-
+	<toolbarpalette id="BrowserToolbarPalette">
+		<toolbarbutton id="multilinks-toolbarbutton2" class="toolbarbutton-1"
+		label="Multi Links Plus" tooltiptext="Enable or disable Multi Links Plus"
+		oncommand="if(event.target == this) MultiLinks_Wrapper.TButton(event);"
+		context="MultiLinks-StatusContextMenu"
+		/>
+	</toolbarpalette>
 	<!--<statusbar id="status-bar">
 		<statusbarpanel id="status-bar-sample-1" label="Hello World" tooltiptext="Sample status bar">
 			<hbox 	id="artik-debug-bar"
@@ -95,5 +101,4 @@
 							oncommand="document.getElementById('artik-debug-bar').hidden = !document.getElementById('artik-debug-bar').hidden;"/>
 		</statusbarpanel>
 	</statusbar>-->
-
 </overlay>

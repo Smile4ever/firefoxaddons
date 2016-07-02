@@ -5,6 +5,9 @@ MultyLinksOptionsLoadGeneral = function()
 	var showi = document.getElementById("show-statusbaricon");
 	showi.checked = DataManager.GetShowSBIcon();
 	
+	var showti = document.getElementById("show-toolbaricon");
+	showti.checked = DataManager.GetShowToolbarIcon();
+	
 	var smart = document.getElementById("smart-selection");
 	smart.checked = DataManager.GetSmart();
 	
@@ -38,6 +41,9 @@ MultyLinksOptionsLoadAdvanced = function()
 	
 	var del = document.getElementById("delay");
 	del.value = DataManager.GetDelay();
+	
+	var fcmc = document.getElementById("force-context-menu-cancellation")
+	fcmc.checked = DataManager.GetForceContextMenuCancellation();
 }
 
 MultyLinksOptionsLoadActions = function()
@@ -119,12 +125,15 @@ MultyLinksOptionsaccept = function()
 	var showi = document.getElementById("show-statusbaricon");
 	DataManager.SetShowSBIcon(showi.checked);
 	
+	var showti = document.getElementById("show-toolbaricon")
+	DataManager.SetShowToolbarIcon(showti.checked);
+	
 	var mainWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"].
 			getService(Components.interfaces.nsIWindowMediator).
 			getMostRecentWindow("navigator:browser");
 
 	if(mainWindow.MultiLinks_Wrapper)
-		mainWindow.MultiLinks_Wrapper.InitSBIcon();
+		mainWindow.MultiLinks_Wrapper.InitIcon();
 		
 	var smart = document.getElementById("smart-selection");
 	DataManager.SetSmart(smart.checked);
@@ -150,6 +159,9 @@ MultyLinksOptionsaccept = function()
 	var scspeed = document.getElementById("scroll-speed");
 	DataManager.SetScrollSpeed(scspeed.value);
 
+	var fcmc = document.getElementById("force-context-menu-cancellation")
+	DataManager.SetForceContextMenuCancellation(fcmc.checked);
+	
 	//
 	var sKeys = "RML";
 	for(var i = 0; i < sKeys.length; i++)

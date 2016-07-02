@@ -134,6 +134,18 @@ MultiLinks_DataManager = function() {
     this.SetShowSBIcon = function(a) {
         this.getPrefs().setBoolPref("ShowSBIcon", a);
     }
+    
+    //ShowToolbarIcon
+	this.GetShowToolbarIcon = function() {
+        var param = "ShowToolbarIcon";
+        if (this.getPrefs().prefHasUserValue(param) == false)
+            this.getPrefs().setBoolPref(param, true);
+        return this.getPrefs().getBoolPref(param);
+    }
+
+    this.SetShowToolbarIcon = function(a) {
+        this.getPrefs().setBoolPref("ShowToolbarIcon", a);
+    }
 	
 	//ActivateNewTab
     this.GetActNewTab = function(key) {
@@ -349,5 +361,17 @@ MultiLinks_DataManager = function() {
 
     this.SetTabsInNewWindowUrls = function(v) {
         this.getPrefs().setCharPref("TabsInNewWindowUrls", v);
+    }
+   
+   // ForceContextMenuCancellation
+   this.GetForceContextMenuCancellation = function() {
+        var param = "ForceContextMenuCancellation";
+		if (this.getPrefs().prefHasUserValue(param) == false)
+			this.getPrefs().setBoolPref(param, false);
+		return this.getPrefs().getBoolPref(param);
+   }
+
+   this.SetForceContextMenuCancellation = function(v) {
+       this.getPrefs().setBoolPref("ForceContextMenuCancellation", v);
    }
 }

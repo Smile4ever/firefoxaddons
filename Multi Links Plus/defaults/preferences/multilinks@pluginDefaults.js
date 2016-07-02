@@ -7,6 +7,7 @@ pref("extensions.multilinks@plugin.LWidth", 2);
 pref("extensions.multilinks@plugin.SStyle", "dotted");
 pref("extensions.multilinks@plugin.LStyle", "solid");
 pref("extensions.multilinks@plugin.ShowSBIcon", true);
+pref("extensions.multilinks@plugin.ShowToolbarIcon", true);
 pref("extensions.multilinks@plugin.SmartSelection", true);
 pref("extensions.multilinks@plugin.ActivateNewTab", false);
 pref("extensions.multilinks@plugin.ActivateNewWindow", false);
@@ -40,3 +41,5 @@ pref("extensions.multilinks@plugin.OperationL", 0);
 pref("extensions.multilinks@plugin.ActivateNewTabL", false);
 pref("extensions.multilinks@plugin.ActivateNewWindowL", false);
 pref("extensions.multilinks@plugin.CopyUrlsWithTitlesL", 0);
+
+pref("extensions.multilinks@plugin.ForceContextMenuCancellation", false);

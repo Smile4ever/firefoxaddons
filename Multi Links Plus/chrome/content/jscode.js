@@ -23,7 +23,7 @@
 	Options: function()
 	{
 		window.openDialog("chrome://multilinks/content/options.xul", "", "centerscreen,chrome,modal");
-		MultiLinks_Wrapper.InitSBIcon();
+		MultiLinks_Wrapper.InitIcon();
 	},
 	
 	debug: function(s) 
@@ -60,21 +60,26 @@
 	
 	TButton: function(aEvent)
 	{
-		if(aEvent.which != 1)
-			return;
+		/*if(aEvent.which != 1)
+			return;*/
 
 		var tb = document.getElementById("multilinks-toolbarbutton");
+		var tb2 = document.getElementById("multilinks-toolbarbutton2");
 		var checked = MultiLinks_Wrapper.DataManager.GetActivated();
 		checked = !checked;
 
-		if(checked)
+		if(checked){
 			tb.style.setProperty("list-style-image", "url(chrome://multilinks/skin/mlc.png)", "");
-		else
+			tb2.style.setProperty("list-style-image", "url(chrome://multilinks/skin/mlc.png)", "");
+		}
+		else{
 			tb.style.setProperty("list-style-image", "url(chrome://multilinks/skin/ml.png)", "");
+			tb2.style.setProperty("list-style-image", "url(chrome://multilinks/skin/ml.png)", "");
+		}
 		
 		MultiLinks_Wrapper.DataManager.SetActivated(checked);
 	},
-	
+		
     Init: function() 
 	{
         window.addEventListener("load", this.InitEvents, false);
@@ -117,13 +122,18 @@
 			MultiLinks_Wrapper.LinksManager = new MultiLinks_LinksManager();
 			
 			var tb = document.getElementById("multilinks-toolbarbutton");
+			var tb2 = document.getElementById("multilinks-toolbarbutton2");
 			var checked = MultiLinks_Wrapper.DataManager.GetActivated();
-			if(checked)
+			if(checked){
 				tb.style.setProperty("list-style-image", "url(chrome://multilinks/skin/mlc.png)", "");
-			else
+				tb2.style.setProperty("list-style-image", "url(chrome://multilinks/skin/mlc.png)", "");
+			}
+			else{
 				tb.style.setProperty("list-style-image", "url(chrome://multilinks/skin/ml.png)", "");
-			
-			MultiLinks_Wrapper.InitSBIcon();
+				tb2.style.setProperty("list-style-image", "url(chrome://multilinks/skin/ml.png)", "");
+			}
+						
+			MultiLinks_Wrapper.InitIcon();
 			
 			var wurls = MultiLinks_Wrapper.DataManager.GetTabsInNewWindowUrls();
 			MultiLinks_Wrapper.DataManager.SetTabsInNewWindowUrls("");
@@ -139,17 +149,23 @@
 		}
     },
 
-	InitSBIcon: function()
+	InitIcon: function()
 	{
 		var tb = document.getElementById("MultiLinks-StatusBar");
 		if(MultiLinks_Wrapper.DataManager.GetShowSBIcon())
 			tb.style.setProperty("display", "", "");
 		else
 			tb.style.setProperty("display", "none", "");
+			
+		var tb2 = document.getElementById("multilinks-toolbarbutton2");
+		if(MultiLinks_Wrapper.DataManager.GetShowToolbarIcon())
+			tb2.style.setProperty("display", "", "");
+		else
+			tb2.style.setProperty("display", "none", "");
 	},
 	Help: function()
 	{
-		getBrowser().selectedTab = getBrowser().addTab("https://github.com/Smile4ever/firefoxaddons/tree/master/Multi%20Links%20Plus");
+		getBrowser().selectedTab = getBrowser().addTab("https://github.com/Smile4ever/firefoxaddons/tree/master/Multi%20Links%20Plus/README.md");
 	},
 	
 	OnShowPopup: function(aEvent)
@@ -372,15 +388,17 @@
 			if(MultiLinks_Wrapper.DataManager.GetActivated() != true)
 				return;
 			
-			if(aEvent.target && (aEvent.target.tagName == "a" || aEvent.target.tagName == "A"))
-				return;
-			
-			var parent = aEvent.originalTarget;
-			while(parent.parentNode)
-				parent = parent.parentNode;
-			
-			if(!parent.body)
-				return;
+			if(MultiLinks_Wrapper.DataManager.GetForceContextMenuCancellation() == true){
+				if(aEvent.target && (aEvent.target.tagName == "a" || aEvent.target.tagName == "A"))
+					return;
+				
+				var parent = aEvent.originalTarget;
+				while(parent.parentNode)
+					parent = parent.parentNode;
+				
+				if(!parent.body)
+					return;
+			}
 					
 			if(MultiLinks_Wrapper.moveS && aEvent.which == 1)
 			{
@@ -647,8 +665,6 @@
 
 	StartScroll: function(dH, dV)
 	{
-		//ContextMenuEvent.preventDefault();
-
 		MultiLinks_Wrapper.dHScroll = dH;
 		MultiLinks_Wrapper.dVScroll = dV;
 		if(MultiLinks_Wrapper.iScroll == null)

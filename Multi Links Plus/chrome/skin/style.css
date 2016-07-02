@@ -2,3 +2,10 @@
 	list-style-image: url("chrome://multilinks/skin/ml.png");
 	cursor:pointer;
 }
+/* Button2 */
+toolbar[iconsize="small"] #multilinks-toolbarbutton2 {
+	list-style-image: url("chrome://multilinks/skin/ml.png");
+}
+#multilinks-toolbarbutton2 {
+	list-style-image: url("chrome://multilinks/skin/ml.png");
+}

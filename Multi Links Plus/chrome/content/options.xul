@@ -33,6 +33,10 @@
 					<checkbox id="show-statusbaricon"
 								label="Show statusbar icon" 
 								checked="true"/>
+								
+					<checkbox id="show-toolbaricon"
+								label="Show toolbar icon" 
+								checked="true"/>
 
 					<spacer height="10"/>
 					
@@ -165,6 +169,12 @@
 						</vbox>
 					</hbox>
 					
+					<spacer height="10"/>
+					<!-- ForceContextMenuCancellation -->
+					<checkbox id="force-context-menu-cancellation"
+								label="Force context menu cancellation" 
+								checked="false"/>
+								
 					<spacer flex="1"/>
 					<spacer height="10"/>
 					<hbox>
