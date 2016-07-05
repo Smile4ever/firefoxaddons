@@ -277,10 +277,10 @@ MultiLinks_LinksManager = function()
 			doc = doc.getElementById("canvas_frame").contentDocument;
 			
 		var body = doc.body;
-		// was enabled
-		/*if(body){
+		// Normal text selections should still work
+		if(body){
 			body.style.setProperty("-moz-user-select", "text", "");
-		}*/
+		}
 		
 		//MultiLinks_Wrapper.debug("StopSelect");
 		
