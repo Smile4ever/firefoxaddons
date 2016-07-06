@@ -156,8 +156,11 @@
 			tb.style.setProperty("display", "", "");
 		else
 			tb.style.setProperty("display", "none", "");
-			
+				
 		var tb2 = document.getElementById("multilinks-toolbarbutton2");
+		// The button wasn't dragged onto the toolbar
+		if(tb2 == null)
+			return;
 		if(MultiLinks_Wrapper.DataManager.GetShowToolbarIcon())
 			tb2.style.setProperty("display", "", "");
 		else
