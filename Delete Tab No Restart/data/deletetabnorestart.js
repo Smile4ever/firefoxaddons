@@ -12,8 +12,13 @@ window.addEventListener("keyup", function (event) {
 		}
 
 		// order is important here
-		if(content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
-			window.close();
+		if(window.content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
+			var closeEvent = window.content.document.createEvent("KeyboardEvent");
+			//closeEvent.initKeyEvent(type, bubbles, cancelable, viewArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, keyCodeArg, charCodeArg);
+			closeEvent.initKeyEvent("keypress", true, true, window, true, 0, 0, 0, 0, "w".charCodeAt(0));
+			window.dispatchEvent(closeEvent);
+			
+			//window.close();
 		}else{
 			return;
 		}
