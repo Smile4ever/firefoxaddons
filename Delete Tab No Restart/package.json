@@ -1,7 +1,7 @@
 {
   "title": "Delete Tab No Restart",
   "name": "deletetabnorestart",
-  "version": "0.2.0",
+  "version": "0.3.3",
   "description": "Close the current tab by pressing the key Delete.",
   "id": "deletetabnorestart@hugsmile.eu",
   "main": "index.js",

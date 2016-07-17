@@ -6,7 +6,7 @@ window.addEventListener("keyup", function (event) {
   switch (event.key) {
     case "Delete":
 		// order is important here
-		if(content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
+		if(window.content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
 			deletetab.closetab();
 		}else{
 			return;
