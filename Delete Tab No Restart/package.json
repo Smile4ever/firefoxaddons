@@ -1,7 +1,7 @@
 {
   "title": "Delete Tab No Restart",
   "name": "deletetabnorestart",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Close the current tab by pressing the key Delete.",
   "id": "deletetabnorestart@hugsmile.eu",
   "main": "index.js",
@@ -9,5 +9,8 @@
   "engines": {
     "firefox": ">=38.0a1"
   },
-  "license": "GPL2+ / MPL"
+  "license": "GPL2+ / MPL",
+  "permissions": {
+    "multiprocess": true
+  }
 }

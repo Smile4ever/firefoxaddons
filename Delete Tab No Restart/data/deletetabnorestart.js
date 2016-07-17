@@ -13,7 +13,7 @@ window.addEventListener("keyup", function (event) {
 
 		// order is important here
 		if(window.content.document.hasFocus() && window.content.document.activeElement.tagName == "BODY"){
-			deletetab.closetab();
+			self.port.emit("closeTab", "");
 		}else{
 			return;
 		}
@@ -26,16 +26,3 @@ window.addEventListener("keyup", function (event) {
   // don't allow for double actions for a single event
   event.preventDefault();
 }, true);
-
-var deletetab = {
-
-	closetab: function(){
-		if(window.content.location.href.indexOf("zoho.com") == -1){
-			var closeEvent = window.content.document.createEvent("KeyboardEvent");
-			//closeEvent.initKeyEvent(type, bubbles, cancelable, viewArg, ctrlKeyArg, altKeyArg, shiftKeyArg, metaKeyArg, keyCodeArg, charCodeArg);
-			closeEvent.initKeyEvent("keypress", true, true, window, true, 0, 0, 0, 0, "w".charCodeAt(0));
-			window.dispatchEvent(closeEvent);
-			//window.close();
-		}
-	}
-}
