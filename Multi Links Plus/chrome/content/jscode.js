@@ -391,16 +391,25 @@
 			if(MultiLinks_Wrapper.DataManager.GetActivated() != true)
 				return;
 			
+			var parent = aEvent.originalTarget;
+			while(parent.parentNode)
+				parent = parent.parentNode;
+			
+			if(parent.toString().indexOf("HTML") == -1){
+				return;
+			}
+			
 			if(MultiLinks_Wrapper.DataManager.GetForceContextMenuCancellation() == true){
-				if(aEvent.target && (aEvent.target.tagName == "a" || aEvent.target.tagName == "A"))
+				if(aEvent.target && (aEvent.target.tagName == "a" ||
+				aEvent.target.tagName == "A" ||
+				aEvent.target.tagName == "h1" ||
+				aEvent.target.tagName == "H1" ||
+				aEvent.target.tagName.toUpperCase() == "TEXTAREA"
+				))
 					return;
 				
-				var parent = aEvent.originalTarget;
-				while(parent.parentNode)
-					parent = parent.parentNode;
-				
-				if(!parent.body)
-					return;
+				/*if(!parent.body)
+					return;*/
 			}
 					
 			if(MultiLinks_Wrapper.moveS && aEvent.which == 1)
@@ -553,9 +562,8 @@
 			
 			if(MultiLinks_Wrapper.status == null)
 				MultiLinks_Wrapper.status = String(gBrowser.contentWindow.defaultStatus);
-			// DISABLED to disable warnings
-			//if(MultiLinks_Wrapper.LinksManager.calcStatusB() == true)
-			//	gBrowser.contentWindow.status = String(MultiLinks_Wrapper.LinksManager.calcStatus(gBrowser.contentDocument));
+			if(MultiLinks_Wrapper.LinksManager.calcStatusB() == true)
+				gBrowser.contentWindow.status = MultiLinks_Wrapper.LinksManager.calcStatus(gBrowser.contentDocument) + "";
 			
 			var doc = gBrowser.contentDocument;
 			
