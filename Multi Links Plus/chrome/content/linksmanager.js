@@ -113,7 +113,10 @@ MultiLinks_LinksManager = function()
 	
 	this.getLinks = function(doc)
 	{
-		var aLinks = doc.body.getElementsByTagName("a");
+		/*if(doc.body == null)
+			return;*/
+			
+		var aLinks = doc.getElementsByTagName("a");
 		for(var i = 0; i < aLinks.length; i++)
 			MultiLinks_Wrapper.LinksManager.aLinks.push(aLinks[i]);
 		
@@ -440,6 +443,14 @@ MultiLinks_LinksManager = function()
 	
 	this.MarkLink = function(doc, link, n)
 	{
+		try{
+			if(link.hasAttribute("multilinks-visible")){
+				// do nothing
+			}
+		}catch(e){
+			return;
+		}
+			
 		if(link.hasAttribute("multilinks-visible"))
 		{
 			if(link.getAttribute("multilinks-visible") == "false")
@@ -450,15 +461,19 @@ MultiLinks_LinksManager = function()
 			var visible = true;
 			
 			//var style = doc.defaultView.getComputedStyle(link, null);
-			var style = link.ownerDocument.defaultView.getComputedStyle(link, null);
-
-			if(style.getPropertyValue("visibility") == "hidden")
-				visible = false;
-			if(style.getPropertyValue("display") == "hidden")
-				visible = false;
-			if(style.getPropertyValue("display") == "none")
-				visible = false;
-				
+			// add if
+			if(link.ownerDocument.defaultView){
+				var style = link.ownerDocument.defaultView.getComputedStyle(link, null);
+				// added if
+				if(style){
+					if(style.getPropertyValue("visibility") == "hidden")
+						visible = false;
+					if(style.getPropertyValue("display") == "hidden")
+						visible = false;
+					if(style.getPropertyValue("display") == "none")
+						visible = false;
+				}
+			}
 			link.setAttribute("multilinks-visible", visible);
 			//link.setAttribute("multilinks-fontsize", this.ExtractNumber("style.fontSize"));
 			
@@ -661,9 +676,13 @@ MultiLinks_LinksManager = function()
 				
 			if(this.aLinks.length == 0)
 				return;
-				
-			if(!this.aLinks[0].hasAttribute("multilinks-visible"))
-				return;
+			
+			//try{
+				if(!this.aLinks[0].hasAttribute("multilinks-visible"))
+					return;
+			//}catch(err_inside){
+			//	MultiLinks_Wrapper.debug("multilinks-visible is dead" + this.aLinks + this.aLinks[0]);
+			//}
 
 			for(var i = 0; i < this.aLinks.length; i++)
 			{
@@ -677,7 +696,7 @@ MultiLinks_LinksManager = function()
 			}
 		}catch(err)
 		{
-			MultiLinks_Wrapper.OnError(err);
+			//MultiLinks_Wrapper.OnError(err);
 		}	
 		
 		var iframes = doc.getElementsByTagName("iframe");
@@ -816,15 +835,33 @@ MultiLinks_LinksManager = function()
 			
 			var seldiv = doc.getElementById("multilinks-selection-container");
 			var selection = doc.getElementById("multilinks-selection");
-			seldiv.removeChild(selection);
+			try{
+				seldiv.removeChild(selection);
+			}catch(err_inside){
+				// not important
+			}
 		}catch(err)
 		{
 			MultiLinks_Wrapper.OnError(err);
 		}	
 	}
 	
-	this.ManageLinks = function(links, op, cp)
-	{
+	this.CloseTabURL = function(url){
+		//alert("we should close" + url);
+		var tabs = gBrowser.tabs;
+		for (var i = tabs.length - 1; i >= 0; i--)
+		{
+			var tab = tabs[i];
+			var browser = gBrowser.getBrowserForTab(tab);
+			if (browser.currentURI && browser.currentURI.spec == url){
+				//alert("closing url" + url);
+				gBrowser.removeTab(tab);
+			}
+			
+		}
+	}
+		
+	this.ManageLinks = function(links, op, cp){
 		try
 		{
 			if(links.length == 0)
@@ -892,8 +929,10 @@ MultiLinks_LinksManager = function()
 		}catch(err)
 		{
 			MultiLinks_Wrapper.OnError(err);
-		}
+		}	
 	}
+	
+	
 	
 	this.OpenInNewTabs = function(links)
 	{

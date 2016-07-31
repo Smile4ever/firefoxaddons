@@ -69,12 +69,16 @@
 		checked = !checked;
 
 		if(checked){
-			tb.style.setProperty("list-style-image", "url(chrome://multilinks/skin/mlc.png)", "");
-			tb2.style.setProperty("list-style-image", "url(chrome://multilinks/skin/mlc.png)", "");
+			if(tb)
+				tb.style.setProperty("list-style-image", "url(chrome://multilinks/skin/mlc.png)", "");
+			if(tb2)
+				tb2.style.setProperty("list-style-image", "url(chrome://multilinks/skin/mlc.png)", "");
 		}
 		else{
-			tb.style.setProperty("list-style-image", "url(chrome://multilinks/skin/ml.png)", "");
-			tb2.style.setProperty("list-style-image", "url(chrome://multilinks/skin/ml.png)", "");
+			if(tb)
+				tb.style.setProperty("list-style-image", "url(chrome://multilinks/skin/ml.png)", "");
+			if(tb2)
+				tb2.style.setProperty("list-style-image", "url(chrome://multilinks/skin/ml.png)", "");
 		}
 		
 		MultiLinks_Wrapper.DataManager.SetActivated(checked);
@@ -396,17 +400,33 @@
 				parent = parent.parentNode;
 			
 			if(parent.toString().indexOf("HTML") == -1){
+				try{
+					MultiLinks_Wrapper.LinksManager.StopSelect(document.getElementsByTagName("body")[0], false);
+				}catch(e){
+					debug("body is null??");
+				}
+				return;
+			}
+			
+			if(aEvent.target &&	(aEvent.target.tagName.toUpperCase() == "TEXTAREA" || aEvent.target.tagName.toUpperCase() == "INPUT")){
+				try{
+					MultiLinks_Wrapper.LinksManager.StopSelect(document.getElementsByTagName("body")[0], false);
+				}catch(e){
+					debug("body is null??");
+				}
 				return;
 			}
 			
 			if(MultiLinks_Wrapper.DataManager.GetForceContextMenuCancellation() == true){
-				if(aEvent.target && (aEvent.target.tagName == "a" ||
-				aEvent.target.tagName == "A" ||
-				aEvent.target.tagName == "h1" ||
-				aEvent.target.tagName == "H1" ||
-				aEvent.target.tagName.toUpperCase() == "TEXTAREA"
-				))
+				if(aEvent.target && (
+						aEvent.target.tagName == "a" ||
+						aEvent.target.tagName == "A" ||
+						aEvent.target.tagName == "h1" ||
+						aEvent.target.tagName == "H1"
+					)
+				){
 					return;
+				}
 				
 				/*if(!parent.body)
 					return;*/

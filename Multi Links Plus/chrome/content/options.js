@@ -239,14 +239,17 @@ MultyLinksOptionsInputLColor = function()
 	}
 }
 
-MultyLinksOptionsChangeSColor = function()
+// change selection color (R, M or L)
+MultyLinksOptionsChangeSColor = function(rml)
 {
+	
 	try
 	{
-		var scolor = document.getElementById("selection-color");
+		var scolor = document.getElementById("selection-color-" + rml);
 		var color = scolor.color.substring(1, 7);
 		
-		var stcolor = document.getElementById("selection-tcolor");
+		var stcolor = document.getElementById("selection-tcolor-" + rml);
+		
 		if(color != stcolor.value)
 			stcolor.value = color;
 	}catch(err)
@@ -255,14 +258,15 @@ MultyLinksOptionsChangeSColor = function()
 	}
 }
 
-MultyLinksOptionsChangeLColor = function()
+// change links color (R, M or L)
+MultyLinksOptionsChangeLColor = function(rml)
 {
 	try
 	{
-		var scolor = document.getElementById("links-color");
+		var scolor = document.getElementById("links-color-" + rml);
 		var color = scolor.color.substring(1, 7);
 		
-		var stcolor = document.getElementById("links-tcolor");
+		var stcolor = document.getElementById("links-tcolor-" + rml);
 		if(color != stcolor.value)
 			stcolor.value = color;
 	}catch(err)

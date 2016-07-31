@@ -292,7 +292,7 @@
 											<hbox>
 												<colorpicker id="selection-color-R" 
 														type="button"
-														onchange="MultyLinksOptionsChangeSColor();"
+														onchange='MultyLinksOptionsChangeSColor("R");'
 														width="40"/>
 												<spacer flex="1"/>
 											</hbox>
@@ -311,7 +311,7 @@
 														width="60" 
 														maxlength="6" 
 														style="margin-left:1px"
-														oninput="MultyLinksOptionsInputSColor()"/>
+														oninput='MultyLinksOptionsInputSColor("R")'/>
 											<spacer flex="1"/>
 										</vbox>
 									</hbox>
@@ -438,7 +438,7 @@
 											<hbox>
 												<colorpicker id="selection-color-M" 
 														type="button"
-														onchange="MultyLinksOptionsChangeSColor();"
+														onchange='MultyLinksOptionsChangeSColor("M");'
 														width="40"/>
 												<spacer flex="1"/>
 											</hbox>
@@ -457,7 +457,7 @@
 														width="60" 
 														maxlength="6" 
 														style="margin-left:1px"
-														oninput="MultyLinksOptionsInputSColor()"/>
+														oninput='MultyLinksOptionsInputSColor("M")'/>
 											<spacer flex="1"/>
 										</vbox>
 									</hbox>
@@ -584,7 +584,7 @@
 											<hbox>
 												<colorpicker id="selection-color-L" 
 														type="button"
-														onchange="MultyLinksOptionsChangeSColor();"
+														onchange='MultyLinksOptionsChangeSColor("L");'
 														width="40"/>
 												<spacer flex="1"/>
 											</hbox>
@@ -603,7 +603,7 @@
 														width="60" 
 														maxlength="6" 
 														style="margin-left:1px"
-														oninput="MultyLinksOptionsInputSColor()"/>
+														oninput='MultyLinksOptionsInputSColor("L")'/>
 											<spacer flex="1"/>
 										</vbox>
 									</hbox>
