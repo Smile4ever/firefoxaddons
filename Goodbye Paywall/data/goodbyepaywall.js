@@ -39,7 +39,7 @@ window.addEventListener("keyup", function (event) {
   if(event.getModifierState("Alt") && (typeahead_value == false || isMediaWiki() == true )){
 	return;
   }
-  alert(event.keyCode);
+  
   switch (event.keyCode) {
     case 84:
 		// order is important here
