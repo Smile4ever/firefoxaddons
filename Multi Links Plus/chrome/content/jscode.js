@@ -400,19 +400,21 @@
 				parent = parent.parentNode;
 			
 			if(parent.toString().indexOf("HTML") == -1){
+				MultiLinks_Wrapper.debug("no html");
+				
 				try{
-					MultiLinks_Wrapper.LinksManager.StopSelect(document.getElementsByTagName("body")[0], false);
+					MultiLinks_Wrapper.LinksManager.StopSelect(gBrowser.contentDocument, false);
 				}catch(e){
-					debug("body is null??");
+					MultiLinks_Wrapper.debug("body is null?? - 1");
 				}
 				return;
 			}
 			
 			if(aEvent.target &&	(aEvent.target.tagName.toUpperCase() == "TEXTAREA" || aEvent.target.tagName.toUpperCase() == "INPUT")){
 				try{
-					MultiLinks_Wrapper.LinksManager.StopSelect(document.getElementsByTagName("body")[0], false);
+					MultiLinks_Wrapper.LinksManager.StopSelect(gBrowser.contentDocument, false);
 				}catch(e){
-					debug("body is null??");
+					MultiLinks_Wrapper.debug("body is null?? - 2");
 				}
 				return;
 			}
@@ -524,8 +526,8 @@
 				doc.body.style.setProperty("-moz-user-select", "none", "");
 			MultiLinks_Wrapper.m_down = true;
 			
-			// was window
-			doc.addEventListener("mousemove", MultiLinks_Wrapper.OnMouseMove, true);
+			// In Multi Links, this was window which is better for scrolling
+			window.addEventListener("mousemove", MultiLinks_Wrapper.OnMouseMove, true);
 			//window._content.document.addEventListener("mousemove", MultiLinks_Wrapper.OnMouseMove, true);
 			MultiLinks_Wrapper.m_menu = false;
 			MultiLinks_Wrapper.OPNKey = Number(aEvent.which);
