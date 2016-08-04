@@ -402,20 +402,20 @@
 			if(parent.toString().indexOf("HTML") == -1){
 				MultiLinks_Wrapper.debug("no html");
 				
-				try{
+				/*try{
 					MultiLinks_Wrapper.LinksManager.StopSelect(gBrowser.contentDocument, false);
 				}catch(e){
 					MultiLinks_Wrapper.debug("body is null?? - 1");
-				}
+				}*/
 				return;
 			}
 			
 			if(aEvent.target &&	(aEvent.target.tagName.toUpperCase() == "TEXTAREA" || aEvent.target.tagName.toUpperCase() == "INPUT")){
-				try{
+				/*try{
 					MultiLinks_Wrapper.LinksManager.StopSelect(gBrowser.contentDocument, false);
 				}catch(e){
 					MultiLinks_Wrapper.debug("body is null?? - 2");
-				}
+				}*/
 				return;
 			}
 			
