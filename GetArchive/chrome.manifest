@@ -1,3 +1,5 @@
 content   getarchive           		chrome/content/
+skin	getarchive classic/1.0	chrome/skin/
+style	chrome://global/content/customizeToolbar.xul	chrome://getarchive/skin/toolbar-button.css
 
 overlay  chrome://browser/content/browser.xul chrome://getarchive/content/getarchive.xul

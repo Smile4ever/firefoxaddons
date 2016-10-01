@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE overlay SYSTEM "chrome://getarchive/locale/getarchive.dtd">
-
+<?xml-stylesheet href="chrome://getarchive/skin/toolbar-button.css" type="text/css"?>
+  
 <overlay id="getarchive-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <!-- javascript -->
@@ -86,5 +87,45 @@
 		oncommand='getarchive.pastecomment();'
 		/>
    </keyset>
-   
+   <statusbar id="status-bar">
+		<statusbarpanel
+			id="getArchivePanelIcon"
+			onclick="getarchive.switchAction(event)"
+			context="getArchiveContextmenu"
+			tooltip=""
+			hidden="false">
+			<image id="getarchive-statusicon"
+					tooltiptext="Get Archive"
+					/>
+		</statusbarpanel>
+	</statusbar>
+   <toolbarpalette id="BrowserToolbarPalette">
+		<toolbarbutton id="getarchive-button" class="toolbarbutton-1"
+		label="Get Archive" tooltiptext="Get an archived copy"
+		oncommand="if(event.target == this) getarchive.getarchiveorglink(-1);"
+		context="getArchiveContextmenu"
+		onclick="getarchive.switchAction(event)">
+			<menupopup
+				id="getArchiveContextmenu"
+				position="after_start">
+				
+				<menuitem
+					id="getArchiveOrg"
+					label="Get Archive.org"
+					oncommand="getarchive.getarchiveorglink(-1);"
+				/>		
+				<menuitem
+					id="getArchiveIs"
+					label="Get Archive.is"
+					oncommand="getarchive.gettodayarchive(-1);"
+				/>
+				<menuitem
+					id="getArchivePreferences"
+					label="Preferences"
+					oncommand="getarchive.showDialog('chrome://getarchive/content/options.xul');"
+				/>
+				
+			</menupopup>
+		</toolbarbutton>
+	</toolbarpalette>
 </overlay>

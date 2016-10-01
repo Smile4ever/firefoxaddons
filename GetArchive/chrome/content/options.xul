@@ -12,6 +12,8 @@
 			<preference id="getarchive-engine" name="extensions.getarchive.engine" type="string" />
 			<preference id="getarchive-enablectrlc" name="extensions.getarchive.enablectrlc" type="bool" />
 			<preference id="getarchive-requirefocus" name="extensions.getarchive.requirefocus" type="bool" />
+			<preference id="getarchive-prefer-long-link" name="extensions.getarchive.prefer-long-link" type="bool" />
+			<preference id="getarchive-archive-service" name="extensions.getarchive.archive-service" type="string" />
 		</preferences>
 		<vbox align="start">
 			<!--<hbox align="center">-->
@@ -38,6 +40,19 @@
 				<checkbox preference="getarchive-requirefocus"/>
 				<label value="CTRL+C requires focus on page element"/>
 			</hbox>
+			<hbox align="start">
+				<checkbox preference="getarchive-prefer-long-link"/>
+				<label value="Prefer long link"/>
+			</hbox>
+		</vbox>
+		<vbox align="start">
+			<label value="Default archive service" minwidth="150px"/>
+			<menulist preference="getarchive-archive-service">
+			  <menupopup>
+				<menuitem label="Archive.org Wayback Machine" value="archiveorg"/>
+				<menuitem label="archive.is" value="archiveis"/>
+			  </menupopup>
+			</menulist>
 		</vbox>
 	</prefpane>
 

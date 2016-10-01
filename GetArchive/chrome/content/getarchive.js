@@ -1,24 +1,8 @@
 var wait = 200;
 var getarchive_website = "";
+var getarchive_lastcopy = "";
 
 var getarchive = {
-    /*openurl: function(){
-		var currentLocation=gBrowser.contentDocument.location.href;
-		var pageLocation = "";
-		
-		try{
-			pageLocation = gContextMenu.linkURL;
-		}catch(err){
-			pageLocation = "";
-		}
-		
-		pageLocation = this.getLinkFromMediaWikiSelection(currentLocation, pageLocation);
-		
-		if(pageLocation != ""){
-			gBrowser.selectedTab = gBrowser.addTab(pageLocation);
-		}
-	},*/
-	
 	getarchiveorglink: function(buttoncode) {
 		var currentLocation=gBrowser.contentDocument.location.href;
 		var archiveOrgBaseURL = "http://web.archive.org/web/2005/"; //0000000000
@@ -31,13 +15,10 @@ var getarchive = {
 		}catch(err){
 			pageLocation = "";
 		}
-		//currentLocation = currentLocation.replace("http://archive.today/", "");
 
 		if(currentLocation.indexOf("web.archive.org/web/*/") > -1){
 			window.content.location.href = this.cleanurl(currentLocation.replace("web.archive.org/web/*/", "web.archive.org/web/2005/"));
 			this.copytoclipboard();
-			//pageLocation = "";
-			//currentLocation = "";
 			return;
 		}
 
@@ -59,18 +40,17 @@ var getarchive = {
 		if(pageLocation != ""){
 			// right click / action-submit / action-edit
 
-			if(buttoncode > 0 || currentLocation.indexOf("wiki") > -1){
+			//if(buttoncode > 0 || currentLocation.indexOf("wiki") > -1){
 				try{
-					gBrowser.selectedTab = gBrowser.addTab(archiveOrgBaseURL+decodeURI(this.cleanurl(pageLocation))); //can fail (invalid URI)
+					gBrowser.selectedTab = this.insertTab(archiveOrgBaseURL+decodeURI(this.cleanurl(pageLocation)));
 				}catch(err){
-					gBrowser.selectedTab = gBrowser.addTab(archiveOrgBaseURL+this.cleanurl(pageLocation));
+					gBrowser.selectedTab = this.insertTab(archiveOrgBaseURL+this.cleanurl(pageLocation));
 				}
-			}else{
+			/*}else{
 				window.content.location.href = archiveOrgBaseURL+this.cleanurl(pageLocation);
-			}
+			}*/
 			this.copytoclipboard();
 		}else{
-			//alert("no pageLocation");
 			if(currentLocation.indexOf("Overleg:") == -1){
 			    pageLocation = gBrowser.contentDocument.location.href;
 				pageLocation = pageLocation.replace("http://archive.today/", "");
@@ -82,8 +62,6 @@ var getarchive = {
 				this.copytoclipboard();
 			}
 		}
-		//pageLocation = "";
-		//currentLocation = "";
 	},
 	getPageLocation: function(){
 		// this should only work on talk pages -> ca-talk with class selected indicates this is a talk page
@@ -227,6 +205,14 @@ var getarchive = {
 		}
 		return true;
 	},
+	getUrlToCopy: function(){
+		var urlToCopy = gBrowser.contentDocument.location.href;
+		var PREFER_LONG = this.prefs().getBoolPref("extensions.getarchive.prefer-long-link");
+		if(content.location.href.indexOf("archive.is") > -1 && PREFER_LONG == true){
+			urlToCopy = content.document.getElementById("SHARE_LONGLINK").getAttribute("value");
+		}
+		return urlToCopy;
+	},
 	copytoclipboard: function(){
 		//var clipboard = Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper);
 		that=this;
@@ -240,7 +226,8 @@ var getarchive = {
 			}
 			if(that.isurlloaded()){
 				//clipboard.copyString(gBrowser.contentDocument.location.href);
-				if(content.document.title == "" && content.document.title == "Internet Archive Wayback Machine"){
+				// was &&
+				if(content.document.title == "" || content.document.title == "Internet Archive Wayback Machine"){
 					tries++;
 					window.setTimeout(func, wait);
 				}else{
@@ -251,7 +238,7 @@ var getarchive = {
 							tries++;
 							window.setTimeout(func, wait);
 						}else{
-							that.copytoclipboardv2(gBrowser.contentDocument.location.href);
+							that.copytoclipboardv2(that.getUrlToCopy());
 							copied = true;
 							content.document.title = "+" + content.document.title;
 						}
@@ -421,7 +408,7 @@ var getarchive = {
 		}
 
 		if(window.content.location.href.indexOf("wiki") > -1 || buttoncode > 0){
-			gBrowser.selectedTab = gBrowser.addTab("http://archive.is/"+this.cleanurl(pageLocation));
+			gBrowser.selectedTab = this.insertTab("http://archive.is/"+this.cleanurl(pageLocation));
 		}else{
 			window.content.location.href = "https://archive.is/" + gBrowser.contentDocument.location.href;
 		}
@@ -528,11 +515,14 @@ var getarchive = {
 		// chrome://browser-region/locale/region-properties
 		if(browserengine.indexOf("chrome://") > -1){
 			try{
-				var branch = this.prefs().getBranch("browser.search.");
+				/*var branch = this.prefs().getBranch("browser.search");
 				var value = branch.getComplexValue("defaultenginename",Components.interfaces.nsIPrefLocalizedString).data;
+				browserengine = value;*/
+				
+				var value = this.prefs().getComplexValue("browser.search.defaultenginename",Components.interfaces.nsIPrefLocalizedString).data;
 				browserengine = value;
 			}catch(e){
-				this.showMessage("Failed to retrieve the default search engine.");
+				this.showMessage("Failed to retrieve the default search engine." + value);
 			}
 		}
 		browserengine = browserengine.toLowerCase();
@@ -551,7 +541,6 @@ var getarchive = {
 					if(engines[i].name.toLowerCase() == browserengine){
 						// we don't have the URL of browser.search.defaultenginename, but we can get it now!
 						// http://superuser.com/questions/960177/how-to-get-the-url-to-the-current-search-engine-in-firefox
-						//alert(engines[i].getSubmission(currentLocation, null).uri.spec);
 						currentLocation = engines[i].getSubmission(currentLocation, null).uri.spec;
 					}
 					//alert(engines[i].name + " " + engines[i].getSubmission(currentLocation, null).uri.spec);
@@ -572,7 +561,7 @@ var getarchive = {
 		}
 		
 		if(window.content.location.href.indexOf("wiki") > -1 || buttoncode > 0){
-			gBrowser.selectedTab = gBrowser.addTab(currentLocation);
+			gBrowser.selectedTab = this.insertTab(currentLocation);
 		}else{
 			window.content.location.href = currentLocation;
 		}     
@@ -583,6 +572,7 @@ var getarchive = {
 			var newClipboardContent = "[" + clipboardContent;
 			this.copytoclipboardv2(newClipboardContent);
 		}
+		// document.execCommand('paste') might work as well
 		goDoCommand('cmd_paste');
 		if(newClipboardContent != null || newClipboardContent != undefined){
 			this.copytoclipboardv2(clipboardContent);
@@ -624,6 +614,10 @@ var getarchive = {
 		return window.content.document.body.innerHTML;
 	},
 	cleanurl: function(url){
+		if(url == undefined){
+			this.showMessage("Try reloading the page");
+			return "";
+		}
 		if(url.indexOf("[") == 0){
 			url = url.substring(1);
 		}
@@ -646,7 +640,47 @@ var getarchive = {
 		}
 		alertsService.showAlertNotification("", title, message, true, "", this, "");
 	},
-	
+	insertTab: function(url){
+		var related = true;
+		try{
+			related = this.prefs().getCharPref("browser.tabs.insertRelatedAfterCurrent");
+		}catch(ex){
+			// this browser hasn't properly set this preference, use the default
+		}
+		return gBrowser.addTab(url, {relatedToCurrent: related});
+	},
+	switchAction: function(event){
+		//alert("hi" + event.button);
+		switch(event.button){
+			case 0:
+				if (event.target.id == 'getarchive-statusicon' || event.target.id == 'getarchive-button') {
+					var archiveService = this.prefs().getCharPref("extensions.getarchive.archive-service");
+					switch(archiveService){
+						case "archiveorg":
+							getarchive.getarchiveorglink(-1);
+							break;
+						case "archiveis":
+							getarchive.gettodayarchive(-1);
+							break;
+						default:
+							getarchive.getarchiveorglink(-1);
+							break;
+					}
+					
+					//getarchive.getarchiveorglink(-1);
+				}
+			break;
+		}
+	},
+	showDialog: function(url, params) {
+		var paramObject = params ? params : this;
+		return window.openDialog(
+		  url,
+		  '',
+		  'chrome=yes,resizable=yes,toolbar=yes,centerscreen=yes,modal=no,dependent=no,dialog=no',
+		  paramObject
+		);
+	},
 }
 //var urlbarElement = document.getElementById("urlbar");
 
@@ -662,22 +696,28 @@ window.addEventListener("keydown", function (event) {
 			return;
 		}
 
-		var iframes = content.document.getElementsByTagName("iframe");
-		if(iframes.length > 0){
-			var i = 0;
-			for(i = 0; i < iframes.length; i++){
-				var iframe = iframes[i];
-				var idoc= iframe.contentDocument || iframe.contentWindow.document;
-				var selection = idoc.getSelection();
-				if(selection == null){
-					continue;
-				}
-				
-				if(selection.toString().length > 0){
-					return;
+		var frameIdentifiers = ["iframe", "frame"];
+		var i = 0;
+		
+		// Test URL: http://web.archive.org/web/20060504004551/http://www.beastiemuseum.com/
+		for(i = 0; i < frameIdentifiers.length; i++){
+			var frames = content.document.getElementsByTagName(frameIdentifiers[i]);
+			if(frames.length > 0){
+				var i = 0;
+				for(i = 0; i < frames.length; i++){
+					var frame = frames[i];
+					var idoc = frame.contentDocument || frame.contentWindow.document;
+					var frameselection = idoc.getSelection();
+					if(frameselection == null){
+						continue;
+					}
+					
+					if(frameselection.toString().length > 0){
+						return;
+					}
 				}
 			}
-		}
+		}		
 
 		var enablectrlc = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch).getBoolPref("extensions.getarchive.enablectrlc");
 		if(!enablectrlc){
@@ -685,21 +725,32 @@ window.addEventListener("keydown", function (event) {
 		}
 
 		var requirefocus = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch).getBoolPref("extensions.getarchive.enablectrlc");
-		if(requirefocus && (content.document.activeElement.tagName.toLowerCase() == "textarea" || content.document.activeElement.tagName.toLowerCase() == "input")){
+		var activeElementToLower = content.document.activeElement.tagName.toLowerCase();
+		if(requirefocus && (activeElementToLower == "textarea" || activeElementToLower == "input")){
+			return;
+		}
+		
+		if(gBrowser.contentDocument.location.href.indexOf("about:") > -1){
 			return;
 		}
 
-		if(content.getSelection().toString().length == 0 && gBrowser.contentDocument.location.href.indexOf("about:") == -1){
-			
-			getarchive.showMessage(getarchive.urldecode(window.content.location.href), "Copied URL to clipboard");
-			getarchive.copytoclipboardv2(window.content.location.href);
+		var urlToCopy = getarchive.getUrlToCopy();
+		if(content.getSelection().toString().length == 0){
+						
+			if(getarchive_lastcopy == urlToCopy){
+				return;
+			}
+			getarchive_lastcopy = urlToCopy;
+			getarchive.showMessage(getarchive.urldecode(urlToCopy), "Copied URL to clipboard");
+			getarchive.copytoclipboardv2(urlToCopy);
+	
 			if(content.document.title.indexOf("+") != 0){
 				content.document.title = "+" + content.document.title;
 			}
+						
 			// don't allow for double actions for a single event
 			event.preventDefault();
 			return;
-			
 		}
 	}
 }, true);	
