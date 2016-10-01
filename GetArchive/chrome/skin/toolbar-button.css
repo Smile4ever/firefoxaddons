@@ -1,0 +1,1 @@
+#getarchive-button,#getarchive-statusicon { list-style-image: url("chrome://getarchive/content/icon32.png"); } toolbar[iconsize="small"] #getarchive-button,#getarchive-statusicon { list-style-image: url("chrome://getarchive/content/icon16.png"); }
