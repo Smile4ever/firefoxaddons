@@ -111,6 +111,8 @@ MultiLinks_LinksManager = function()
 		return doc.getElementById("multilinks-links-container");
 	}
 	
+	// TODO: javascript links
+	// Radio buttons would be nice too
 	this.getLinks = function(doc)
 	{
 		/*if(doc.body == null)
@@ -942,7 +944,9 @@ MultiLinks_LinksManager = function()
 		
 		if(MultiLinks_Wrapper.DataManager.GetReverseOrder())
 			aLinks.reverse();
-			
+		
+		var relatedTabs = MultiLinks_Wrapper.DataManager.GetOpenAsRelatedTabs();
+				
 		var delay = MultiLinks_Wrapper.DataManager.GetDelay();
 		if(delay > 0)
 		{
@@ -955,9 +959,9 @@ MultiLinks_LinksManager = function()
 			for(var i = 0; i < links.length; i++)
 			{
 				if(act)
-					getBrowser().selectedTab = getBrowser().addTab(links[i].href);
+					getBrowser().selectedTab = getBrowser().addTab(links[i].href, {relatedToCurrent: relatedTabs});
 				else
-					getBrowser().addTab(links[i].href);
+					getBrowser().addTab(links[i].href, {relatedToCurrent: relatedTabs});
 			}
 		}
 	}
@@ -970,10 +974,12 @@ MultiLinks_LinksManager = function()
 		var link = links[0];
 		links = links.slice(1);
 		
+		var relatedTabs = MultiLinks_Wrapper.DataManager.GetOpenAsRelatedTabs();
+		
 		if(act)
-			getBrowser().selectedTab = getBrowser().addTab(link);
+			getBrowser().selectedTab = getBrowser().addTab(link, {relatedToCurrent: relatedTabs});
 		else
-			getBrowser().addTab(link);
+			getBrowser().addTab(link, {relatedToCurrent: relatedTabs});
 		
 		var delay = MultiLinks_Wrapper.DataManager.GetDelay();
 		setTimeout(MultiLinks_Wrapper.LinksManager.OpenInNewTabsTO, delay * 1000, links, act);

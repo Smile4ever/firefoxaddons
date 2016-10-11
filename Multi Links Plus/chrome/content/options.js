@@ -8,6 +8,9 @@ MultyLinksOptionsLoadGeneral = function()
 	var showti = document.getElementById("show-toolbaricon");
 	showti.checked = DataManager.GetShowToolbarIcon();
 	
+	var relatedTabs = document.getElementById("open-as-related-tabs")
+	relatedTabs.checked = DataManager.GetOpenAsRelatedTabs();
+	
 	var smart = document.getElementById("smart-selection");
 	smart.checked = DataManager.GetSmart();
 	
@@ -134,7 +137,10 @@ MultyLinksOptionsaccept = function()
 
 	if(mainWindow.MultiLinks_Wrapper)
 		mainWindow.MultiLinks_Wrapper.InitIcon();
-		
+	
+	var relatedTabs = document.getElementById("open-as-related-tabs")
+	DataManager.SetOpenAsRelatedTabs(relatedTabs.checked);
+	
 	var smart = document.getElementById("smart-selection");
 	DataManager.SetSmart(smart.checked);
 	

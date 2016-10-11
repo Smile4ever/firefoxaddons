@@ -374,4 +374,16 @@ MultiLinks_DataManager = function() {
    this.SetForceContextMenuCancellation = function(v) {
        this.getPrefs().setBoolPref("ForceContextMenuCancellation", v);
    }
+   
+   // OpenAsRelatedTabs
+   this.GetOpenAsRelatedTabs = function() {
+        var param = "OpenAsRelatedTabs";
+		if (this.getPrefs().prefHasUserValue(param) == false)
+			this.getPrefs().setBoolPref(param, false);
+		return this.getPrefs().getBoolPref(param);
+   }
+
+   this.SetOpenAsRelatedTabs = function(v) {
+       this.getPrefs().setBoolPref("OpenAsRelatedTabs", v);
+   }
 }

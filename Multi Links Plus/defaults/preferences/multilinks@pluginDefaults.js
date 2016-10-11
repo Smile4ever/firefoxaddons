@@ -8,6 +8,7 @@ pref("extensions.multilinks@plugin.SStyle", "dotted");
 pref("extensions.multilinks@plugin.LStyle", "solid");
 pref("extensions.multilinks@plugin.ShowSBIcon", true);
 pref("extensions.multilinks@plugin.ShowToolbarIcon", true);
+pref("extensions.multilinks@plugin.OpenAsRelatedTabs", true);
 pref("extensions.multilinks@plugin.SmartSelection", true);
 pref("extensions.multilinks@plugin.ActivateNewTab", false);
 pref("extensions.multilinks@plugin.ActivateNewWindow", false);

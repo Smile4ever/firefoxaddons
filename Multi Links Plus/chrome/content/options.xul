@@ -40,6 +40,12 @@
 
 					<spacer height="10"/>
 					
+					<checkbox id="open-as-related-tabs"
+								label="Open new tabs next to the current tab" 
+								checked="true"/>
+					
+					<spacer height="10"/>
+					
 					<checkbox id="smart-selection"
 								label="Smart selection" 
 								checked="true"/>
