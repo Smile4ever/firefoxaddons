@@ -2,8 +2,9 @@
 
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?> 
 <?xml-stylesheet href="chrome://multilinks/skin/skin.css" type="text/css"?>
+<!DOCTYPE window SYSTEM "chrome://multilinks/locale/multilinksplus.dtd">
 
-<dialog id="MultiLinks-Options" title="Multi Links Plus Preferences"
+<dialog id="MultiLinks-Options" title="&pref_preferences_title;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="none"
         orient="vertical"
@@ -20,42 +21,39 @@
 
 	<tabbox id="MLOptions" selectedIndex="0">
 		<tabs>
-			<tab label="General"/>
-			<tab label="Advanced"/>
-			<tab label="Actions"/>
-			<tab label="Appearance"/>
+			<tab label="&pref_tab_general;"/>
+			<tab label="&pref_tab_advanced;"/>
+			<tab label="&pref_tab_actions;"/>
+			<tab label="&pref_tab_appearance;"/>
 		</tabs>
 		<tabpanels>
 			<tabpanel>
 				<vbox>
 					<spacer height="10"/>
-					
+
 					<checkbox id="show-statusbaricon"
-								label="Show statusbar icon" 
+								label="&pref_show_statusbar_icon;" 
 								checked="true"/>
 								
 					<checkbox id="show-toolbaricon"
-								label="Show toolbar icon" 
+								label="&pref_show_toolbar_icon;" 
 								checked="true"/>
 
 					<spacer height="10"/>
 					
 					<checkbox id="open-as-related-tabs"
-								label="Open new tabs next to the current tab" 
+								label="&pref_open_as_related_tabs;" 
 								checked="true"/>
 					
 					<spacer height="10"/>
 					
 					<checkbox id="smart-selection"
-								label="Smart selection" 
+								label="&pref_smart_selection;" 
 								checked="true"/>
 								
-					<vbox style="margin-left:40px">
+					<vbox style="margin-left:40px;max-width:280px;">
 						<description>
-							Smart selection allows you to select 
-						</description>
-						<description>
-							only search results in search engines
+							&pref_smart_selection_description;
 						</description>
 					</vbox>
 								
@@ -65,7 +63,7 @@
 						<spacer width="5"/>
 						<vbox width="160">
 							<spacer flex="1"/>
-							<label  value="Key for multiple selection" control="multi-key"/>
+							<label  value="&pref_key_multiple_selection;" control="multi-key"/>
 							<spacer flex="1"/>
 						</vbox>
 						<vbox>
@@ -82,7 +80,7 @@
 					<hbox>
 					<spacer width="0"/>
 					<checkbox id="select-multy-down"
-								label="select only if this key is pressed" 
+								label="&pref_key_multiple_selection_only;" 
 								checked="false"/>
 					</hbox>	
 
@@ -92,7 +90,7 @@
 						<spacer width="5"/>
 						<vbox width="160">
 							<spacer flex="1"/>
-							<label value="Maximum number of links" control="maxlnumber"/>
+							<label value="&pref_max_number_links;" control="maxlnumber"/>
 							<spacer flex="1"/>
 						</vbox>
 						<vbox>
@@ -106,7 +104,7 @@
 						<spacer width="5"/>
 						<vbox width="160">
 							<spacer flex="1"/>
-							<label  value="Scroll speed" control="scroll-speed"/>
+							<label value="&pref_scroll_speed;" control="scroll-speed"/>
 							<spacer flex="1"/>
 						</vbox>
 						<vbox>
@@ -129,7 +127,7 @@
 					<spacer flex="1"/>
 					<spacer height="10"/>
 					<hbox>
-						<button label="Reset to defaults" oncommand="ResetToDefaults();"/>
+						<button label="&pref_button_reset;" oncommand="ResetToDefaults();"/>
 						<spacer flex="1"/>
 					</hbox>
 				</vbox>
@@ -139,26 +137,26 @@
 				<vbox>
 					<spacer height="10"/>
 					<checkbox id="allways-copy-to-clipboard"
-								label="Always copy to clipboard" 
+								label="&pref_copy_clipboard_always;" 
 								checked="false"
 								onclick="AllwaysCopyCLick();"/>
 						<radiogroup id="MultiLinks-CopyTC-Operation" style="margin-left:35px">
-							<radio label="Copy urls with titles" />
-							<radio label="Copy urls only" />
-							<radio label="Copy titles only" />
-							<radio label="Copy as HTML" />
+							<radio label="&pref_copy_urls_titles;" />
+							<radio label="&pref_copy_urls_only;" />
+							<radio label="&pref_copy_titles_only;" />
+							<radio label="&pref_copy_as_html;" />
 						</radiogroup>
 
 					<spacer height="10"/>
 
 					<checkbox id="block-same"
-								label="Block same links in one opening sequence" 
+								label="&pref_block_same_links;" 
 								checked="false"/>
 								
 					<spacer height="10px"/>
 					
 					<checkbox id="reverse-order"
-								label="Reverse order of opening links" 
+								label="&pref_reverse_order;" 
 								checked="false"/>
 
 					<spacer height="10"/>
@@ -167,7 +165,7 @@
 						<spacer width="5"/>
 						<vbox width="200">
 							<spacer flex="1"/>
-							<label value="Delay in opening links (seconds)" control="delay"/>
+							<label value="&pref_delay;" control="delay"/>
 							<spacer flex="1"/>
 						</vbox>
 						<vbox>
@@ -178,13 +176,13 @@
 					<spacer height="10"/>
 					<!-- ForceContextMenuCancellation -->
 					<checkbox id="force-context-menu-cancellation"
-								label="Force context menu cancellation" 
+								label="&pref_force_context_menu_cancellation;" 
 								checked="false"/>
 								
 					<spacer flex="1"/>
 					<spacer height="10"/>
 					<hbox>
-						<button label="Reset to defaults" oncommand="ResetToDefaults();"/>
+						<button label="&pref_button_reset;" oncommand="ResetToDefaults();"/>
 						<spacer flex="1"/>
 					</hbox>
 				</vbox>
@@ -194,71 +192,71 @@
 				<vbox>
 					<tabbox id="MLOptionsOperation" selectedIndex="0">
 						<tabs>
-							<tab label="Right mouse button"/>
-							<tab label="Middle mouse button"/>
-							<tab label="Left mouse button"/>
+							<tab label="&pref_subtab_right;"/>
+							<tab label="&pref_subtab_middle;"/>
+							<tab label="&pref_subtab_left;"/>
 						</tabs>
 						<tabpanels>
 							<tabpanel>
 								<vbox>
 									<radiogroup id="MultiLinks-Operation-R" style="margin-left:15px">
-										<radio label="No action" selected="true" oncommand="MultyLinksOptionsChangeOp('R', 0);"/>
-										<radio label="Open in new tabs" selected="true" oncommand="MultyLinksOptionsChangeOp('R', 1);"/>
-											<checkbox id="activate-new-tab-R" label="Activate new opened tab" checked="true" style="margin-left:35px"/>
-										<radio label="Open in new windows"  oncommand="MultyLinksOptionsChangeOp('R', 2);"/>
-											<checkbox id="activate-new-window-R" label="Activate new opened window" checked="true" style="margin-left:35px"/>
-										<radio label="Open as tabs in new window"  oncommand="MultyLinksOptionsChangeOp('R', 3);"/>
-										<radio label="Copy to clipboard" oncommand="MultyLinksOptionsChangeOp('R', 4);"/>
+										<radio label="&pref_noaction;" selected="true" oncommand="MultyLinksOptionsChangeOp('R', 0);"/>
+										<radio label="&pref_open_in_tabs;" selected="true" oncommand="MultyLinksOptionsChangeOp('R', 1);"/>
+											<checkbox id="activate-new-tab-R" label="&pref_open_in_tabs_activate;" checked="true" style="margin-left:35px"/>
+										<radio label="&pref_open_in_windows;" oncommand="MultyLinksOptionsChangeOp('R', 2);"/>
+											<checkbox id="activate-new-window-R" label="&pref_open_in_windows_activate;" checked="true" style="margin-left:35px"/>
+										<radio label="&pref_open_as_tabs_in_window;" oncommand="MultyLinksOptionsChangeOp('R', 3);"/>
+										<radio label="&pref_copy_to_clipboard;" oncommand="MultyLinksOptionsChangeOp('R', 4);"/>
 											<radiogroup id="MultiLinks-CopyTC-Operation-R" style="margin-left:35px">
-												<radio label="Copy urls with titles" />
-												<radio label="Copy urls only" />
-												<radio label="Copy titles only" />
-												<radio label="Copy as HTML" />
+												<radio label="&pref_copy_urls_titles;" />
+												<radio label="&pref_copy_urls_only;" />
+												<radio label="&pref_copy_titles_only;" />
+												<radio label="&pref_copy_as_html;" />
 											</radiogroup>
-										<radio label="Add to bookmarks"  oncommand="MultyLinksOptionsChangeOp('R', 5);"/>
-										<radio label="Download links"  oncommand="MultyLinksOptionsChangeOp('R', 6);"/>
+										<radio label="&pref_add_to_bookmarks;" oncommand="MultyLinksOptionsChangeOp('R', 5);"/>
+										<radio label="&pref_download_links;" oncommand="MultyLinksOptionsChangeOp('R', 6);"/>
 									</radiogroup>
 								</vbox>
 							</tabpanel>
 							<tabpanel>
 								<vbox>
 									<radiogroup id="MultiLinks-Operation-M" style="margin-left:15px">
-										<radio label="No action" selected="true" oncommand="MultyLinksOptionsChangeOp('M', 0);"/>
-										<radio label="Open in new tabs" selected="true" oncommand="MultyLinksOptionsChangeOp('M', 1);"/>
-											<checkbox id="activate-new-tab-M" label="Activate new opened tab" checked="true" style="margin-left:35px"/>
-										<radio label="Open in new windows"  oncommand="MultyLinksOptionsChangeOp('M', 2);"/>
-											<checkbox id="activate-new-window-M" label="Activate new opened window" checked="true" style="margin-left:35px"/>
-										<radio label="Open as tabs in new window"  oncommand="MultyLinksOptionsChangeOp('M', 3);"/>
-										<radio label="Copy to clipboard" oncommand="MultyLinksOptionsChangeOp('M', 4);"/>
+										<radio label="&pref_noaction;" selected="true" oncommand="MultyLinksOptionsChangeOp('M', 0);"/>
+										<radio label="&pref_open_in_tabs;" selected="true" oncommand="MultyLinksOptionsChangeOp('M', 1);"/>
+											<checkbox id="activate-new-tab-M" label="&pref_open_in_tabs_activate;" checked="true" style="margin-left:35px"/>
+										<radio label="&pref_open_in_windows;" oncommand="MultyLinksOptionsChangeOp('M', 2);"/>
+											<checkbox id="activate-new-window-M" label="&pref_open_in_windows_activate;" checked="true" style="margin-left:35px"/>
+										<radio label="&pref_open_as_tabs_in_window;" oncommand="MultyLinksOptionsChangeOp('M', 3);"/>
+										<radio label="&pref_copy_to_clipboard;" oncommand="MultyLinksOptionsChangeOp('M', 4);"/>
 											<radiogroup id="MultiLinks-CopyTC-Operation-M" style="margin-left:35px">
-												<radio label="Copy urls with titles" />
-												<radio label="Copy urls only" />
-												<radio label="Copy titles only" />
-												<radio label="Copy as HTML" />
+												<radio label="&pref_copy_urls_titles;" />
+												<radio label="&pref_copy_urls_only;" />
+												<radio label="&pref_copy_titles_only;" />
+												<radio label="&pref_copy_as_html;" />
 											</radiogroup>
-										<radio label="Add to bookmarks"  oncommand="MultyLinksOptionsChangeOp('M', 5);"/>
-										<radio label="Download links"  oncommand="MultyLinksOptionsChangeOp('M', 6);"/>
+										<radio label="&pref_add_to_bookmarks;" oncommand="MultyLinksOptionsChangeOp('M', 5);"/>
+										<radio label="&pref_download_links;" oncommand="MultyLinksOptionsChangeOp('M', 6);"/>
 									</radiogroup>
 								</vbox>
 							</tabpanel>
 							<tabpanel>
 								<vbox>
 									<radiogroup id="MultiLinks-Operation-L" style="margin-left:15px">
-										<radio label="No action" selected="true" oncommand="MultyLinksOptionsChangeOp('L', 0);"/>
-										<radio label="Open in new tabs" selected="true" oncommand="MultyLinksOptionsChangeOp('L', 1);"/>
-											<checkbox id="activate-new-tab-L" label="Activate new opened tab" checked="true" style="margin-left:35px"/>
-										<radio label="Open in new windows"  oncommand="MultyLinksOptionsChangeOp('L', 2);"/>
-											<checkbox id="activate-new-window-L" label="Activate new opened window" checked="true" style="margin-left:35px"/>
-										<radio label="Open as tabs in new window"  oncommand="MultyLinksOptionsChangeOp('L', 3);"/>
-										<radio label="Copy to clipboard" oncommand="MultyLinksOptionsChangeOp('L', 4);"/>
+										<radio label="&pref_noaction;" selected="true" oncommand="MultyLinksOptionsChangeOp('L', 0);"/>
+										<radio label="&pref_open_in_tabs;" selected="true" oncommand="MultyLinksOptionsChangeOp('L', 1);"/>
+											<checkbox id="activate-new-tab-L" label="&pref_open_in_tabs_activate;" checked="true" style="margin-left:35px"/>
+										<radio label="&pref_open_in_windows;"  oncommand="MultyLinksOptionsChangeOp('L', 2);"/>
+											<checkbox id="activate-new-window-L" label="&pref_open_in_windows_activate;" checked="true" style="margin-left:35px"/>
+										<radio label="&pref_open_as_tabs_in_window;" oncommand="MultyLinksOptionsChangeOp('L', 3);"/>
+										<radio label="&pref_copy_to_clipboard;" oncommand="MultyLinksOptionsChangeOp('L', 4);"/>
 											<radiogroup id="MultiLinks-CopyTC-Operation-L" style="margin-left:35px">
-												<radio label="Copy urls with titles" />
-												<radio label="Copy urls only" />
-												<radio label="Copy titles only" />
-												<radio label="Copy as HTML" />
+												<radio label="&pref_copy_urls_titles;" />
+												<radio label="&pref_copy_urls_only;" />
+												<radio label="&pref_copy_titles_only;" />
+												<radio label="&pref_copy_as_html;" />
 											</radiogroup>
-										<radio label="Add to bookmarks"  oncommand="MultyLinksOptionsChangeOp('L', 5);"/>
-										<radio label="Download links"  oncommand="MultyLinksOptionsChangeOp('L', 6);"/>
+										<radio label="&pref_add_to_bookmarks;" oncommand="MultyLinksOptionsChangeOp('L', 5);"/>
+										<radio label="&pref_download_links;" oncommand="MultyLinksOptionsChangeOp('L', 6);"/>
 									</radiogroup>
 								</vbox>
 							</tabpanel>
@@ -267,7 +265,7 @@
 					<spacer flex="1"/>
 					<spacer height="10"/>
 					<hbox>
-						<button label="Reset to defaults" oncommand="ResetToDefaults();"/>
+						<button label="&pref_button_reset;" oncommand="ResetToDefaults();"/>
 						<spacer flex="1"/>
 					</hbox>
 				</vbox>
@@ -277,9 +275,9 @@
 				<vbox>
 					<tabbox id="MLOptionsAppearance" selectedIndex="0">
 						<tabs>
-							<tab label="Right mouse button"/>
-							<tab label="Middle mouse button"/>
-							<tab label="Left mouse button"/>
+							<tab label="&pref_subtab_right;"/>
+							<tab label="&pref_subtab_middle;"/>
+							<tab label="&pref_subtab_left;"/>
 						</tabs>
 						<tabpanels>
 							<tabpanel><!--Right mouse button-->
@@ -290,7 +288,7 @@
 										
 										<vbox width="130">
 											<spacer flex="1"/>
-											<label value="Selection color" control="selection-color"/>
+											<label value="&pref_selection_color;" control="selection-color"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox width="70">
@@ -325,7 +323,7 @@
 									<hbox>
 										<vbox width="130">
 											<spacer flex="1"/>
-											<label value="Links color" control="links-color"/>
+											<label value="&pref_links_color;" control="links-color"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox width="70">
@@ -362,7 +360,7 @@
 									<hbox>
 										<vbox width="170">
 											<spacer flex="1"/>
-											<label value="Selection box width in pixels" control="selection-width"/>
+											<label value="&pref_selection_box_width;" control="selection-width"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox>
@@ -375,7 +373,7 @@
 									<hbox>
 										<vbox width="170">
 											<spacer flex="1"/>
-											<label value="Links border width in pixels" control="links-width"/>
+											<label value="&pref_links_border_width;" control="links-width"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox>
@@ -390,16 +388,16 @@
 									<hbox>
 										<vbox width="120">
 											<spacer flex="1"/>
-											<label value="Selection box style" control="selection-style"/>
+											<label value="&pref_selection_box_style;" control="selection-style"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox>
 											<spacer flex="1"/>
 											<menulist id="selection-style-R" width="80">
 												<menupopup>
-													<menuitem label="dotted" value="dotted"/>
-													<menuitem label="dashed" value="dashed"/>
-													<menuitem label="solid" value="solid"/>
+													<menuitem label="&pref_box_style_dotted;" value="dotted"/>
+													<menuitem label="&pref_box_style_dashed;" value="dashed"/>
+													<menuitem label="&pref_box_style_solid;" value="solid"/>
 												</menupopup>
 											</menulist>
 											<spacer flex="1"/>
@@ -409,16 +407,16 @@
 									<hbox>
 										<vbox width="120">
 											<spacer flex="1"/>
-											<label value="Links border style" control="links-style"/>
+											<label value="&pref_links_border_style;" control="links-style"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox>
 											<spacer flex="1"/>
 											<menulist id="links-style-R" width="80">
 												<menupopup>
-													<menuitem label="dotted" value="dotted"/>
-													<menuitem label="dashed" value="dashed"/>
-													<menuitem label="solid" value="solid"/>
+													<menuitem label="&pref_box_style_dotted;" value="dotted"/>
+													<menuitem label="&pref_box_style_dashed;" value="dashed"/>
+													<menuitem label="&pref_box_style_solid;" value="solid"/>
 												</menupopup>
 											</menulist>
 											<spacer flex="1"/>
@@ -436,7 +434,7 @@
 										
 										<vbox width="130">
 											<spacer flex="1"/>
-											<label value="Selection color" control="selection-color"/>
+											<label value="&pref_selection_color;" control="selection-color"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox width="70">
@@ -471,7 +469,7 @@
 									<hbox>
 										<vbox width="130">
 											<spacer flex="1"/>
-											<label value="Links color" control="links-color"/>
+											<label value="&pref_links_color;" control="links-color"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox width="70">
@@ -508,7 +506,7 @@
 									<hbox>
 										<vbox width="170">
 											<spacer flex="1"/>
-											<label value="Selection box width in pixels" control="selection-width"/>
+											<label value="&pref_selection_box_width;" control="selection-width"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox>
@@ -521,7 +519,7 @@
 									<hbox>
 										<vbox width="170">
 											<spacer flex="1"/>
-											<label value="Links border width in pixels" control="links-width"/>
+											<label value="&pref_links_border_width;" control="links-width"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox>
@@ -536,16 +534,16 @@
 									<hbox>
 										<vbox width="120">
 											<spacer flex="1"/>
-											<label value="Selection box style" control="selection-style"/>
+											<label value="&pref_selection_box_style;" control="selection-style"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox>
 											<spacer flex="1"/>
 											<menulist id="selection-style-M" width="80">
 												<menupopup>
-													<menuitem label="dotted" value="dotted"/>
-													<menuitem label="dashed" value="dashed"/>
-													<menuitem label="solid" value="solid"/>
+													<menuitem label="&pref_box_style_dotted;" value="dotted"/>
+													<menuitem label="&pref_box_style_dashed;" value="dashed"/>
+													<menuitem label="&pref_box_style_solid;" value="solid"/>
 												</menupopup>
 											</menulist>
 											<spacer flex="1"/>
@@ -555,16 +553,16 @@
 									<hbox>
 										<vbox width="120">
 											<spacer flex="1"/>
-											<label value="Links border style" control="links-style"/>
+											<label value="&pref_links_border_style;" control="links-style"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox>
 											<spacer flex="1"/>
 											<menulist id="links-style-M" width="80">
 												<menupopup>
-													<menuitem label="dotted" value="dotted"/>
-													<menuitem label="dashed" value="dashed"/>
-													<menuitem label="solid" value="solid"/>
+													<menuitem label="&pref_box_style_dotted;" value="dotted"/>
+													<menuitem label="&pref_box_style_dashed;" value="dashed"/>
+													<menuitem label="&pref_box_style_solid;" value="solid"/>
 												</menupopup>
 											</menulist>
 											<spacer flex="1"/>
@@ -582,7 +580,7 @@
 										
 										<vbox width="130">
 											<spacer flex="1"/>
-											<label value="Selection color" control="selection-color"/>
+											<label value="&pref_selection_color;" control="selection-color"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox width="70">
@@ -617,7 +615,7 @@
 									<hbox>
 										<vbox width="130">
 											<spacer flex="1"/>
-											<label value="Links color" control="links-color"/>
+											<label value="&pref_links_color;" control="links-color"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox width="70">
@@ -654,7 +652,7 @@
 									<hbox>
 										<vbox width="170">
 											<spacer flex="1"/>
-											<label value="Selection box width in pixels" control="selection-width"/>
+											<label value="&pref_selection_box_width;" control="selection-width"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox>
@@ -667,7 +665,7 @@
 									<hbox>
 										<vbox width="170">
 											<spacer flex="1"/>
-											<label value="Links border width in pixels" control="links-width"/>
+											<label value="&pref_links_border_width;" control="links-width"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox>
@@ -682,16 +680,16 @@
 									<hbox>
 										<vbox width="120">
 											<spacer flex="1"/>
-											<label value="Selection box style" control="selection-style"/>
+											<label value="&pref_selection_box_style;" control="selection-style"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox>
 											<spacer flex="1"/>
 											<menulist id="selection-style-L" width="80">
 												<menupopup>
-													<menuitem label="dotted" value="dotted"/>
-													<menuitem label="dashed" value="dashed"/>
-													<menuitem label="solid" value="solid"/>
+													<menuitem label="&pref_box_style_dotted;" value="dotted"/>
+													<menuitem label="&pref_box_style_dashed;" value="dashed"/>
+													<menuitem label="&pref_box_style_solid;" value="solid"/>
 												</menupopup>
 											</menulist>
 											<spacer flex="1"/>
@@ -701,16 +699,16 @@
 									<hbox>
 										<vbox width="120">
 											<spacer flex="1"/>
-											<label value="Links border style" control="links-style"/>
+											<label value="&pref_links_border_style;" control="links-style"/>
 											<spacer flex="1"/>
 										</vbox>
 										<vbox>
 											<spacer flex="1"/>
 											<menulist id="links-style-L" width="80">
 												<menupopup>
-													<menuitem label="dotted" value="dotted"/>
-													<menuitem label="dashed" value="dashed"/>
-													<menuitem label="solid" value="solid"/>
+													<menuitem label="&pref_box_style_dotted;" value="dotted"/>
+													<menuitem label="&pref_box_style_dashed;" value="dashed"/>
+													<menuitem label="&pref_box_style_solid;" value="solid"/>
 												</menupopup>
 											</menulist>
 											<spacer flex="1"/>
@@ -725,7 +723,7 @@
 					<spacer flex="1"/>
 					<spacer height="10"/>
 					<hbox>
-						<button label="Reset to defaults" oncommand="ResetToDefaults();"/>
+						<button label="&pref_button_reset;" oncommand="ResetToDefaults();"/>
 						<spacer flex="1"/>
 					</hbox>
 				</vbox>
@@ -735,13 +733,13 @@
 	
 	<hbox>
 		<spacer flex="1"/>
-		<label value="Multi Links Instructions" class="text-link" onmouseup="MultyLinksOptionsHelp()"/>
+		<label value="&pref_link_instructions;" class="text-link" onmouseup="MultyLinksOptionsHelp()"/>
 	</hbox>
 	
 	<hbox>
 		<!--<button label="Donate" oncommand="Donate();"/>-->
 		<spacer flex="1"/>
-		<button label="OK" oncommand="MultyLinksOptionsaccept(); window.close();"/>
-		<button label="Cancel" oncommand="window.close();"/>
+		<button label="&pref_button_ok;" oncommand="MultyLinksOptionsaccept(); window.close();"/>
+		<button label="&pref_button_cancel;" oncommand="window.close();"/>
 	</hbox>
 </dialog>

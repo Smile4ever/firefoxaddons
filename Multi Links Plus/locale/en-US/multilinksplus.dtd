@@ -1,0 +1,70 @@
+<!ENTITY pref_tab_general "General">
+<!ENTITY pref_tab_advanced "Advanced">
+<!ENTITY pref_tab_actions "Actions">
+<!ENTITY pref_tab_appearance "Appearance">
+
+<!ENTITY pref_show_statusbar_icon "Show statusbar icon">
+<!ENTITY pref_show_toolbar_icon "Show toolbar icon">
+<!ENTITY pref_smart_selection "Smart selection">
+<!ENTITY pref_smart_selection_description "Smart selection allows you to select only search results in search engines">
+<!ENTITY pref_open_as_related_tabs "Open new tabs next to the current tab"> <!-- new 2 -->
+<!ENTITY pref_key_multiple_selection "Key for multiple selection">
+<!ENTITY pref_key_multiple_selection_only "Select only if this key is pressed">
+<!ENTITY pref_max_number_links "Maximum number of links">
+<!ENTITY pref_scroll_speed "Scroll speed">
+
+<!ENTITY pref_copy_clipboard_always "Always copy to clipboard">
+<!ENTITY pref_copy_urls_titles "Copy urls with titles">
+<!ENTITY pref_copy_urls_only "Copy urls only">
+<!ENTITY pref_copy_titles_only "Copy titles only">
+<!ENTITY pref_copy_as_html "Copy as HTML">
+<!ENTITY pref_block_same_links "Block same links in one opening sequence">
+<!ENTITY pref_reverse_order "Reverse order of opening links">
+<!ENTITY pref_delay "Delay in opening links (seconds)">
+<!ENTITY pref_force_context_menu_cancellation "Force context menu cancellation">
+
+<!ENTITY pref_subtab_right "Right mouse button">
+<!ENTITY pref_subtab_middle "Middle mouse button">
+<!ENTITY pref_subtab_left "Left mouse button">
+
+<!ENTITY pref_noaction "No action">
+<!ENTITY pref_open_in_tabs "Open in new tabs">
+<!ENTITY pref_open_in_tabs_activate "Activate new opened tab">
+<!ENTITY pref_open_in_windows "Open in new windows">
+<!ENTITY pref_open_in_windows_activate "Activate new opened window">
+<!ENTITY pref_open_as_tabs_in_window "Open as tabs in new window">
+<!ENTITY pref_copy_to_clipboard "Copy to clipboard">
+<!ENTITY pref_add_to_bookmarks "Add to bookmarks">
+<!ENTITY pref_download_links "Download links">
+
+<!ENTITY pref_selection_color "Selection color">
+<!ENTITY pref_links_color "Links color">
+<!ENTITY pref_selection_box_width "Selection box width in pixels">
+<!ENTITY pref_links_border_width "Links border width in pixels">
+<!ENTITY pref_selection_box_style "Selection box style">
+<!ENTITY pref_links_border_style "Links border style">
+
+<!ENTITY pref_box_style_dotted "dotted">
+<!ENTITY pref_box_style_dashed "dashed">
+<!ENTITY pref_box_style_solid "solid">
+
+<!ENTITY pref_button_reset "Reset to defaults">
+<!ENTITY pref_button_ok "OK">
+<!ENTITY pref_button_cancel "Cancel">
+
+<!ENTITY pref_link_instructions "Multi Links Plus Instructions"> <!-- new 2 -->
+
+<!-- New -->
+<!ENTITY pref_icon_instructions "Instructions">
+<!ENTITY pref_icon_options "Options...">
+<!ENTITY pref_icon_tooltip "Enable or disable Multi Links Plus"> <!-- new 2 -->
+
+<!ENTITY pref_warning_max_links "Opening more than $NUMBER links may cause $BROWSERNAME to run extremely slow or crash. Are you sure?">
+<!ENTITY pref_warning_not_again "Don't show this message again">
+
+<!ENTITY pref_yes "Yes">
+<!ENTITY pref_no "No">
+<!ENTITY pref_cancel "Cancel"> <!-- new 2 -->
+<!ENTITY pref_move_selection "Move selection"> <!-- new 2 -->
+
+<!ENTITY pref_preferences_title "Multi Links Plus Preferences"> <!-- new 2 -->

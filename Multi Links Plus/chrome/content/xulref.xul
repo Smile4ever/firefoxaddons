@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
-<?xml-stylesheet type="text/css" href="chrome://global/skin/" ?>
-<?xml-stylesheet href="chrome://multilinks/skin/style.css"
-                 type="text/css"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css" ?>
+<?xml-stylesheet href="chrome://multilinks/skin/style.css" type="text/css"?>
+<!DOCTYPE window SYSTEM "chrome://multilinks/locale/multilinksplus.dtd">
 
 <overlay id="multilinks-overlay" 
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -18,65 +18,65 @@
         <statusbarpanel id="MultiLinks-StatusBar" 
 						context="MultiLinks-StatusContextMenu"
 						onmouseup="MultiLinks_Wrapper.TButton(event);">
-			<image 	id="multilinks-toolbarbutton"
-					tooltiptext="Multi Links"/>    
+			<image id="multilinks-toolbarbutton"
+					tooltiptext="Multi Links Plus"/>    
         </statusbarpanel>
         <menupopup id="MultiLinks-StatusContextMenu" >
             <menuitem id="MultiLinks-menuOptions"
-                label="Options..." 
+                label="&pref_icon_options;" 
 				oncommand="MultiLinks_Wrapper.Options();"/>
 			<menuseparator/>
 			<menuitem id="MultiLinks-menuInstr"
-                label="Instructions"
+                label="&pref_icon_instructions;"
 				oncommand="MultiLinks_Wrapper.Help();"/>
         </menupopup>
 		<menupopup id="MultiLinks-OperationContextMenu"
 					onpopuphidden = "MultiLinks_Wrapper.OpContext(0);"
 					onpopuphiding = "MultiLinks_Wrapper.OnContextHiding();">
             <menuitem id="MultiLinks-Op1"
-                label="Open in new Tabs" 
+                label="&pref_open_in_tabs;" 
 				oncommand="MultiLinks_Wrapper.OpContext(1);"/>
 			<menuitem id="MultiLinks-Op2"
-                label="Open in new Windows" 
+                label="&pref_open_in_windows;" 
 				oncommand="MultiLinks_Wrapper.OpContext(2);"/>
 			<menuitem id="MultiLinks-Op3"
-                label="Open as Tabs in new Window" 
+                label="&pref_open_as_tabs_in_window;" 
 				oncommand="MultiLinks_Wrapper.OpContext(3);"/>
-			<menu label="Copy to Clipboard" >
+			<menu label="&pref_copy_to_clipboard;" >
 				<menupopup
 					onpopuphidden = "MultiLinks_Wrapper.OpContext(-1);">
 					<menuitem id="MultiLinks-Op4-0"
-						label="Copy Urls and Titles" 
+						label="&pref_copy_urls_titles;" 
 						oncommand="MultiLinks_Wrapper.OpContext(4, 1);"/>
 					<menuitem id="MultiLinks-Op4-1"
-						label="Copy Urls only" 
+						label="&pref_copy_urls_only;" 
 						oncommand="MultiLinks_Wrapper.OpContext(4, 2);"/>
 					<menuitem id="MultiLinks-Op4-2"
-						label="Copy Titles only" 
+						label="&pref_copy_titles_only;" 
 						oncommand="MultiLinks_Wrapper.OpContext(4, 3);"/>
 					<menuitem id="MultiLinks-Op4-3"
-						label="Copy as HTML" 
+						label="&pref_copy_as_html;" 
 						oncommand="MultiLinks_Wrapper.OpContext(4, 4);"/>
 				</menupopup>
 			</menu>
 			<menuitem id="MultiLinks-Op5"
-                label="Add to Bookmarks" 
+                label="&pref_add_to_bookmarks;" 
 				oncommand="MultiLinks_Wrapper.OpContext(5);"/>
 			<menuitem id="MultiLinks-Op6"
-                label="Download Links" 
+                label="&pref_download_links;" 
 				oncommand="MultiLinks_Wrapper.OpContext(6);"/>
 			<menuseparator/>
 			<menuitem id="MultiLinks-MoveSelection"
-                label="Move selection" 
+                label="&pref_move_selection;" 
 				oncommand="MultiLinks_Wrapper.StartMoveSelection();"/>
 			<menuitem id="MultiLinks-OpCancel"
-                label="Cancel" 
+                label="&pref_cancel;" 
 				oncommand="MultiLinks_Wrapper.OpContext(0);"/>
         </menupopup>
     </statusbar>
 	<toolbarpalette id="BrowserToolbarPalette">
 		<toolbarbutton id="multilinks-toolbarbutton2" class="toolbarbutton-1"
-		label="Multi Links Plus" tooltiptext="Enable or disable Multi Links Plus"
+		label="Multi Links Plus" tooltiptext="&pref_icon_tooltip;"
 		oncommand="if(event.target == this) MultiLinks_Wrapper.TButton(event);"
 		context="MultiLinks-StatusContextMenu"
 		/>

@@ -2,6 +2,7 @@
 
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://multilinks/skin/skin.css" type="text/css"?>
+<!DOCTYPE window SYSTEM "chrome://multilinks/locale/multilinksplus.dtd">
 
 <dialog id="MultiLinks-Confirm" title="Multi Links Plus"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
@@ -31,13 +32,13 @@
   <spacer height="3"/>
   <checkbox id="show-again"
 			style="padding-left:120px"
-			label="Don't show this message again" 
+			label="&pref_warning_not_again;" 
 			checked="false"/>
   <spacer height="10"/>
   <hbox>
     <spacer flex="1" />
-    <button id="bt_yes" label="Yes" oncommand="MLClose('true');"/>
-	<button id="bt_no" label="No" oncommand="MLClose('false');"/>	
+    <button id="bt_yes" label="&pref_yes;" oncommand="MLClose('true');"/>
+	<button id="bt_no" label="&pref_no;" oncommand="MLClose('false');"/>	
     <spacer flex="1" />
   </hbox>
         

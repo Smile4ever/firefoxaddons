@@ -138,7 +138,7 @@ MultyLinksOptionsaccept = function()
 	if(mainWindow.MultiLinks_Wrapper)
 		mainWindow.MultiLinks_Wrapper.InitIcon();
 	
-	var relatedTabs = document.getElementById("open-as-related-tabs")
+	var relatedTabs = document.getElementById("open-as-related-tabs");
 	DataManager.SetOpenAsRelatedTabs(relatedTabs.checked);
 	
 	var smart = document.getElementById("smart-selection");
@@ -328,6 +328,12 @@ ResetToDefaults = function()
 		case 0:
 			var showi = document.getElementById("show-statusbaricon");
 			showi.checked = true;
+			
+			var showti = document.getElementById("show-toolbaricon");
+			showti.checked = true;
+			
+			var relatedTabs = document.getElementById("open-as-related-tabs")
+			relatedTabs.checked = true;
 			
 			var smart = document.getElementById("smart-selection");
 			smart.checked = true;

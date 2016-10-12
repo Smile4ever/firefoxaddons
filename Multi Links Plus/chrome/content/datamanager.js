@@ -379,7 +379,7 @@ MultiLinks_DataManager = function() {
    this.GetOpenAsRelatedTabs = function() {
         var param = "OpenAsRelatedTabs";
 		if (this.getPrefs().prefHasUserValue(param) == false)
-			this.getPrefs().setBoolPref(param, false);
+			this.getPrefs().setBoolPref(param, true);
 		return this.getPrefs().getBoolPref(param);
    }
 

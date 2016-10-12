@@ -146,7 +146,7 @@
 				var delay = MultiLinks_Wrapper.DataManager.GetDelay();
 				var awurls = wurls.split("\n");
 				setTimeout(MultiLinks_Wrapper.OpenInNewTabsTO, delay * 1000, awurls);
-			}
+			}			
 		} catch (err) {
 			MultiLinks_Wrapper.OnError(err);
 			return;
@@ -662,9 +662,16 @@
 		var brandBundle = bundleSvc.createBundle("chrome://branding/locale/brand.properties");
 		var brandShortName = brandBundle.GetStringFromName("brandShortName");
 		var ret = new Object();
+		
+		var localeBundle = bundleSvc.createBundle("chrome://multilinks/locale/multilinksplus.properties");
+		var localeDescription = localeBundle.GetStringFromName("pref_warning_max_links");
+
+		// "Opening more than " + MultiLinks_Wrapper.DataManager.GetMaxLNumber() + " links may cause " + brandShortName + " to run extremely slow or crash. Are you sure?"
+		var maxNumber = MultiLinks_Wrapper.DataManager.GetMaxLNumber();
+		
 		window.openDialog("chrome://multilinks/content/confirm.xul", 
-							"Multi Links", "chrome, modal, centerscreen", 
-							"Opening more than " + MultiLinks_Wrapper.DataManager.GetMaxLNumber() + " links may cause " + brandShortName + " to run extremely slow or crash. Are you sure?", ret);
+							"Multi Links Plus", "chrome, modal, centerscreen", 
+							localeDescription.replace("$NUMBER", maxNumber).replace("$BROWSERNAME", brandShortName), ret);
 		if(ret.value == 'true')
 			return true;
 		return false;
