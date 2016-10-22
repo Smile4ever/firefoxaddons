@@ -363,27 +363,88 @@ MultiLinks_DataManager = function() {
         this.getPrefs().setCharPref("TabsInNewWindowUrls", v);
     }
    
-   // ForceContextMenuCancellation
-   this.GetForceContextMenuCancellation = function() {
+	// ForceContextMenuCancellation
+	this.GetForceContextMenuCancellation = function() {
         var param = "ForceContextMenuCancellation";
 		if (this.getPrefs().prefHasUserValue(param) == false)
 			this.getPrefs().setBoolPref(param, false);
 		return this.getPrefs().getBoolPref(param);
-   }
+	}
 
-   this.SetForceContextMenuCancellation = function(v) {
-       this.getPrefs().setBoolPref("ForceContextMenuCancellation", v);
-   }
+	this.SetForceContextMenuCancellation = function(v) {
+		this.getPrefs().setBoolPref("ForceContextMenuCancellation", v);
+	}
    
-   // OpenAsRelatedTabs
-   this.GetOpenAsRelatedTabs = function() {
+	// ContextMenuCancellationHTML
+	this.GetContextMenuCancellationHTML = function(){
+		var param = "ContextMenuCancellationHTML";
+		if (this.getPrefs().prefHasUserValue(param) == false)
+			this.getPrefs().setBoolPref(param, true);
+		return this.getPrefs().getBoolPref(param);
+	}
+	
+	// ContextMenuCancellationTextArea
+	this.GetContextMenuCancellationTextArea = function(){
+		var param = "ContextMenuCancellationTextArea";
+		if (this.getPrefs().prefHasUserValue(param) == false)
+			this.getPrefs().setBoolPref(param, true);
+		return this.getPrefs().getBoolPref(param);
+	}
+	
+	// ContextMenuCancellationInput
+	this.GetContextMenuCancellationInput = function(){
+		var param = "ContextMenuCancellationInput";
+		if (this.getPrefs().prefHasUserValue(param) == false)
+			this.getPrefs().setBoolPref(param, true);
+		return this.getPrefs().getBoolPref(param);
+	}
+   
+	// OpenAsRelatedTabs
+	this.GetOpenAsRelatedTabs = function() {
         var param = "OpenAsRelatedTabs";
 		if (this.getPrefs().prefHasUserValue(param) == false)
 			this.getPrefs().setBoolPref(param, true);
 		return this.getPrefs().getBoolPref(param);
-   }
+	}
 
-   this.SetOpenAsRelatedTabs = function(v) {
-       this.getPrefs().setBoolPref("OpenAsRelatedTabs", v);
-   }
+	this.SetOpenAsRelatedTabs = function(v) {
+		this.getPrefs().setBoolPref("OpenAsRelatedTabs", v);
+	}
+   
+	// EnableAlphanumericSorting
+	this.GetEnableAlphanumericSorting = function(){
+		var param = "EnableAlphanumericSorting";
+		if (this.getPrefs().prefHasUserValue(param) == false)
+			this.getPrefs().setBoolPref(param, false);
+		return this.getPrefs().getBoolPref(param);
+	}
+   
+	this.SetEnableAlphanumericSorting = function(v){
+		this.getPrefs().setBoolPref("EnableAlphanumericSorting", v);
+	}
+   
+	// Minimum text length
+	this.GetMinimumTextLength = function() {
+        var param = "MinimumTextLength";
+		if (this.getPrefs().prefHasUserValue(param) == false)
+			this.getPrefs().setBoolPref(param, false);
+		return this.getPrefs().getBoolPref(param);
+	}
+
+	this.SetMinimumTextLength = function(v) {
+		this.getPrefs().setBoolPref("MinimumTextLength", v);
+	}
+   
+	// Minimum text length value
+	this.GetMinimumTextLengthValue = function() {
+        var param = "MinimumTextLengthValue";
+		if (this.getPrefs().prefHasUserValue(param) == false)
+            this.getPrefs().setIntPref(param, 5);
+        return this.getPrefs().getIntPref(param);
+	}
+
+	this.SetMinimumTextLengthValue = function(w) {
+		this.getPrefs().setIntPref("MinimumTextLengthValue", w);
+	}
+   
 }

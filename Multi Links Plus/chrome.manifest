@@ -1,4 +1,6 @@
 locale multilinks en-US locale/en-US/
+locale multilinks nl-NL locale/nl-NL/
+locale multilinks zh-CN locale/zh-CN/
 
 content	multilinks chrome/content/
 overlay	chrome://browser/content/browser.xul	chrome://multilinks/content/xulref.xul

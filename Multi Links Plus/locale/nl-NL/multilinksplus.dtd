@@ -1,0 +1,73 @@
+<!ENTITY pref_tab_general "Algemeen">
+<!ENTITY pref_tab_advanced "Geavanceerd">
+<!ENTITY pref_tab_actions "Acties">
+<!ENTITY pref_tab_appearance "Uiterlijk">
+
+<!ENTITY pref_show_statusbar_icon "Toon statusbalkicoon">
+<!ENTITY pref_show_toolbar_icon "Toon werkbalkicoon">
+<!ENTITY pref_smart_selection "Slimme selectie">
+<!ENTITY pref_smart_selection_description "Slimme selectie zorgt ervoor dat enkel zoekresultaten in zoekmachines geselecteerd worden">
+<!ENTITY pref_open_as_related_tabs "Open nieuwe tabbladen naast het huidige tabblad">
+<!ENTITY pref_enable_alphanumeric_sorting "Alfanumeriek sorteren op URL">
+<!ENTITY pref_minimum_text_length "Minimum tekstlengte">
+<!ENTITY pref_minimum_text_length_description "Minimum tekstlengte zorgt ervoor dat links waarvan de tekst korter is dan het ingestelde minimum niet geopend worden.">
+<!ENTITY pref_key_multiple_selection "Toets voor meerdere selecties">
+<!ENTITY pref_key_multiple_selection_only "Selecteer enkel indien deze toets is ingedrukt">
+<!ENTITY pref_max_number_links "Maximum aantal links">
+<!ENTITY pref_scroll_speed "Scrollsnelheid">
+
+<!ENTITY pref_copy_clipboard_always "Altijd kopiëren naar klembord">
+<!ENTITY pref_copy_urls_titles "Kopieer urls met titels">
+<!ENTITY pref_copy_urls_only "Kopieer enkel urls">
+<!ENTITY pref_copy_titles_only "Kopieer enkel titels">
+<!ENTITY pref_copy_as_html "Kopieer als HTML">
+<!ENTITY pref_block_same_links "Voorkom meerdere keren openen van dezelfde links binnen één selectie">
+<!ENTITY pref_reverse_order "Links openen in omgekeerde volgorde">
+<!ENTITY pref_delay "Vertraging bij links openen (seconden)">
+<!ENTITY pref_force_context_menu_cancellation "Forceer context menu annulering">
+
+<!ENTITY pref_subtab_right "Rechtse muisknop">
+<!ENTITY pref_subtab_middle "Middelste muisknop">
+<!ENTITY pref_subtab_left "Linkse muisknop">
+
+<!ENTITY pref_noaction "Geen actie">
+<!ENTITY pref_open_in_tabs "Openen in nieuwe tabbladen">
+<!ENTITY pref_open_in_tabs_activate "Activeer nieuw geopende tabbladen">
+<!ENTITY pref_open_in_windows "Openen in nieuwe vensters">
+<!ENTITY pref_open_in_windows_activate "Activeer nieuw geopend venster">
+<!ENTITY pref_open_as_tabs_in_window "Openen als tabbladen in nieuw venster">
+<!ENTITY pref_copy_to_clipboard "Kopieer naar klembord">
+<!ENTITY pref_add_to_bookmarks "Toevoegen aan bladwijzers">
+<!ENTITY pref_download_links "Links downloaden">
+
+<!ENTITY pref_selection_color "Selectiekleur">
+<!ENTITY pref_links_color "Linkkleur">
+<!ENTITY pref_selection_box_width "Breedte van selectievak in pixels">
+<!ENTITY pref_links_border_width "Breedte van linkrand in pixels">
+<!ENTITY pref_selection_box_style "Stijl van selectievak">
+<!ENTITY pref_links_border_style "Stijl van linkrand">
+
+<!ENTITY pref_box_style_dotted "met puntjes">
+<!ENTITY pref_box_style_dashed "met streepjes">
+<!ENTITY pref_box_style_solid "vol">
+
+<!ENTITY pref_button_reset "Herstellen naar standaardinstellingen">
+<!ENTITY pref_donate "Doneren">
+<!ENTITY pref_button_ok "OK">
+<!ENTITY pref_button_cancel "Annuleren">
+
+<!ENTITY pref_link_instructions "Multi Links Plus instructies">
+
+<!ENTITY pref_icon_instructions "Instructies">
+<!ENTITY pref_icon_options "Opties...">
+<!ENTITY pref_icon_tooltip "Zet Multi Links Plus aan of uit">
+
+<!ENTITY pref_warning_max_links "Het openen van meer dan $NUMBER links kan $BROWSERNAME extreem traag doen reageren of crashen. Wilt u doorgaan?">
+<!ENTITY pref_warning_not_again "Toon dit bericht niet opnieuw">
+
+<!ENTITY pref_yes "Ja">
+<!ENTITY pref_no "Nee">
+<!ENTITY pref_cancel "Annuleren">
+<!ENTITY pref_move_selection "Selectie verplaatsen">
+
+<!ENTITY pref_preferences_title "Multi Links Plus voorkeuren">

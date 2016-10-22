@@ -57,16 +57,12 @@
 			alert("MultiLinks_Wrapper: " + err);
 		this.err = true;
 	},
-	
-	TButton: function(aEvent)
-	{
-		/*if(aEvent.which != 1)
-			return;*/
-
+	UpdateButtons: function(inverse){
 		var tb = document.getElementById("multilinks-toolbarbutton");
 		var tb2 = document.getElementById("multilinks-toolbarbutton2");
 		var checked = MultiLinks_Wrapper.DataManager.GetActivated();
-		checked = !checked;
+		if(inverse)
+			checked = !checked;
 
 		if(checked){
 			if(tb)
@@ -81,7 +77,15 @@
 				tb2.style.setProperty("list-style-image", "url(chrome://multilinks/skin/ml.png)", "");
 		}
 		
-		MultiLinks_Wrapper.DataManager.SetActivated(checked);
+		if(inverse)
+			MultiLinks_Wrapper.DataManager.SetActivated(checked);
+	},
+	TButton: function(aEvent)
+	{
+		/*if(aEvent.which != 1)
+			return;*/
+		if(aEvent.button == 0)
+			this.UpdateButtons(true);
 	},
 		
     Init: function() 
@@ -104,7 +108,7 @@
 	},
 	
 	//init events listeners
-    InitEvents: function() 
+    InitEvents: function()
 	{
 		try
 		{
@@ -125,20 +129,9 @@
 			MultiLinks_Wrapper.DataManager = new MultiLinks_DataManager();
 			MultiLinks_Wrapper.LinksManager = new MultiLinks_LinksManager();
 			
-			var tb = document.getElementById("multilinks-toolbarbutton");
-			var tb2 = document.getElementById("multilinks-toolbarbutton2");
-			var checked = MultiLinks_Wrapper.DataManager.GetActivated();
-			if(checked){
-				tb.style.setProperty("list-style-image", "url(chrome://multilinks/skin/mlc.png)", "");
-				tb2.style.setProperty("list-style-image", "url(chrome://multilinks/skin/mlc.png)", "");
-			}
-			else{
-				tb.style.setProperty("list-style-image", "url(chrome://multilinks/skin/ml.png)", "");
-				tb2.style.setProperty("list-style-image", "url(chrome://multilinks/skin/ml.png)", "");
-			}
-						
+			MultiLinks_Wrapper.UpdateButtons(false);
 			MultiLinks_Wrapper.InitIcon();
-			
+
 			var wurls = MultiLinks_Wrapper.DataManager.GetTabsInNewWindowUrls();
 			MultiLinks_Wrapper.DataManager.SetTabsInNewWindowUrls("");
 			if(wurls != "")
@@ -163,8 +156,12 @@
 				
 		var tb2 = document.getElementById("multilinks-toolbarbutton2");
 		// The button wasn't dragged onto the toolbar
-		if(tb2 == null)
-			return;
+		if(tb2 == null){
+			this.installButton("nav-bar", "multilinks-toolbarbutton2");
+			this.UpdateButtons(false);
+			// return;
+		}
+			
 		if(MultiLinks_Wrapper.DataManager.GetShowToolbarIcon())
 			tb2.style.setProperty("display", "", "");
 		else
@@ -174,7 +171,9 @@
 	{
 		getBrowser().selectedTab = getBrowser().addTab("https://github.com/Smile4ever/firefoxaddons/tree/master/Multi%20Links%20Plus/README.md");
 	},
-	
+	Donate: function(){
+		getBrowser().selectedTab = getBrowser().addTab("https://www.paypal.me/Smile4ever/5");
+	},
 	OnShowPopup: function(aEvent)
 	{
 		//MultiLinks_Wrapper.debug("Show popup" + aEvent.originalTarget);
@@ -395,30 +394,35 @@
 			if(MultiLinks_Wrapper.DataManager.GetActivated() != true)
 				return;
 			
-			var parent = aEvent.originalTarget;
-			while(parent.parentNode)
-				parent = parent.parentNode;
-			
-			if(parent.toString().indexOf("HTML") == -1){
-				MultiLinks_Wrapper.debug("no html");
+			if(MultiLinks_Wrapper.DataManager.GetContextMenuCancellationHTML()){
+				var parent = aEvent.originalTarget;
+				while(parent.parentNode)
+					parent = parent.parentNode;
 				
-				/*try{
-					MultiLinks_Wrapper.LinksManager.StopSelect(gBrowser.contentDocument, false);
-				}catch(e){
-					MultiLinks_Wrapper.debug("body is null?? - 1");
-				}*/
-				return;
+				if(parent.toString().indexOf("HTML") == -1){
+					MultiLinks_Wrapper.debug("no html");
+					
+					/*try{
+						MultiLinks_Wrapper.LinksManager.StopSelect(gBrowser.contentDocument, false);
+					}catch(e){
+						MultiLinks_Wrapper.debug("body is null?? - 1");
+					}*/
+					return;
+				}
 			}
 			
-			if(aEvent.target &&	(aEvent.target.tagName.toUpperCase() == "TEXTAREA" || aEvent.target.tagName.toUpperCase() == "INPUT")){
-				/*try{
-					MultiLinks_Wrapper.LinksManager.StopSelect(gBrowser.contentDocument, false);
-				}catch(e){
-					MultiLinks_Wrapper.debug("body is null?? - 2");
-				}*/
-				return;
+			if(MultiLinks_Wrapper.DataManager.GetContextMenuCancellationTextArea()){
+				if(aEvent.target &&	(aEvent.target.tagName.toUpperCase() == "TEXTAREA")){
+					return;
+				}
 			}
 			
+			if(MultiLinks_Wrapper.DataManager.GetContextMenuCancellationInput()){
+				if(aEvent.target &&	(aEvent.target.tagName.toUpperCase() == "INPUT")){
+					return;
+				}
+			}
+				
 			if(MultiLinks_Wrapper.DataManager.GetForceContextMenuCancellation() == true){
 				if(aEvent.target && (
 						aEvent.target.tagName == "a" ||
@@ -754,7 +758,35 @@
 		
 		selection.style.setProperty("cursor", "move", "");
 		//MultiLinks_Wrapper.debug("StartMoveSelection");
-	}
+	},
+	/**
+	 * Installs the toolbar button with the given ID into the given
+	 * toolbar, if it is not already present in the document.
+	 *
+	 * @param {string} toolbarId The ID of the toolbar to install to.
+	 * @param {string} id The ID of the button to install.
+	 * @param {string} afterId The ID of the element to insert after. @optional
+	 */
+	installButton: function(toolbarId, id, afterId) {
+		if (!document.getElementById(id)) {
+			var toolbar = document.getElementById(toolbarId);
+
+			// If no afterId is given, then append the item to the toolbar
+			var before = null;
+			if (afterId) {
+				let elem = document.getElementById(afterId);
+				if (elem && elem.parentNode == toolbar)
+					before = elem.nextElementSibling;
+			}
+
+			toolbar.insertItem(id, before);
+			toolbar.setAttribute("currentset", toolbar.currentSet);
+			document.persist(toolbar.id, "currentset");
+
+			if (toolbarId == "addon-bar")
+				toolbar.collapsed = false;
+		}
+	}	
 }
 
 MultiLinks_Wrapper.Init();

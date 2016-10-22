@@ -7,7 +7,10 @@
 <!ENTITY pref_show_toolbar_icon "Show toolbar icon">
 <!ENTITY pref_smart_selection "Smart selection">
 <!ENTITY pref_smart_selection_description "Smart selection allows you to select only search results in search engines">
-<!ENTITY pref_open_as_related_tabs "Open new tabs next to the current tab"> <!-- new 2 -->
+<!ENTITY pref_open_as_related_tabs "Open new tabs next to the current tab">
+<!ENTITY pref_enable_alphanumeric_sorting "Sort alphanumerically by URL"><!-- new -->
+<!ENTITY pref_minimum_text_length "Minimum text length"><!-- new -->
+<!ENTITY pref_minimum_text_length_description "Ensures that only links with a text length greater or equal to the set minimum are opened."><!-- new -->
 <!ENTITY pref_key_multiple_selection "Key for multiple selection">
 <!ENTITY pref_key_multiple_selection_only "Select only if this key is pressed">
 <!ENTITY pref_max_number_links "Maximum number of links">
@@ -49,22 +52,22 @@
 <!ENTITY pref_box_style_solid "solid">
 
 <!ENTITY pref_button_reset "Reset to defaults">
+<!ENTITY pref_donate "Donate"><!-- new -->
 <!ENTITY pref_button_ok "OK">
 <!ENTITY pref_button_cancel "Cancel">
 
-<!ENTITY pref_link_instructions "Multi Links Plus Instructions"> <!-- new 2 -->
+<!ENTITY pref_link_instructions "Multi Links Plus Instructions">
 
-<!-- New -->
 <!ENTITY pref_icon_instructions "Instructions">
 <!ENTITY pref_icon_options "Options...">
-<!ENTITY pref_icon_tooltip "Enable or disable Multi Links Plus"> <!-- new 2 -->
+<!ENTITY pref_icon_tooltip "Enable or disable Multi Links Plus">
 
 <!ENTITY pref_warning_max_links "Opening more than $NUMBER links may cause $BROWSERNAME to run extremely slow or crash. Are you sure?">
 <!ENTITY pref_warning_not_again "Don't show this message again">
 
 <!ENTITY pref_yes "Yes">
 <!ENTITY pref_no "No">
-<!ENTITY pref_cancel "Cancel"> <!-- new 2 -->
-<!ENTITY pref_move_selection "Move selection"> <!-- new 2 -->
+<!ENTITY pref_cancel "Cancel">
+<!ENTITY pref_move_selection "Move selection">
 
-<!ENTITY pref_preferences_title "Multi Links Plus Preferences"> <!-- new 2 -->
+<!ENTITY pref_preferences_title "Multi Links Plus Preferences">

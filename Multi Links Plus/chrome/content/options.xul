@@ -44,6 +44,24 @@
 					<checkbox id="open-as-related-tabs"
 								label="&pref_open_as_related_tabs;" 
 								checked="true"/>
+								
+					<checkbox id="enable-alphanumeric-sorting"
+								label="&pref_enable_alphanumeric_sorting;" 
+								checked="true"/>
+								
+					<hbox>
+						<checkbox id="minimum-text-length"
+									label="&pref_minimum_text_length;" 
+									checked="true"/>
+						
+						<textbox id="minimum-text-length-value" type="number" min="0" max="20" width="50" height="18"/>
+					</hbox>
+					
+					<vbox style="margin-left:40px;max-width:320px;">
+						<description>
+							&pref_minimum_text_length_description;
+						</description>
+					</vbox>	
 					
 					<spacer height="10"/>
 					
@@ -51,7 +69,7 @@
 								label="&pref_smart_selection;" 
 								checked="true"/>
 								
-					<vbox style="margin-left:40px;max-width:280px;">
+					<vbox style="margin-left:40px;max-width:320px;">
 						<description>
 							&pref_smart_selection_description;
 						</description>
@@ -312,7 +330,7 @@
 										<vbox>
 											<spacer flex="1"/>
 											<textbox id="selection-tcolor-R" 
-														width="60" 
+														width="70" 
 														maxlength="6" 
 														style="margin-left:1px"
 														oninput='MultyLinksOptionsInputSColor("R")'/>
@@ -347,7 +365,7 @@
 										<vbox>
 											<spacer flex="1"/>
 											<textbox id="links-tcolor-R" 
-													width="60" 
+													width="70" 
 													maxlength="6" 
 													style="margin-left:1px"
 													oninput="MultyLinksOptionsInputLColor()"/>
@@ -393,7 +411,7 @@
 										</vbox>
 										<vbox>
 											<spacer flex="1"/>
-											<menulist id="selection-style-R" width="80">
+											<menulist id="selection-style-R" width="150">
 												<menupopup>
 													<menuitem label="&pref_box_style_dotted;" value="dotted"/>
 													<menuitem label="&pref_box_style_dashed;" value="dashed"/>
@@ -412,7 +430,7 @@
 										</vbox>
 										<vbox>
 											<spacer flex="1"/>
-											<menulist id="links-style-R" width="80">
+											<menulist id="links-style-R" width="150">
 												<menupopup>
 													<menuitem label="&pref_box_style_dotted;" value="dotted"/>
 													<menuitem label="&pref_box_style_dashed;" value="dashed"/>
@@ -458,7 +476,7 @@
 										<vbox>
 											<spacer flex="1"/>
 											<textbox id="selection-tcolor-M" 
-														width="60" 
+														width="70" 
 														maxlength="6" 
 														style="margin-left:1px"
 														oninput='MultyLinksOptionsInputSColor("M")'/>
@@ -493,7 +511,7 @@
 										<vbox>
 											<spacer flex="1"/>
 											<textbox id="links-tcolor-M" 
-													width="60" 
+													width="70" 
 													maxlength="6" 
 													style="margin-left:1px"
 													oninput="MultyLinksOptionsInputLColor()"/>
@@ -539,7 +557,7 @@
 										</vbox>
 										<vbox>
 											<spacer flex="1"/>
-											<menulist id="selection-style-M" width="80">
+											<menulist id="selection-style-M" width="150">
 												<menupopup>
 													<menuitem label="&pref_box_style_dotted;" value="dotted"/>
 													<menuitem label="&pref_box_style_dashed;" value="dashed"/>
@@ -558,7 +576,7 @@
 										</vbox>
 										<vbox>
 											<spacer flex="1"/>
-											<menulist id="links-style-M" width="80">
+											<menulist id="links-style-M" width="150">
 												<menupopup>
 													<menuitem label="&pref_box_style_dotted;" value="dotted"/>
 													<menuitem label="&pref_box_style_dashed;" value="dashed"/>
@@ -604,7 +622,7 @@
 										<vbox>
 											<spacer flex="1"/>
 											<textbox id="selection-tcolor-L" 
-														width="60" 
+														width="70" 
 														maxlength="6" 
 														style="margin-left:1px"
 														oninput='MultyLinksOptionsInputSColor("L")'/>
@@ -639,7 +657,7 @@
 										<vbox>
 											<spacer flex="1"/>
 											<textbox id="links-tcolor-L" 
-													width="60" 
+													width="70" 
 													maxlength="6" 
 													style="margin-left:1px"
 													oninput="MultyLinksOptionsInputLColor()"/>
@@ -685,7 +703,7 @@
 										</vbox>
 										<vbox>
 											<spacer flex="1"/>
-											<menulist id="selection-style-L" width="80">
+											<menulist id="selection-style-L" width="150">
 												<menupopup>
 													<menuitem label="&pref_box_style_dotted;" value="dotted"/>
 													<menuitem label="&pref_box_style_dashed;" value="dashed"/>
@@ -704,7 +722,7 @@
 										</vbox>
 										<vbox>
 											<spacer flex="1"/>
-											<menulist id="links-style-L" width="80">
+											<menulist id="links-style-L" width="150">
 												<menupopup>
 													<menuitem label="&pref_box_style_dotted;" value="dotted"/>
 													<menuitem label="&pref_box_style_dashed;" value="dashed"/>
@@ -737,7 +755,7 @@
 	</hbox>
 	
 	<hbox>
-		<!--<button label="Donate" oncommand="Donate();"/>-->
+		<button label="&pref_donate;" oncommand="Donate();"/>
 		<spacer flex="1"/>
 		<button label="&pref_button_ok;" oncommand="MultyLinksOptionsaccept(); window.close();"/>
 		<button label="&pref_button_cancel;" oncommand="window.close();"/>

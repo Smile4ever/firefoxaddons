@@ -11,6 +11,15 @@ MultyLinksOptionsLoadGeneral = function()
 	var relatedTabs = document.getElementById("open-as-related-tabs")
 	relatedTabs.checked = DataManager.GetOpenAsRelatedTabs();
 	
+	var alphanumericSorting = document.getElementById("enable-alphanumeric-sorting");
+	alphanumericSorting.checked = DataManager.GetEnableAlphanumericSorting();
+	
+	var minimumTextLength = document.getElementById("minimum-text-length");
+	minimumTextLength.checked = DataManager.GetMinimumTextLength();
+
+	var minimumTextLengthValue = document.getElementById("minimum-text-length-value");
+	minimumTextLengthValue.value = DataManager.GetMinimumTextLengthValue();
+
 	var smart = document.getElementById("smart-selection");
 	smart.checked = DataManager.GetSmart();
 	
@@ -140,6 +149,15 @@ MultyLinksOptionsaccept = function()
 	
 	var relatedTabs = document.getElementById("open-as-related-tabs");
 	DataManager.SetOpenAsRelatedTabs(relatedTabs.checked);
+	
+	var alphanumericSorting = document.getElementById("enable-alphanumeric-sorting");
+	DataManager.SetEnableAlphanumericSorting(alphanumericSorting.checked);
+	
+	var minimumTextLength = document.getElementById("minimum-text-length");
+	DataManager.SetMinimumTextLength(minimumTextLength.checked);
+
+	var minimumTextLengthValue = document.getElementById("minimum-text-length-value");
+	DataManager.SetMinimumTextLengthValue(minimumTextLengthValue.value);
 	
 	var smart = document.getElementById("smart-selection");
 	DataManager.SetSmart(smart.checked);
@@ -332,8 +350,17 @@ ResetToDefaults = function()
 			var showti = document.getElementById("show-toolbaricon");
 			showti.checked = true;
 			
-			var relatedTabs = document.getElementById("open-as-related-tabs")
+			var relatedTabs = document.getElementById("open-as-related-tabs");
 			relatedTabs.checked = true;
+			
+			var alphanumericSorting = document.getElementById("enable-alphanumeric-sorting");
+			alphanumericSorting.checked = false;
+			
+			var minimumTextLength = document.getElementById("minimum-text-length");
+			minimumTextLength.checked = false;
+
+			var minimumTextLengthValue = document.getElementById("minimum-text-length-value");
+			minimumTextLengthValue.value = 5;
 			
 			var smart = document.getElementById("smart-selection");
 			smart.checked = true;
@@ -419,4 +446,13 @@ ResetToDefaults = function()
 			}
 			break;
 	}
+}
+
+Donate = function()
+{
+	var mainWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"].
+			getService(Components.interfaces.nsIWindowMediator).
+			getMostRecentWindow("navigator:browser");
+	mainWindow.getBrowser().selectedTab = mainWindow.getBrowser().addTab("https://www.paypal.me/Smile4ever/5");
+	window.close();
 }

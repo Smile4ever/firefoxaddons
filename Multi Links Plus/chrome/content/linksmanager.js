@@ -85,6 +85,16 @@ MultiLinks_LinksManager = function()
 			this.aLinks[i] = this.aLinks[i].wrappedJSObject;*/
 			
 		this.on = true;
+		
+		try{
+			if(MultiLinks_Wrapper.LinksManager.aLinks.length == 0){
+				 // manage could be true also, but then we need op and cp which we don't have
+				 // this might not work, but we'll try..
+				this.StopSelect(doc, false, null, null);
+			}
+		}catch(ex){
+			MultiLinks_Wrapper.OnError(ex);
+		}
 	}
 	
 	this.getLinksContainer = function(link)
@@ -887,6 +897,29 @@ MultiLinks_LinksManager = function()
 				}
 			}
 			
+			// It would be nice to do the reverse links here, but all functions will need to be able to handle simple arrays instead of a tags.
+			// Therefore, copy to clipboard wouldn't work anymore
+			
+			// Sort
+			if(MultiLinks_Wrapper.DataManager.GetEnableAlphanumericSorting()){
+				links.sort(this.sortAlphaNum);
+			}
+
+			// GetMinimumTextLengthValue
+			if(MultiLinks_Wrapper.DataManager.GetMinimumTextLength()){
+				var index = 0;
+				var newLinks = new Array();
+				var minimumTextLengthValue = MultiLinks_Wrapper.DataManager.GetMinimumTextLengthValue();
+				for(index = 0; index < links.length; index++){
+					if(links[index].text != undefined){
+						if(links[index].text.length >= minimumTextLengthValue){
+							newLinks.push(links[index]);
+						}
+					}
+				}
+				links = newLinks;
+			}
+			
 			if(!op)
 				op = MultiLinks_Wrapper.DataManager.GetOperation(MultiLinks_Wrapper.OPKey);
 			
@@ -906,7 +939,7 @@ MultiLinks_LinksManager = function()
 			{
 				this.CopyToClipboard(links, MultiLinks_Wrapper.DataManager.GetCopyUrlsWithTitles("") + 1);
 			}
-			
+						
 			switch(op)
 			{
 				case 1:
@@ -933,8 +966,32 @@ MultiLinks_LinksManager = function()
 			MultiLinks_Wrapper.OnError(err);
 		}	
 	}
-	
-	
+		
+	this.sortAlphaNum = function (a,b) {
+		var AInt = parseInt(a.href, 10);
+		var BInt = parseInt(b.href, 10);
+		
+		var reA = /[^a-zA-Z]/g;
+		var reN = /[^0-9]/g;
+		
+		if(isNaN(AInt) && isNaN(BInt)){
+			var aA = a.href.replace(reA, "");
+			var bA = b.href.replace(reA, "");
+			if(aA === bA) {
+				var aN = parseInt(a.href.replace(reN, ""), 10);
+				var bN = parseInt(b.href.replace(reN, ""), 10);
+				return aN === bN ? 0 : aN > bN ? 1 : -1;
+			} else {
+				return aA > bA ? 1 : -1;
+			}
+		}else if(isNaN(AInt)){//A is not an Int
+			return 1;//to make alphanumeric sort first return -1 here
+		}else if(isNaN(BInt)){//B is not an Int
+			return -1;//to make alphanumeric sort first return 1 here
+		}else{
+			return AInt > BInt ? 1 : -1;
+		}
+	}
 	
 	this.OpenInNewTabs = function(links)
 	{
@@ -944,7 +1001,7 @@ MultiLinks_LinksManager = function()
 		
 		if(MultiLinks_Wrapper.DataManager.GetReverseOrder())
 			aLinks.reverse();
-		
+				
 		var relatedTabs = MultiLinks_Wrapper.DataManager.GetOpenAsRelatedTabs();
 				
 		var delay = MultiLinks_Wrapper.DataManager.GetDelay();
@@ -956,12 +1013,12 @@ MultiLinks_LinksManager = function()
 		else
 		{
 			var act = MultiLinks_Wrapper.DataManager.GetActNewTab(MultiLinks_Wrapper.OPKey);
-			for(var i = 0; i < links.length; i++)
+			for(var i = 0; i < aLinks.length; i++)
 			{
 				if(act)
-					getBrowser().selectedTab = getBrowser().addTab(links[i].href, {relatedToCurrent: relatedTabs});
+					getBrowser().selectedTab = getBrowser().addTab(aLinks[i], {relatedToCurrent: relatedTabs});
 				else
-					getBrowser().addTab(links[i].href, {relatedToCurrent: relatedTabs});
+					getBrowser().addTab(aLinks[i], {relatedToCurrent: relatedTabs});
 			}
 		}
 	}
@@ -1004,9 +1061,9 @@ MultiLinks_LinksManager = function()
 			else
 			{
 				var act = MultiLinks_Wrapper.DataManager.GetActNewWindow(MultiLinks_Wrapper.OPKey);
-				for(var i = 0; i < links.length; i++)
+				for(var i = 0; i < aLinks.length; i++)
 				{
-					window.open(links[i].href);
+					window.open(aLinks[i]);
 					if(!act)
 						window.focus();
 				}				
@@ -1128,17 +1185,34 @@ MultiLinks_LinksManager = function()
 			if(MultiLinks_Wrapper.DataManager.GetReverseOrder())
 				links.reverse();
 			
+			Components.utils.import("resource://gre/modules/Downloads.jsm");
+			Components.utils.import("resource://gre/modules/Task.jsm");
+			
+			// select a directory
+			var nsIFilePicker = Components.interfaces.nsIFilePicker;
+			var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+			fp.init(window, "Select a directory", nsIFilePicker.modeGetFolder);
+			var res = fp.show();
+			if (res != nsIFilePicker.returnCancel){
+				var thefile = fp.file;
+			}
+			
 			for(var i = 0; i < links.length; i++)
 			{
-				var fileName = links[0].text.replace(/^\s+|\s+$/g, '').replace(/\s{2,}/g, ' ').replace(/ /g,'_');
-				saveURL(links[i].href, fileName, false, true, false, null); 
+				var fileName = links[i].text.replace(/^\s+|\s+$/g, '').replace(/\s{2,}/g, ' ').replace(/ /g,'_');
+				//saveURL(links[i].href, fileName, false, true, false, null);
+				var fullPath = fp.file.path + "/"+ fileName;
+				var url = links[i].href;
+				Task.spawn(function download () {
+					yield Downloads.fetch(url, fullPath);
+				});
 			}
 		}catch(err)
 		{
 			MultiLinks_Wrapper.OnError(err);
 		}
 	}
-	
+
 	this.AddToBookmarks = function(links)
 	{
 		this.AddToBookmarksFF3(links);

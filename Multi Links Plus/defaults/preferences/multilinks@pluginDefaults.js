@@ -9,6 +9,9 @@ pref("extensions.multilinks@plugin.LStyle", "solid");
 pref("extensions.multilinks@plugin.ShowSBIcon", true);
 pref("extensions.multilinks@plugin.ShowToolbarIcon", true);
 pref("extensions.multilinks@plugin.OpenAsRelatedTabs", true);
+pref("extensions.multilinks@plugin.EnableAlphanumericSorting", false);
+pref("extensions.multilinks@plugin.MinimumTextLength", false);
+pref("extensions.multilinks@plugin.MinimumTextLengthValue", 5);
 pref("extensions.multilinks@plugin.SmartSelection", true);
 pref("extensions.multilinks@plugin.ActivateNewTab", false);
 pref("extensions.multilinks@plugin.ActivateNewWindow", false);
@@ -43,4 +46,7 @@ pref("extensions.multilinks@plugin.ActivateNewTabL", false);
 pref("extensions.multilinks@plugin.ActivateNewWindowL", false);
 pref("extensions.multilinks@plugin.CopyUrlsWithTitlesL", 0);
 
+pref("extensions.multilinks@plugin.ContextMenuCancellationHTML", true);
+pref("extensions.multilinks@plugin.ContextMenuCancellationTextArea", true);
+pref("extensions.multilinks@plugin.ContextMenuCancellationInput", true);
 pref("extensions.multilinks@plugin.ForceContextMenuCancellation", false);

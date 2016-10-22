@@ -26,6 +26,9 @@
                 label="&pref_icon_options;" 
 				oncommand="MultiLinks_Wrapper.Options();"/>
 			<menuseparator/>
+			<menuitem id="MultiLinks-menuDonate"
+                label="&pref_donate;"
+				oncommand="MultiLinks_Wrapper.Donate();"/>
 			<menuitem id="MultiLinks-menuInstr"
                 label="&pref_icon_instructions;"
 				oncommand="MultiLinks_Wrapper.Help();"/>
