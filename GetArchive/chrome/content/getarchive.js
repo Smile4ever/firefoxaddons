@@ -5,7 +5,7 @@ var getarchive_lastcopy = "";
 var getarchive = {
 	getarchiveorglink: function(buttoncode) {
 		var currentLocation=gBrowser.contentDocument.location.href;
-		var archiveOrgBaseURL = "http://web.archive.org/web/2005/"; //0000000000
+		var archiveOrgBaseURL = "https://web.archive.org/web/2005/"; //0000000000
 		var pageLocation = "";
 
 		getarchive_website="archive.org"
@@ -382,7 +382,7 @@ var getarchive = {
 		if (pageLocation == ""){
 			indexLocation = currentLocation;
 		}
-		if(indexLocation.indexOf("web.archive.org/web/") > -1 || indexLocation.indexOf("http://web.archive.org/save/_embed/") > -1){
+		if(indexLocation.indexOf("web.archive.org/web/") > -1 || indexLocation.indexOf("https://web.archive.org/save/_embed/") > -1){
 			// we have some kind of filled in link
 			var indexHttp = indexLocation.indexOf("http", 20);
 			if(indexHttp > -1){
@@ -408,7 +408,7 @@ var getarchive = {
 		}
 
 		if(window.content.location.href.indexOf("wiki") > -1 || buttoncode > 0){
-			gBrowser.selectedTab = this.insertTab("http://archive.is/"+this.cleanurl(pageLocation));
+			gBrowser.selectedTab = this.insertTab("https://archive.is/"+this.cleanurl(pageLocation));
 		}else{
 			window.content.location.href = "https://archive.is/" + gBrowser.contentDocument.location.href;
 		}
@@ -437,7 +437,7 @@ var getarchive = {
 		currentLocation = currentLocation.replace("http://archive.is/", "");
 		currentLocation = currentLocation.replace("https://archive.is/", "");
 
-		if(currentLocation.indexOf("web.archive.org/web/2") > -1 || currentLocation.indexOf("web.archive.org/web/1") > -1 || currentLocation.indexOf("http://web.archive.org/save/_embed/") > -1){
+		if(currentLocation.indexOf("web.archive.org/web/2") > -1 || currentLocation.indexOf("web.archive.org/web/1") > -1 || currentLocation.indexOf("https://web.archive.org/save/_embed/") > -1){
 			var indexHttp = currentLocation.indexOf("http", 20);
 			if(indexHttp > -1){
 				currentLocation = currentLocation.substring(indexHttp);
@@ -699,7 +699,7 @@ window.addEventListener("keydown", function (event) {
 		var frameIdentifiers = ["iframe", "frame"];
 		var i = 0;
 		
-		// Test URL: http://web.archive.org/web/20060504004551/http://www.beastiemuseum.com/
+		// Test URL: https://web.archive.org/web/20060504004551/http://www.beastiemuseum.com/
 		for(i = 0; i < frameIdentifiers.length; i++){
 			var frames = content.document.getElementsByTagName(frameIdentifiers[i]);
 			if(frames.length > 0){
