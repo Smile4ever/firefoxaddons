@@ -5,10 +5,10 @@ var getarchive_lastcopy = "";
 var getarchive = {
 	getarchiveorglink: function(buttoncode) {
 		var currentLocation=gBrowser.contentDocument.location.href;
-		var archiveOrgBaseURL = "http://web.archive.org/web/2005/"; //0000000000
+		var archiveOrgBaseURL = "https://web.archive.org/web/2005/"; //0000000000
 		var pageLocation = "";
 
-		getarchive_website="archive.org"
+		getarchive_website="archive.org";
 		
 		try{
 			pageLocation = gContextMenu.linkURL;
@@ -208,7 +208,7 @@ var getarchive = {
 	getUrlToCopy: function(){
 		var urlToCopy = gBrowser.contentDocument.location.href;
 		var PREFER_LONG = this.prefs().getBoolPref("extensions.getarchive.prefer-long-link");
-		if(content.location.href.indexOf("archive.is") > -1 && PREFER_LONG == true){
+		if(content.location.href.indexOf("archive.is") > -1 && PREFER_LONG == true && content.location.href.indexOf("/image") == -1){
 			urlToCopy = content.document.getElementById("SHARE_LONGLINK").getAttribute("value");
 		}
 		return urlToCopy;
@@ -346,7 +346,7 @@ var getarchive = {
 		var linkToPage = null;
 		var currentLocation=gBrowser.contentDocument.location.href;
 
-		getarchive_website="archive.is"
+		getarchive_website="archive.is";
 		try{
 			pageLocation = gContextMenu.linkURL;
 		}catch(err){
@@ -382,11 +382,11 @@ var getarchive = {
 		if (pageLocation == ""){
 			indexLocation = currentLocation;
 		}
-		if(indexLocation.indexOf("web.archive.org/web/") > -1 || indexLocation.indexOf("http://web.archive.org/save/_embed/") > -1){
+		if(indexLocation.indexOf("web.archive.org/web/") > -1 || indexLocation.indexOf("web.archive.org/save/_embed/") > -1){
 			// we have some kind of filled in link
 			var indexHttp = indexLocation.indexOf("http", 20);
 			if(indexHttp > -1){
-				window.content.location.href = "https://archive.is/" + this.cleanurl(indexLocation.substring(indexHttp));
+				window.content.location.href = "http://archive.is/" + this.cleanurl(indexLocation.substring(indexHttp));
 				this.copytoclipboard(); //added
 				return;
 			}/*else{
@@ -410,7 +410,7 @@ var getarchive = {
 		if(window.content.location.href.indexOf("wiki") > -1 || buttoncode > 0){
 			gBrowser.selectedTab = this.insertTab("http://archive.is/"+this.cleanurl(pageLocation));
 		}else{
-			window.content.location.href = "https://archive.is/" + gBrowser.contentDocument.location.href;
+			window.content.location.href = "http://archive.is/" + gBrowser.contentDocument.location.href;
 		}
 		this.copytoclipboard(); //added
 	},
@@ -437,7 +437,7 @@ var getarchive = {
 		currentLocation = currentLocation.replace("http://archive.is/", "");
 		currentLocation = currentLocation.replace("https://archive.is/", "");
 
-		if(currentLocation.indexOf("web.archive.org/web/2") > -1 || currentLocation.indexOf("web.archive.org/web/1") > -1 || currentLocation.indexOf("http://web.archive.org/save/_embed/") > -1){
+		if(currentLocation.indexOf("web.archive.org/web/2") > -1 || currentLocation.indexOf("web.archive.org/web/1") > -1 || currentLocation.indexOf("web.archive.org/save/_embed/") > -1){
 			var indexHttp = currentLocation.indexOf("http", 20);
 			if(indexHttp > -1){
 				currentLocation = currentLocation.substring(indexHttp);
