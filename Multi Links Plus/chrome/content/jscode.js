@@ -84,7 +84,9 @@
 	{
 		/*if(aEvent.which != 1)
 			return;*/
-		if(aEvent.button == 0)
+			
+		// Firefox ~49: aEvent.button for click on toolbar button is undefined.
+		if(aEvent.button == 0 || aEvent.button == undefined)
 			this.UpdateButtons(true);
 	},
 		
