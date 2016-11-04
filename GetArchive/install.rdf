@@ -4,7 +4,7 @@
     <em:id>getarchive@hugsmile.eu</em:id>
     <em:type>2</em:type>
     <em:name>Get Archive</em:name>
-    <em:version>2.5.1</em:version>
+    <em:version>2.5.2</em:version>
     <em:creator>Geoffrey De Belie</em:creator>
     <em:contributor></em:contributor>
     <em:description>Gets a previous version from a webpage using archive.org or archive.is.</em:description>
@@ -16,7 +16,7 @@
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
         <em:minVersion>3.6</em:minVersion>
-		<em:maxVersion>51.0</em:maxVersion>
+		<em:maxVersion>52.0</em:maxVersion>
       </Description>
     </em:targetApplication>
     <em:targetApplication>

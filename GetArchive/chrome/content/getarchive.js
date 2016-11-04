@@ -29,7 +29,7 @@ var getarchive = {
 		}
 		
 		pageLocation = this.getLinkFromMediaWikiSelection(currentLocation, pageLocation);
-
+		
 		if(currentLocation.indexOf("Overleg:") > -1 && gContextMenu == null){
 			temp = this.getPageLocation();
 			if (temp != "" && temp != "NONE"){ //TODO: check this
@@ -37,7 +37,8 @@ var getarchive = {
 			}
 		}
 
-		if(pageLocation != ""){
+		var isArchiveIsOverviewPage = content.document.getElementsByTagName("body")[0].innerHTML.indexOf("search examples") > -1;
+		if(pageLocation != "" && currentLocation.indexOf("archive.is") == -1){
 			// right click / action-submit / action-edit
 
 			//if(buttoncode > 0 || currentLocation.indexOf("wiki") > -1){
@@ -52,12 +53,18 @@ var getarchive = {
 			this.copytoclipboard();
 		}else{
 			if(currentLocation.indexOf("Overleg:") == -1){
+				var oldPageLocation = pageLocation;
 			    pageLocation = gBrowser.contentDocument.location.href;
 				pageLocation = pageLocation.replace("http://archive.today/", "");
 				pageLocation = pageLocation.replace("https://archive.today/", "");
 				pageLocation = pageLocation.replace("http://archive.is/", "");
 				pageLocation = pageLocation.replace("https://archive.is/", "");
 				
+				// If this is a detail page on archive.is, this might actually just be the unique code and not a valid URL
+				// In that case, restore the old page location
+				if(pageLocation.indexOf("http") == -1){
+					pageLocation = oldPageLocation;
+				}
 				window.content.location.href = archiveOrgBaseURL+this.cleanurl(pageLocation);
 				this.copytoclipboard();
 			}
@@ -210,6 +217,10 @@ var getarchive = {
 		var PREFER_LONG = this.prefs().getBoolPref("extensions.getarchive.prefer-long-link");
 		if(content.location.href.indexOf("archive.is") > -1 && PREFER_LONG == true && content.location.href.indexOf("/image") == -1){
 			urlToCopy = content.document.getElementById("SHARE_LONGLINK").getAttribute("value");
+			// Use HTTPS by changing the first protocol only, not all HTTP occurences because it would break the archived link
+			if(urlToCopy.indexOf("http://") == 0){
+				urlToCopy = "https://" + urlToCopy.substring(7);
+			}
 		}
 		return urlToCopy;
 	},
@@ -386,7 +397,7 @@ var getarchive = {
 			// we have some kind of filled in link
 			var indexHttp = indexLocation.indexOf("http", 20);
 			if(indexHttp > -1){
-				window.content.location.href = "http://archive.is/" + this.cleanurl(indexLocation.substring(indexHttp));
+				window.content.location.href = "https://archive.is/" + this.cleanurl(indexLocation.substring(indexHttp));
 				this.copytoclipboard(); //added
 				return;
 			}/*else{
@@ -407,10 +418,10 @@ var getarchive = {
 			}
 		}
 
-		if(window.content.location.href.indexOf("wiki") > -1 || buttoncode > 0){
-			gBrowser.selectedTab = this.insertTab("http://archive.is/"+this.cleanurl(pageLocation));
+		if(window.content.location.href.indexOf("wiki") > -1){
+			gBrowser.selectedTab = this.insertTab("https://archive.is/"+this.cleanurl(pageLocation));
 		}else{
-			window.content.location.href = "http://archive.is/" + gBrowser.contentDocument.location.href;
+			window.content.location.href = "https://archive.is/" + gBrowser.contentDocument.location.href;
 		}
 		this.copytoclipboard(); //added
 	},
@@ -629,6 +640,15 @@ var getarchive = {
 		}
 		if(url.indexOf("tp") == 0 && url.indexOf("://") > -1){
 			url = "ht" + url;
+		}
+		
+		if(url.indexOf("https://www.google.be/url?") > -1){
+			try{
+				var cleanUrl = decodeURIComponent(url);
+				var startIndex = cleanUrl.indexOf("&url=") + 5;
+				var endIndex = cleanUrl.indexOf("&usg=");
+				url = cleanUrl.substring(startIndex, endIndex);
+			}catch(e){}
 		}
 		
 		return url.trim();
