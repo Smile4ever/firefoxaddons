@@ -34,12 +34,12 @@ MultiLinks_LinksManager = function()
 	{
 		if(String(doc.location).indexOf("mail.google.com") != -1 && doc.getElementById("canvas_frame"))
 			doc = doc.getElementById("canvas_frame").contentDocument;
-			
+
 		MultiLinks_Wrapper.debug("StartSelect");
 		this.p_left = left;
 		this.p_top = top;
 		var body = doc.body;
-		
+
 		var div = doc.getElementById("multilinks-links-container");
 		if(!div)
 		{
@@ -120,7 +120,7 @@ MultiLinks_LinksManager = function()
 		
 		return doc.getElementById("multilinks-links-container");
 	}
-	
+		
 	// TODO: javascript links
 	// Radio buttons would be nice too
 	this.getLinks = function(doc)
@@ -129,8 +129,10 @@ MultiLinks_LinksManager = function()
 			return;*/
 			
 		var aLinks = doc.getElementsByTagName("a");
-		for(var i = 0; i < aLinks.length; i++)
-			MultiLinks_Wrapper.LinksManager.aLinks.push(aLinks[i]);
+		for(var i = 0; i < aLinks.length; i++){
+			if(aLinks[i].hasAttribute("href"))
+				MultiLinks_Wrapper.LinksManager.aLinks.push(aLinks[i]);
+		}
 		
 		var iframes = doc.getElementsByTagName("iframe");
 		for(var f = 0; f < iframes.length; f++)
@@ -680,7 +682,7 @@ MultiLinks_LinksManager = function()
 	{
 		if(String(doc.location).indexOf("mail.google.com") != -1 && doc.getElementById("canvas_frame"))
 			doc = doc.getElementById("canvas_frame").contentDocument;
-			
+
 		try
 		{
 			if(!this.aLinks)
@@ -996,8 +998,9 @@ MultiLinks_LinksManager = function()
 	this.OpenInNewTabs = function(links)
 	{
 		var aLinks = new Array();
-		for(var i = 0; i < links.length; i++)
+		for(var i = 0; i < links.length; i++){
 			aLinks.push(links[i].href);
+		}
 		
 		if(MultiLinks_Wrapper.DataManager.GetReverseOrder())
 			aLinks.reverse();
@@ -1634,6 +1637,7 @@ MultiLinks_LinksManager = function()
 				return e;
 				
 			e = e.parentNode;
+			//e = e.ownerDocument.body; // TODO check if this improves performance
 		}
 
 		var e = elem;

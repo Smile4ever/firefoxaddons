@@ -195,12 +195,12 @@
 
 		if(MultiLinks_Wrapper.hide_popup == true)
 		{
-			MultiLinks_Wrapper.debug("popup hiding");
+			//MultiLinks_Wrapper.debug("popup hiding");
 			aEvent.preventDefault();
 			MultiLinks_Wrapper.hide_popup = false;
 			return false;
 		}else{
-			MultiLinks_Wrapper.debug("popup showing");
+			//MultiLinks_Wrapper.debug("popup showing");
 		}
 	},
 	HugsmileOnContextMenu: function(aEvent){
@@ -337,9 +337,12 @@
 	
 	docClientWidth: function(doc)
 	{
+		/*if(doc.body == undefined)
+			return doc.documentElement.scrollWidth;
+			
 		if(doc.documentElement.scrollWidth > doc.body.scrollWidth)
 			return doc.documentElement.scrollWidth;
-		
+		*/
 		return doc.documentElement.scrollWidth;
 	},
 	
@@ -362,8 +365,8 @@
 		var bL = MultiLinks_Wrapper.docScrollLeft(doc);
 		
 		if(String(doc.location).indexOf("mail.google.com") != -1 && doc.getElementById("canvas_frame"))
-			doc = doc.getElementById("canvas_frame").contentDocument;
-			
+			doc = doc.getElementById("canvas_frame").contentDocument;		
+	
 		var l = MultiLinks_Wrapper.docScrollLeft(doc) + left;
 		var t = MultiLinks_Wrapper.docScrollTop(doc) + top;
 		doc.body.scrollTop = t;
@@ -386,33 +389,16 @@
 		{
 			//if(MultiLinks_Wrapper.control && aEvent.ctrlKey == false && aEvent.shiftKey == false && aEvent.altKey == false)
 				//MultiLinks_Wrapper.control = false;
-				
+
 			var key = "L";
 			if(aEvent.which == 2)
 				key = "M";
 			if(aEvent.which == 3)
 				key = "R";
-				
+						
 			if(MultiLinks_Wrapper.DataManager.GetActivated() != true)
 				return;
-			
-			if(MultiLinks_Wrapper.DataManager.GetContextMenuCancellationHTML()){
-				var parent = aEvent.originalTarget;
-				while(parent.parentNode)
-					parent = parent.parentNode;
-				
-				if(parent.toString().indexOf("HTML") == -1){
-					MultiLinks_Wrapper.debug("no html");
-					
-					/*try{
-						MultiLinks_Wrapper.LinksManager.StopSelect(gBrowser.contentDocument, false);
-					}catch(e){
-						MultiLinks_Wrapper.debug("body is null?? - 1");
-					}*/
-					return;
-				}
-			}
-			
+
 			if(MultiLinks_Wrapper.DataManager.GetContextMenuCancellationTextArea()){
 				if(aEvent.target &&	(aEvent.target.tagName.toUpperCase() == "TEXTAREA")){
 					return;
@@ -439,7 +425,7 @@
 				/*if(!parent.body)
 					return;*/
 			}
-					
+						
 			if(MultiLinks_Wrapper.moveS && aEvent.which == 1)
 			{
 				if(aEvent.originalTarget == gBrowser.contentDocument.getElementById("multilinks-selection"))
@@ -475,8 +461,13 @@
 			if(doc.completed != true)
 				return;
 
-			var aElementTag = doc.activeElement.tagName.toLowerCase();
-			if (aElementTag != "body"){
+			//var aElementTag = doc.activeElement.tagName.toLowerCase();
+			/*if (aElementTag != "body"){
+				return;
+			}*/
+
+			if(doc.documentElement.tagName.toLowerCase() != "body" && doc.documentElement.tagName.toLowerCase() != "html"){
+				MultiLinks_Wrapper.debug("This is not a HTML page.");
 				return;
 			}
 
