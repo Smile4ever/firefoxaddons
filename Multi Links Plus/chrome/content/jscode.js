@@ -466,6 +466,19 @@
 				return;
 			}*/
 
+ 
+			if(MultiLinks_Wrapper.DataManager.GetContextMenuCancellationHTML()){
+				/*var parent = aEvent.originalTarget;
+				while(parent.parentNode)
+					parent = parent.parentNode;
+				*/
+				var parent = aEvent.originalTarget.ownerDocument.documentElement;
+					if(parent.toString().indexOf("HTML") == -1){
+					MultiLinks_Wrapper.debug("no html" + parent.toString().toLowerCase());
+					return;
+				}
+			}
+
 			if(doc.documentElement.tagName.toLowerCase() != "body" && doc.documentElement.tagName.toLowerCase() != "html"){
 				MultiLinks_Wrapper.debug("This is not a HTML page.");
 				return;

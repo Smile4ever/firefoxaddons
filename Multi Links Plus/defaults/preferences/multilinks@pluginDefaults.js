@@ -46,6 +46,7 @@ pref("extensions.multilinks@plugin.ActivateNewTabL", false);
 pref("extensions.multilinks@plugin.ActivateNewWindowL", false);
 pref("extensions.multilinks@plugin.CopyUrlsWithTitlesL", 0);
 
+pref("extensions.multilinks@plugin.ContextMenuCancellationHTML", true); 
 pref("extensions.multilinks@plugin.ContextMenuCancellationTextArea", true);
 pref("extensions.multilinks@plugin.ContextMenuCancellationInput", true);
 pref("extensions.multilinks@plugin.ForceContextMenuCancellation", false);
