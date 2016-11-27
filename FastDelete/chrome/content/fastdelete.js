@@ -161,14 +161,17 @@ var deletemw = {
 				var titleMatch = false;
 				
 				/*if(content.document.title.indexOf("Action complete") > -1 || content.document.title.indexOf("Handeling voltooid") > -1){
-					titlematch = true;
+					titleMatch = true;
 				}*/
 				if(content.document.title.indexOf("\"") == -1){
-					titlematch = true;
+					titleMatch = true;
+				}
+				if(content.document.title.indexOf("Cannot delete page") > -1){
+					titleMatch = true;
 				}
 				//titleMatch = false;
 				// generic
-				/*if(!titlematch){
+				/*if(!titleMatch){
 					// read https://nl.wikipedia.org/wiki/MediaWiki:Actioncomplete
 					str = "https://nl.wikipedia.org/wiki/MediaWiki:Actioncomplete";
 					xmlhttp=new XMLHttpRequest();
@@ -200,7 +203,7 @@ var deletemw = {
 					};
 					xmlhttp.send();
 				}*/
-				if(titlematch){
+				if(titleMatch){
 					if(linksToHere == "" || linksToHere == undefined){
 						gBrowser.removeCurrentTab();
 					}else{
@@ -285,8 +288,16 @@ var deletemw = {
 		var contentText = content.document.documentElement.innerHTML;
 		var mwContentText = content.document.getElementById("mw-content-text");
 		if(mwContentText == null){
-			this.closetab();
-			return;
+			if(content.document.title.indexOf("404 Not Found") > -1){
+				//window.content.location.href = this.getActionURL("delete", str);
+				var titleOfPage = str.substring(str.lastIndexOf("en/")+3);
+				window.content.location.href = "http://wiki.lxde.org/en/index.php?action=delete&title=" + titleOfPage;
+				this.autoconfirm();
+				return;
+			}else{
+				this.closetab();
+				return;
+			}
 		}
 		mwContentText = mwContentText.innerHTML;
 		
@@ -305,10 +316,12 @@ var deletemw = {
 			this.openPages();
 			return;
 		}
+		//  || bodyContent.indexOf("Geen enkele pagina, die aan de gekozen filters voldoet, verwijst naar") > -1
 		if(!this.isThereText(false)){
 			this.closetab();
 			return;
 		}
+		
 		if(str.indexOf("Wikimedia Foundation") > -1){
 			//Our servers are currently experiencing a technical problem.
 			window.content.location.reload();
@@ -321,6 +334,19 @@ var deletemw = {
 		if(bodyContent.indexOf("Bij dit artikel is nog geen afbeelding of foto geplaatst.") > -1){
 			this.closetab();
 			return;
+		}
+		
+		
+		if((bodyContent.indexOf("Menke-artikelen") > -1 || content.location.href.indexOf("KNIL") > -1) && !this.isOnlyBotNotifications()){
+			if(!safemode){
+				delete_reason = "conform [[Wikipedia:Stemlokaal/Afhandeling Menke-artikelen]]";
+				window.content.location.href = this.getActionURL("delete", str);
+				this.autoconfirm();
+				return;
+			}else{
+				this.closetab();
+				return;
+			}
 		}
 		
 		// Afbeeldingsuggestie (manual & bot)
@@ -586,7 +612,12 @@ var deletemw = {
 			}
 		}
 		
-		if(str.indexOf("wiki.lxde") > -1) {
+		if(str.indexOf("Special:NewPages") > -1){
+			this.removeSpam();
+			return;
+		}
+		
+		if(str.indexOf("wiki.lxde.org") > -1) {
 			if(mwContentText == null){
 				//this.showMessage("mwContentText is null");
 				window.setTimeout(this.closetab(), 2000);
@@ -607,7 +638,7 @@ var deletemw = {
 					this.autoconfirm();
 					return;
 				}*/
-				var title = content.document.getElementById("firstHeading").childNodes[0].innerHTML;
+				var title = content.document.getElementById("firstHeading").innerHTML;
 				var numberOfUpperCaseLetters = 0;
 				var numberOfNumbers = 0;
 								
@@ -907,7 +938,12 @@ var deletemw = {
 		}
 	},
 	openTalkRedirects: function(){
-		mwWhatlinkshereList = content.document.getElementById("mw-whatlinkshere-list");
+		var mwWhatlinkshereList = content.document.getElementById("mw-whatlinkshere-list");
+		
+		if(mwWhatlinkshereList == null){
+			this.closetab();
+		}
+		
 		lis = mwWhatlinkshereList.getElementsByTagName("li");
 		if(lis == null){
 			return;
@@ -1110,6 +1146,35 @@ var deletemw = {
 		return a.sort().filter(function(item, pos, ary) {
 			return !pos || item != ary[pos - 1];
 		})
+	},
+	removeSpam: function(){
+		var newPagesURL = "http://wiki.lxde.org/en/index.php?title=Special:NewPages&namespace=all&limit=250";
+				
+		var spamPages = window.content.document.documentElement.getElementsByClassName("mw-newpages-pagename");
+		var spamPagesLength = spamPages.length;
+		if(spamPages.length){
+			return;
+		}
+		// already start reloading
+		if(window.content.location.href.indexOf("NewPages") > -1){
+			window.content.location.href = newPagesURL;
+		}
+		
+		var i = 0;
+		for(i = 0; i < spamPages.length; i++){
+			gBrowser.selectedTab = gBrowser.addTab("http://wiki.lxde.org" + spamPages[i].getAttribute("href") + "&action=delete");
+		}
+		
+		var that = this;
+		
+		for(i = 0; i < spamPages.length * 3; i++){
+			setTimeout(function(){
+				that.confirm();
+			}, (i + 1) * 400);
+		}
+				
+		//Opening a URL in an on demand tab
+		//https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Tabbed_browser
 	}
 }
 window.addEventListener("keyup", function (event) {
