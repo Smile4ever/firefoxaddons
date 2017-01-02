@@ -1,13 +1,17 @@
 {
   "title": "Translate Now",
   "name": "translatenow",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Right click a selection to translate words in Firefox.",
   "main": "index.js",
   "author": "Geoffrey De Belie",
   "engines": {
     "firefox": ">=38.0a1"
   },
+  "permissions": [
+	
+    {"multiprocess": "true"}
+  ],
   "license": "GPL2+ / MPL",
   "preferences": [{
         "name": "destination_language",
@@ -754,6 +758,13 @@
 				"label": "Zulu"
 			}
 		]
-    }
+    },
+	{
+		"name": "reuse_tab",
+        "title": "Reuse tab",
+        "description": "Do not open new tabs, but always use the same tab",
+        "type": "bool",
+        "value": true
+	}
     ]
 }
