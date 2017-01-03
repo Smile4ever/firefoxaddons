@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+
+  <body>
+	<style>
+		button{
+			padding: 5px 10px 5px 10px;
+		}
+		table{
+			margin-bottom: 10px;
+			min-width: 100%;
+		}
+		body{
+			font-size: 1em;
+			font-family: Segoe UI, sans-serif;
+			color: rgb(51, 51, 51);
+		}
+	</style>
+    <form id="optionsform">
+		<table>
+			<tr>
+				<td><label><span id="scrollvalue">Scroll value</span></label></td><td><input type="number" id="scrollkey_scrollvalue" ></td>
+			</tr>
+			<tr>
+				<td colspan="2"><label><input type="checkbox" id="scrollkey_scroll_pagedown_pageup"><span id="pagedownpageup">PageDown and PageUp scroll the value indicated above</span></label></td>
+			</tr>
+			<tr>
+				<td colspan="2"><label><input type="checkbox" id="scrollkey_horizontal_scroll"><span id="horizontalscroll">Use the shortcut above for horizontal scrolling</span></label></td>
+			</tr>
+			<tr>
+				<td><label><span id="scrollvalueshift">Scroll value (Shift)</span></label></td>
+				<td><input type="number" id="scrollkey_scrollvalue_shift" ></td>
+			</tr>
+			<tr>
+				<td colspan="2"><label><input type="checkbox" id="scrollkey_horizontal_scroll_shift"><span id="horizontalscrollshift">Use the shortcut above for horizontal scrolling</span></label></td>
+			</tr>
+			<tr>
+				<td><label><span id="scrollvaluealt">Scroll value (Alt)</span></label></td>
+				<td><input type="number" id="scrollkey_scrollvalue_alt" ></td>
+			</tr>
+			<tr>
+				<td colspan="2"><label><input type="checkbox" id="scrollkey_horizontal_scroll_alt"><span id="horizontalscrollalt">Use the shortcut above for horizontal scrolling</span></label></td>
+			</tr>
+		</table>
+
+        <button type="submit"><span id="savepreferences">Save preferences</span></button>
+		<table>
+    </form>
+
+    <script src="options.js"></script>
+
+  </body>
+
+</html>

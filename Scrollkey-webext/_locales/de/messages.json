@@ -1,0 +1,34 @@
+{
+  "extensionDescription": {
+    "message": "Scroll Seiten in VIM Stil mit den j und k Tasten.",
+    "description": "Beschreibung der Erweiterung."
+  },
+  "scrollvalue": {
+    "message": "Scrollwert",
+    "description": ""
+  },
+  "scrollvalueshift": {
+    "message": "Scrollwert (Shift)",
+    "description": ""
+  },
+  "scrollvaluealt": {
+    "message": "Scrollwert (Alt)",
+    "description": ""
+  },
+  "pixels": {
+    "message": "Pixel",
+    "description": ""
+  },
+  "pagedownpageup": {
+    "message": "PageDown und PageUp blättern den oben angegebenen Wert",
+    "description": ""
+  },
+  "horizontalscroll": {
+    "message": "Verwenden Sie die Tastenkombination oben für horizontalen Bildlauf",
+    "description": ""
+  },
+  "savepreferences": {
+    "message": "Einstellungen speichern",
+    "description": ""
+  }
+}

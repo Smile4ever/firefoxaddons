@@ -1,0 +1,1 @@
+END button in textarea -> CTRL+END

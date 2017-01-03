@@ -1,0 +1,34 @@
+{
+  "manifest_version": 2,
+  "name": "Scrollkey",
+  "version": "1.0",
+  "description": "__MSG_extensionDescription__",
+  "homepage_url": "http://hugsmile.eu",
+  "default_locale": "en",
+  "icons": {
+    "16": "icons/scrollkey-16.png",
+	"32": "icons/scrollkey-32.png",
+	"64": "icons/scrollkey-64.png",
+	"128": "icons/scrollkey-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["scrollkey.js"]
+    }
+  ],
+
+  "applications": {
+    "gecko": {
+      "id": "scrollkey-webext@hugsmile.eu",
+	  "strict_min_version": "52.0"
+    }
+  },
+
+  "options_ui": {
+    "page": "options.html"
+  },
+
+  "permissions": ["storage"]
+
+}
