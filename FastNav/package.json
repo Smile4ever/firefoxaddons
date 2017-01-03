@@ -9,5 +9,8 @@
   "engines": {
     "firefox": ">=38.0a1"
   },
+  "permissions": [
+    "multiprocess"
+  ],
   "license": "GPL2+ / MPL"
 }
