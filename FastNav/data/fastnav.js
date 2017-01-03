@@ -21,44 +21,41 @@ window.addEventListener("keyup", function (event) {
   if (event.defaultPrevented) {
     return;
   }
+  
+  // check if modifier is pressed (ctrl, shift)
+  // if pressed, return
+  if(event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
+	return;
+  }
+  if(event.getModifierState("Alt") && (typeahead_value == false || isMediaWiki() == true )){
+	return;
+  }
 
   switch (event.keyCode) {
     case 78:
-		// check if modifier is pressed (ctrl, shift)
-		// if pressed, return
-		if(event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
-			return;
-		}
-		if(event.getModifierState("Alt") && (typeahead_value == false || isMediaWiki() == true )){
-			return;
-		}
 		// order is important here
 		if(document.hasFocus() && document.activeElement.tagName == "BODY"){
 			generic("next");
 		}else{
 			return;
 		}
-				
       break;
     case 66:
     case 80:
-		// check if modifier is pressed (ctrl, shift)
-		// if pressed, return
-		if(event.getModifierState("Shift") || event.getModifierState("Control") || event.getModifierState("Meta") || event.getModifierState("OS") || event.getModifierState("AltGraph")){
-			return;
-		}
-		if(event.getModifierState("Alt") && (typeahead_value == false || isMediaWiki() == true )){
-			return;
-		}
-		
 		// order is important here
 		if(document.hasFocus() && document.activeElement.tagName == "BODY"){
 			generic("prev");
 		}else{
 			return;
 		}
-				
       break;
+    case 79:
+      if(document.hasFocus() && document.activeElement.tagName == "BODY"){
+		genericOpen();
+	  }else{
+		return;
+	  }
+	  break;
     default:
       return;
   }
@@ -86,59 +83,52 @@ function isMediaWiki(){
 function cleanurl(url){
 	return decodeURIComponent(url.replace("&amp;", "&"))
 }
+
+function replacelocation(value, website){
+	//alert(value + " - " + website);
+	window.location.href = value;
+}
+
 function generic(mode){
 	var location= window.location.href;
 	var lastIndex = location.lastIndexOf("=");
 	var pageNumber = location.substring(lastIndex+1);
 	var stringlength = 1;
-	
-	var counter;
+	var i = 0;
+
+	// phoronix.com, http://punbb.informer.com, FluxBB
+	// http://www.phoronix.com/forums/forum/phoronix/latest-phoronix-articles/823939-the-best-most-efficient-graphics-cards-for-1080p-linux-gamers/page2
 	var linkTags = window.document.getElementsByTagName("link");
-	for(counter = 0; counter < linkTags.length; counter++){
-		if(linkTags[counter].getAttribute("rel") == mode){
-			// http://www.phoronix.com/forums/forum/phoronix/latest-phoronix-articles/823939-the-best-most-efficient-graphics-cards-for-1080p-linux-gamers/page2
-			window.location.href = linkTags[counter].getAttribute("href");
+	for(i = 0; i < linkTags.length; i++){
+		if(linkTags[i].getAttribute("rel") == mode){
+			this.replacelocation(linkTags[i].getAttribute("href"), "<link rel");
 			return;
 		}
 	}
 	
-	if(location.indexOf("reddit.com") > -1){
-		/*var locationAfter = -1;
-		var bodyhtml = document.body.innerHTML;
-		if(mode == "next"){
-			locationAfter = bodyhtml.indexOf("after=");
-		}else{
-			locationAfter = bodyhtml.indexOf("before=");
+	// reddit.com, phpBB
+	var atags = document.getElementsByTagName("a");
+	for(i = 0; i < atags.length; i++){
+		if(atags[i].hasAttribute("rel")){
+    	    if(atags[i].getAttribute("rel").indexOf(mode) > -1){
+				this.replacelocation(atags[i].href, "<a rel");
+				return;
+			}
+	   }
+	}
+	
+	// MyBB
+	if(mode == "next"){
+		var value = document.getElementsByClassName("pagination_next")[0];
+		if(value != undefined){
+			this.replacelocation(document.getElementsByClassName("pagination_next")[0], "mybb (pagination_next)");
+			return;
 		}
-		var locationCount = bodyhtml.indexOf("www.reddit.com/?count=", locationAfter - 30);
-		var locationCountEnd = bodyhtml.indexOf("\"", locationCount);
-		
-		alert("http://" + cleanurl(bodyhtml.substring(locationCount, locationCountEnd)));
-		
-		window.location.href = "http://" + cleanurl(bodyhtml.substring(locationCount, locationCountEnd));
-		return;*/
-		var i = 0;
-		var match = false;
-		var atags = document.getElementsByTagName("a");
-		for(i = 0; i < atags.length; i++){
-		    try{
-    		    if(atags[i].getAttribute("rel").indexOf(mode) > -1){
-    		         match = true;
-    		         window.location.href = atags[i].href;
-    		    }
-    	   }catch(ex){
-    	       // this is normal
-    	   }
-		}
-		if(match){
-		    return;
-		}
-		
 	}
 	
 	if(location.indexOf("techradar.com") > -1){
 		if (mode == "next" && location.lastIndexOf("/") < location.length - 3){ // there is no page filled in, add it
-			window.location.href = window.location.href + "/2";
+			this.replacelocation(window.location.href + "/2", "techradar.com");
 			return;
 		}
 
@@ -166,11 +156,11 @@ function generic(mode){
 	
 	if(mode == "next"){
 		if(paginatorNext != undefined){
-			window.location.href = paginatorNext.href;
+			this.replacelocation(paginatorNext.href, "webwereld next");
 		}
 	}else{
 		if(paginatorPrevious != undefined){
-			window.location.href = paginatorPrevious.href;
+			this.replacelocation(paginatorPrevious.href, "webwereld previous");
 		}
 	}
 	
@@ -178,19 +168,56 @@ function generic(mode){
 	var nextPageJenkovCom = window.document.getElementsByClassName("nextArticleInCategory")[0];
 	if(nextPageJenkovCom != null){
 		if(mode == "next"){
-			window.location.href = nextPageJenkovCom.parentElement.href;
+			this.replacelocation(nextPageJenkovCom.parentElement.href, "jenkov.com");
+			return;
 		}else{
 			window.history.back();
+			return;
 		}
 	}
 	
-	// waarmaarraar.nl
-	var nextPageWMR = window.document.getElementsByClassName("readmore")[0];
-	if(nextPageWMR != null){
-		var alink = nextPageWMR.getElementsByTagName("a")[0];
-		if(mode == "next"){
-			window.location.href = alink.href;
+	// waarmaarraar.nl (prev/next article)
+	if(location.indexOf("waarmaarraar.nl") > -1){
+		var container = document.getElementsByClassName("span7")[0];
+		var ahrefs = container.getElementsByTagName("a");
+		var newahrefs = [];
+		
+		for(counter = 0; counter < ahrefs.length; counter++){
+			var hrefattribute = ahrefs[counter].getAttribute("href");
+			if(hrefattribute == null){
+				continue;
+			}
+			if(hrefattribute.indexOf("/pages/re") > -1){
+				newahrefs.push(ahrefs[counter]);
+			}
 		}
+
+		if(newahrefs.length == 2){
+			if(mode == "next" ){
+				this.replacelocation(newahrefs[1].getAttribute("href"), "waarmaarraar.nl next");
+			}else{
+				this.replacelocation(newahrefs[0].getAttribute("href"), "waarmaarraar.nl prev");
+			}
+			return;
+		}
+		if(newahrefs.length == 1){
+			// there is no previous/next page?
+			this.replacelocation(newahrefs[0].getAttribute("href"), "waarmaarraar.nl next/prev");
+			return;
+		}
+	}
+
+	// chm
+	var ahrefs = window.document.getElementsByClassName("a");
+	var i = 0;
+	for(i = 0; i < ahrefs.length; i++){
+		if(ahrefs[i].getAttribute("alt") == "Next Page" && mode == "next"){
+		}
+		
+		if(ahrefs[i].getAttribute("alt") == "Previous Page" && mode == "prev"){
+			window.location.href = ahrefs[i];
+		}
+		return;
 	}
 	
 	// clixsense adgrid
@@ -239,6 +266,82 @@ function generic(mode){
 			// prev
 			pagenum = parseInt(pageNumber) - 1;
 		}
-		window.location.href = location.substring(0,lastIndex + stringlength) + pagenum;
+		var addendum = location.substring(lastIndex + stringlength+1);
+		if(!isNaN(addendum)){
+			addendum = "";
+		}
+		this.replacelocation(location.substring(0,lastIndex + stringlength) + pagenum + addendum, "generic");
+	}
+}
+function genericOpen(){
+	var i = 0;
+	var location= window.location.href;
+	
+	if(location.indexOf("twoo.com") > -1){
+		
+		var photoCover = document.getElementsByClassName("photoCover")[0];
+		var linkToProfile = "https://www.twoo.com/" + photoCover.getAttribute("data-user-info");
+		//window.location.href = linkToProfile;
+		
+		/*var photoCoverTitle = document.getElementsByClassName("photoCover__info__title")[0];
+		var profileAhref = photoCoverTitle.getElementsByTagName("a");
+		profileAhref.setAttribute("href", linkToProfile);*/
+		window.open(linkToProfile);
+		return;
+	}
+	
+	// waarmaarraar.nl
+	if(location.indexOf("waarmaarraar.nl") > -1){
+		// Read more
+		var nextPageWMR = window.document.getElementsByClassName("readmore")[0];
+		if(nextPageWMR != null){
+			var alink = nextPageWMR.getElementsByTagName("a")[0];
+			if(mode == "next"){
+				window.location.href = alink.href;
+				return;
+			}
+		}
+		// Bronsite
+		var alinks = document.getElementsByTagName("a");
+		for(i = 0; i < alinks.length; i++){
+			// ©
+			var onclick = "";
+			try{
+				onclick = alinks[i].getAttribute("onclick");
+			}catch(e){
+				continue;
+			}
+			if(onclick == null){
+				continue;
+			}
+			
+			if(onclick.indexOf("/bronsite/") > -1){
+				window.location.href = alinks[i].getAttribute("href");
+				return;
+			}
+			
+		}
+	}
+	
+	// reddit interstitial page
+	var interstitial = document.getElementsByClassName("interstitial")[0];
+	if(interstitial != undefined){
+		var buttons = document.getElementsByTagName("button");
+		for(i = 0; i < buttons.length; i++){
+			if(buttons[i].getAttribute("value") == "yes"){
+				buttons[i].click();
+				return;
+			}
+		}
+	}
+	
+	if(location.indexOf("reddit.com") > -1){
+		var titles = document.getElementsByClassName("title");
+		for(i = 0; i < titles.length; i++){
+			if(titles[i].hasAttribute("href")){
+				window.location.href = titles[i].getAttribute("href");
+				return;
+			}
+		}
 	}
 }
