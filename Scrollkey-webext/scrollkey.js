@@ -152,7 +152,7 @@ window.addEventListener("keydown", function(event){
 			setTimeout(function(){
 				if(scrollPageDownPageUp){
 					ok = true;
-					scrolldown(0);
+					scrollDown(0);
 				}
 			}, 20);
 		}
@@ -163,7 +163,7 @@ window.addEventListener("keydown", function(event){
 			setTimeout(function(){
 				if(scrollPageDownPageUp){
 					ok = true;
-					scrolldown(0);
+					scrollUp(0);
 				}
 			}, 20);
 		}
