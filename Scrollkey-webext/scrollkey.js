@@ -83,6 +83,9 @@ var getScrollValue = function(id){
 
 var setScrollValue = function(result){
 	scrollValue = value(result);
+	if(scrollValue == null){
+		scrollValue = 400;
+	}
 }
 
 var getHorizontalScroll = function(id){
@@ -101,6 +104,9 @@ var getHorizontalScroll = function(id){
 
 var setHorizontalScroll = function(result){
 	horizontalScroll = value(result);
+	if(horizontalScroll == null){
+		horizontalScroll = false;
+	}
 }
 
 var getScrollPageDownPageUp = function(){
@@ -109,11 +115,10 @@ var getScrollPageDownPageUp = function(){
 }
 
 var setScrollPageDownPageUp = function(result){
-	if(result.scrollkey_scroll_pagedown_pageup == null){
-		 // PageUp / PageDown have their default browser function
+	scrollPageDownPageUp = value(result);
+	if(scrollPageDownPageUp == null){
+		// PageUp / PageDown have their default browser function
 		scrollPageDownPageUp = false;
-	}else{
-		scrollPageDownPageUp = result.scrollkey_scroll_pagedown_pageup;
 	}
 }
 
