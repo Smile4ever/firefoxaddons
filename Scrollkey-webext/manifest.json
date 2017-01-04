@@ -20,7 +20,8 @@
 
   "applications": {
     "gecko": {
-      "id": "scrollkey-webext@hugsmile.eu"
+      "id": "scrollkey-webext@hugsmile.eu",
+	  "strict_min_version": "48.0"
     }
   },
 

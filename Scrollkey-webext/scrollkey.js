@@ -11,7 +11,7 @@ var scrollUp = function(id){
 		}else{
 			window.scrollBy(0, scrollValue  * -1);
 		}
-	}, 20);
+	}, 50);
 }
 var scrollDown = function(id){
 	getScrollValue(id);
@@ -22,7 +22,49 @@ var scrollDown = function(id){
 		}else{
 			window.scrollBy(0, scrollValue);
 		}
-	}, 20);
+	}, 50);
+}
+
+// http://stackoverflow.com/questions/5916900/how-can-you-detect-the-version-of-a-browser
+navigator.sayswho= (function(){
+    var ua= navigator.userAgent, tem, 
+    M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+    if(/trident/i.test(M[1])){
+        tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
+        return 'IE '+(tem[1] || '');
+    }
+    if(M[1]=== 'Chrome'){
+        tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
+        if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
+    }
+    M= M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+    if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
+    return M.join(' ');
+})();
+
+var isLowFirefoxVersion = function(){
+	var app = navigator.sayswho;
+	var appVersion = app.toLowerCase().replace("firefox ", "");
+	var appVersionSingle = appVersion.substr(0,appVersion.indexOf('.'));
+	if(appVersionSingle != "")
+		appVersion = appVersionSingle;
+	
+	if(app.toLowerCase().indexOf("firefox") > -1 && appVersion <= 51)
+		return true;
+	
+	return false;
+}
+
+var value = function(result){
+	if(isLowFirefoxVersion()){
+		result = result[0];
+	}
+	for(var key in result) {
+	  if(result.hasOwnProperty(key)) {
+        return result[key];
+	  }
+	}
+	return undefined;
 }
 
 var getScrollValue = function(id){
@@ -40,13 +82,7 @@ var getScrollValue = function(id){
 }
 
 var setScrollValue = function(result){
-	for(var key in result) {
-		if(result.hasOwnProperty(key)) {
-			scrollValue = result[key];
-			return;
-		}
-	}
-	scrollValue = 400;
+	scrollValue = value(result);
 }
 
 var getHorizontalScroll = function(id){
@@ -64,13 +100,7 @@ var getHorizontalScroll = function(id){
 }
 
 var setHorizontalScroll = function(result){
-	for(var key in result) {
-		if(result.hasOwnProperty(key)) {
-			horizontalScroll = result[key];
-			return;
-		}
-	}
-	horizontalScroll = false;
+	horizontalScroll = value(result);
 }
 
 var getScrollPageDownPageUp = function(){
@@ -79,13 +109,12 @@ var getScrollPageDownPageUp = function(){
 }
 
 var setScrollPageDownPageUp = function(result){
-	for(var key in result) {
-		if(result.hasOwnProperty(key)) {
-			scrollPageDownPageUp = result[key];
-			return;
-		}
+	if(result.scrollkey_scroll_pagedown_pageup == null){
+		 // PageUp / PageDown have their default browser function
+		scrollPageDownPageUp = false;
+	}else{
+		scrollPageDownPageUp = result.scrollkey_scroll_pagedown_pageup;
 	}
-	scrollPageDownPageUp = false; // PageUp / PageDown have their default browser function
 }
 
 var onError = function(result){
