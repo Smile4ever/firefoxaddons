@@ -25,38 +25,9 @@ var scrollDown = function(id){
 	}, 50);
 }
 
-// http://stackoverflow.com/questions/5916900/how-can-you-detect-the-version-of-a-browser
-navigator.sayswho= (function(){
-    var ua= navigator.userAgent, tem, 
-    M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-    if(/trident/i.test(M[1])){
-        tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
-        return 'IE '+(tem[1] || '');
-    }
-    if(M[1]=== 'Chrome'){
-        tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
-        if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
-    }
-    M= M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
-    if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
-    return M.join(' ');
-})();
-
-var isLowFirefoxVersion = function(){
-	var app = navigator.sayswho;
-	var appVersion = app.toLowerCase().replace("firefox ", "");
-	var appVersionSingle = appVersion.substr(0,appVersion.indexOf('.'));
-	if(appVersionSingle != "")
-		appVersion = appVersionSingle;
-	
-	if(app.toLowerCase().indexOf("firefox") > -1 && appVersion <= 51)
-		return true;
-	
-	return false;
-}
-
 var value = function(result){
-	if(isLowFirefoxVersion()){
+	// Firefox <= 51 returns an array, which isn't correct behaviour. This code works around that bug. See also https://bugzilla.mozilla.org/show_bug.cgi?id=1328616
+	if(Array.isArray(result)){
 		result = result[0];
 	}
 	for(var key in result) {
