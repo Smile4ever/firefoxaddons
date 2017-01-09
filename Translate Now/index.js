@@ -46,11 +46,16 @@ var menuItem2 = contextMenu.Item({
 });
 
 var openTab = function(url){
-	if(lastTab != null && reuse_tab){
-		lastTab.url = url;
-		lastTab.activate();
-		return;
+	try{
+		if(lastTab.url != undefined && reuse_tab){
+			lastTab.url = url;
+			lastTab.activate();
+			return;
+		}
+	}catch(ex){
+		// go to below
 	}
+	
 	tabs.open({
 		url: url,
 		onReady: function(tab) {
