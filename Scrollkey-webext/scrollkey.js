@@ -11,7 +11,7 @@ var scrollUp = function(id){
 		}else{
 			window.scrollBy(0, scrollValue  * -1);
 		}
-	}, 50);
+	}, 20);
 }
 var scrollDown = function(id){
 	getScrollValue(id);
@@ -22,7 +22,7 @@ var scrollDown = function(id){
 		}else{
 			window.scrollBy(0, scrollValue);
 		}
-	}, 50);
+	}, 20);
 }
 
 var value = function(result){
@@ -81,7 +81,7 @@ var setHorizontalScroll = function(result){
 }
 
 var getScrollPageDownPageUp = function(){
-	var getting1 = browser.storage.local.get("scrollkey_scrollpagedownpageup");
+	var getting1 = browser.storage.local.get("scrollkey_scroll_pagedown_pageup");
     getting1.then(setScrollPageDownPageUp, onError);
 }
 
@@ -92,6 +92,10 @@ var setScrollPageDownPageUp = function(result){
 		scrollPageDownPageUp = false;
 	}
 }
+
+// begin init
+getScrollPageDownPageUp();
+// end init
 
 var onError = function(result){
 	
@@ -152,25 +156,21 @@ window.addEventListener("keydown", function(event){
 		}
 		
 		if(!event.altKey && !event.shiftKey && event.keyCode == 34){
-			getScrollPageDownPageUp();
 			//PageDown
-			setTimeout(function(){
-				if(scrollPageDownPageUp){
-					ok = true;
-					scrollDown(0);
-				}
-			}, 20);
+			getScrollPageDownPageUp(); // won't take effect this time, but it will take effect next time which is good enough
+			if(scrollPageDownPageUp){
+				ok = true;
+				scrollDown(0);
+			}
 		}
 		
 		if(!event.altKey && !event.shiftKey && event.keyCode == 33){
-			getScrollPageDownPageUp()
 			//PageUp
-			setTimeout(function(){
-				if(scrollPageDownPageUp){
-					ok = true;
-					scrollUp(0);
-				}
-			}, 20);
+			getScrollPageDownPageUp(); // won't take effect this time, but it will take effect next time which is good enough
+			if(scrollPageDownPageUp){
+				ok = true;
+				scrollUp(0);
+			}
 		}
 	}
 	
