@@ -24,7 +24,15 @@
     "description": ""
   },
   "horizontalscroll": {
-    "message": "Verwenden Sie die Tastenkombination oben für horizontalen Bildlauf",
+    "message": "Verwenden Sie die Tastenkombination J/K für horizontalen Bildlauf",
+    "description": ""
+  },
+  "horizontalscrollshift": {
+    "message": "Verwenden Sie die Tastenkombination Shift+J/Shift+K für horizontalen Bildlauf",
+    "description": ""
+  },
+  "horizontalscrollalt": {
+    "message": "Verwenden Sie die Tastenkombination Alt+J/Alt+K für horizontalen Bildlauf",
     "description": ""
   },
   "savepreferences": {

@@ -24,7 +24,15 @@
     "description": ""
   },
   "horizontalscroll": {
-    "message": "Use the shortcut above for horizontal scrolling",
+    "message": "Use the shortcut J/K for horizontal scrolling",
+    "description": ""
+  },
+  "horizontalscrollshift": {
+    "message": "Use the shortcut Shift+J/Shift+K for horizontal scrolling",
+    "description": ""
+  },
+  "horizontalscrollalt": {
+    "message": "Use the shortcut Alt+J/Alt+K for horizontal scrolling",
     "description": ""
   },
   "savepreferences": {

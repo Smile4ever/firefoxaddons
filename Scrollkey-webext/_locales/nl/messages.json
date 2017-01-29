@@ -24,7 +24,15 @@
     "description": ""
   },
   "horizontalscroll": {
-    "message": "Gebruik de sneltoets hierboven voor horizontaal scrollen",
+    "message": "Gebruik de sneltoets J/K voor horizontaal scrollen",
+    "description": ""
+  },
+  "horizontalscrollshift": {
+    "message": "Gebruik de sneltoets Shift+J/Shift+K voor horizontaal scrollen",
+    "description": ""
+  },
+  "horizontalscrollalt": {
+    "message": "Gebruik de sneltoets Alt+J/Alt+K voor horizontaal scrollen",
     "description": ""
   },
   "savepreferences": {

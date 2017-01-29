@@ -15,35 +15,55 @@
 			min-width: 100%;
 		}
 		body{
-			font-size: 1em;
+			font-size: 1.25rem;
 			font-family: Segoe UI, sans-serif;
 			color: rgb(51, 51, 51);
+		}
+		.box{
+			border-top: 1px solid #c1c1c1;
+		}
+		input[type=number]{
+			max-width: 4em;
+		}
+		.invisible{
+			visibility: hidden;
 		}
 	</style>
     <form id="optionsform">
 		<table>
 			<tr>
-				<td><label><span id="scrollvalue">Scroll value</span></label></td><td><input type="number" id="scrollkey_scrollvalue" ></td>
+				<td><label><span id="scrollvalue">Scroll value</span></label></td>
+				<td><input type="number" id="scrollkey_scrollvalue"> <span id="pixels">pixels</span></td>
 			</tr>
 			<tr>
-				<td colspan="2"><label><input type="checkbox" id="scrollkey_scroll_pagedown_pageup"><span id="pagedownpageup">PageDown and PageUp scroll the value indicated above</span></label></td>
+				<td></td>
+				<td><label><input type="checkbox" id="scrollkey_horizontal_scroll"><span id="horizontalscroll">Use the shortcut J/K for horizontal scrolling</span></label></td>
 			</tr>
 			<tr>
-				<td colspan="2"><label><input type="checkbox" id="scrollkey_horizontal_scroll"><span id="horizontalscroll">Use the shortcut above for horizontal scrolling</span></label></td>
+				<td></td>
+				<td><label><input type="checkbox" id="scrollkey_scroll_pagedown_pageup"><span id="pagedownpageup">PageDown and PageUp scroll the value indicated above</span></label></td>
+			</tr>
+			<tr>
+				<td colspan="2"><span class="invisible">_</span></td>
 			</tr>
 			<tr>
 				<td><label><span id="scrollvalueshift">Scroll value (Shift)</span></label></td>
-				<td><input type="number" id="scrollkey_scrollvalue_shift" ></td>
+				<td><input type="number" id="scrollkey_scrollvalue_shift"><label> <span id="pixelsshift">pixels</span></td>
 			</tr>
 			<tr>
-				<td colspan="2"><label><input type="checkbox" id="scrollkey_horizontal_scroll_shift"><span id="horizontalscrollshift">Use the shortcut above for horizontal scrolling</span></label></td>
+				<td></td>
+				<td><label><input type="checkbox" id="scrollkey_horizontal_scroll_shift"><span id="horizontalscrollshift">Use the shortcut Shift+J/Shift+K for horizontal scrolling</span></label></td>
+			</tr>
+			<tr>
+				<td colspan="2"><span class="invisible">_</span></td>
 			</tr>
 			<tr>
 				<td><label><span id="scrollvaluealt">Scroll value (Alt)</span></label></td>
-				<td><input type="number" id="scrollkey_scrollvalue_alt" ></td>
+				<td><input type="number" id="scrollkey_scrollvalue_alt"> <span id="pixelsalt">pixels</span></td>
 			</tr>
 			<tr>
-				<td colspan="2"><label><input type="checkbox" id="scrollkey_horizontal_scroll_alt"><span id="horizontalscrollalt">Use the shortcut above for horizontal scrolling</span></label></td>
+				<td></td>
+				<td><label><input type="checkbox" id="scrollkey_horizontal_scroll_alt"><span id="horizontalscrollalt">Use the shortcut Alt+J/Alt+K for horizontal scrolling</span></label></td>
 			</tr>
 		</table>
 

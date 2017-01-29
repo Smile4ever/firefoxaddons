@@ -89,14 +89,20 @@ function restoreOptions() {
 }
 
 function i18n() {
-  document.querySelector("#scrollvalue").innerHTML = browser.i18n.getMessage("scrollvalue"); // "Scrollwaarde";
-  document.querySelector("#pagedownpageup").innerHTML = browser.i18n.getMessage("pagedownpageup"); // "PageDown en PageUp scrollen de waarde zoals hierboven aangegeven";
-  document.querySelector("#horizontalscroll").innerHTML = browser.i18n.getMessage("horizontalscroll"); // "Gebruik de sneltoets hierboven voor horizontaal scrollen";
-  document.querySelector("#scrollvalueshift").innerHTML = browser.i18n.getMessage("scrollvalueshift"); // "Scrollwaarde (Shift)";
-  document.querySelector("#horizontalscrollshift").innerHTML = browser.i18n.getMessage("horizontalscroll"); // "Gebruik de sneltoets hierboven voor horizontaal scrollen";
-  document.querySelector("#scrollvaluealt").innerHTML = browser.i18n.getMessage("scrollvaluealt"); // "Scrollwaarde (Alt)";
-  document.querySelector("#horizontalscrollalt").innerHTML = browser.i18n.getMessage("horizontalscroll"); // "Gebruik de sneltoets hierboven voor horizontaal scrollen";
-  document.querySelector("#savepreferences").innerHTML = browser.i18n.getMessage("savepreferences"); // "Voorkeuren opslaan";
+  document.querySelector("#scrollvalue").innerHTML = browser.i18n.getMessage("scrollvalue"); // "Scrollwaarde"
+  document.querySelector("#pagedownpageup").innerHTML = browser.i18n.getMessage("pagedownpageup"); // "PageDown en PageUp scrollen de waarde zoals hierboven aangegeven"
+  document.querySelector("#horizontalscroll").innerHTML = browser.i18n.getMessage("horizontalscroll"); // "Gebruik de sneltoets hierboven voor horizontaal scrollen"
+  document.querySelector("#pixels").innerHTML = browser.i18n.getMessage("pixels"); // "pixels"
+
+  document.querySelector("#scrollvalueshift").innerHTML = browser.i18n.getMessage("scrollvalueshift"); // "Scrollwaarde (Shift)"
+  document.querySelector("#pixelsshift").innerHTML = browser.i18n.getMessage("pixels"); // "pixels"
+  document.querySelector("#horizontalscrollshift").innerHTML = browser.i18n.getMessage("horizontalscrollshift"); // "Gebruik de sneltoets Shift+J/Shift+K voor horizontaal scrollen"
+  
+  document.querySelector("#scrollvaluealt").innerHTML = browser.i18n.getMessage("scrollvaluealt"); // "Scrollwaarde (Alt)"
+  document.querySelector("#horizontalscrollalt").innerHTML = browser.i18n.getMessage("horizontalscrollalt"); // "Gebruik de sneltoets Alt+J/Alt+K voor horizontaal scrollen"
+  document.querySelector("#pixelsalt").innerHTML = browser.i18n.getMessage("pixels"); // "pixels"
+
+  document.querySelector("#savepreferences").innerHTML = browser.i18n.getMessage("savepreferences"); // "Voorkeuren opslaan"
 }
 
 function init(){

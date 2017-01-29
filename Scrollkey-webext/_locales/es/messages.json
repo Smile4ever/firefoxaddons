@@ -1,6 +1,6 @@
 {
   "extensionDescription": {
-    "message": "Desplácese las páginas en estilo VIM con los accesos directos j y k.",
+    "message": "Permite desplazarte por la pagina al estilo VIM, utilizando las teclas J y K para moverte exactamente la cantidad que desees.",
     "description": "Descripción de la extensión."
   },
   "scrollvalue": {
@@ -8,11 +8,11 @@
     "description": ""
   },
   "scrollvalueshift": {
-    "message": "Valor de desplazamiento (Shift)",
+    "message": "Valor de desplazamiento utilizando (Shift)",
     "description": ""
   },
   "scrollvaluealt": {
-    "message": "Valor de desplazamiento (Alt)",
+    "message": "Valor de desplazamiento utilizando (Alt)",
     "description": ""
   },
   "pixels": {
@@ -20,11 +20,19 @@
     "description": ""
   },
   "pagedownpageup": {
-    "message": "AvPág y RePág desplazarse el valor indicado anteriormente",
+    "message": "Hacer que AvPág y RePág desplacen la pagina en el valor indicado anteriormente",
     "description": ""
   },
   "horizontalscroll": {
-    "message": "Utilice la tecla de acceso directo de arriba para el desplazamiento horizontal",
+    "message": "Utilizar J/K para desplazarse horizontalmente",
+    "description": ""
+  },
+  "horizontalscrollshift": {
+    "message": "Utilizar Shift+J/Shift+K para desplazarse horizontalmente",
+    "description": ""
+  },
+  "horizontalscrollalt": {
+    "message": "Utilizar Alt+J/Alt+K para desplazarse horizontalmente",
     "description": ""
   },
   "savepreferences": {

@@ -24,7 +24,15 @@
     "description": ""
   },
   "horizontalscroll": {
-    "message": "Utilisez la touche de raccourci ci-dessus pour le défilement horizontal",
+    "message": "Utilisez la touche de raccourci J/K pour le défilement horizontal",
+    "description": ""
+  },
+  "horizontalscrollshift": {
+    "message": "Utilisez la touche de raccourci Maj+J/Maj+K pour le défilement horizontal",
+    "description": ""
+  },
+  "horizontalscrollalt": {
+    "message": "Utilisez la touche de raccourci Alt+J/Alt+K pour le défilement horizontal",
     "description": ""
   },
   "savepreferences": {
