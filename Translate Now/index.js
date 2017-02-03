@@ -94,7 +94,7 @@ var doClick = function(sText, action){
 			newText = newText.replace("%25", "");
 			newText = newText.replace("%C2%A0", " ");
 			if(action == "speak"){
-				openTab("http://translate.google.com/translate_tts?tl=en&q=" + newText);
+				openTab("http://translate.google.com/translate_tts?tl=en&client=tw-ob&q=" + newText);
 			}else{
 				openTab("http://translate.google.com/#" + source_lang_value + "/" + dest_lang_value + "/" + newText);
 			}
