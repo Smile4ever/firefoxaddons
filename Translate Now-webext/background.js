@@ -76,6 +76,8 @@ browser.runtime.onMessage.addListener(function(message) {
 
 /// Context menus
 function initContextMenus(){
+	browser.contextMenus.removeAll();
+	
 	browser.contextMenus.create({
 		id: "translatenow-translate",
 		title: "Translate Now",
