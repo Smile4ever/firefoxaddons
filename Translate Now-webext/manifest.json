@@ -1,0 +1,23 @@
+{
+	"name": "Translate Now",
+	"description": "Right click a selection to translate words in Firefox.",
+	"homepage_url": "http://hugsmile.eu",
+	"manifest_version": 2,
+	"version": "1.0.0",
+	"background": {
+		"scripts": ["background.js"]
+	},
+	"icons": {
+		"64": "icons/translatenow-64.png"
+	},
+	"applications": {
+		"gecko": {
+			"id": "translatenow@hugsmile.eu",
+		"strict_min_version": "48.0"
+		}
+	},
+	"permissions": ["storage", "tabs", "contextMenus", "notifications"],
+	"options_ui": {
+		"page": "options.html"
+	}
+}
