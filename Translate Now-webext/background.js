@@ -98,7 +98,7 @@ function initContextMenus(){
 		}
 	}
 	
-	browser.contextMenus.onClicked.addListener(function(info, tab) {
+	browser.contextMenus.onClicked.addListener(function(info,tab){
 		switch (info.menuItemId) {
 			case "translatenow-translate":
 				doClick(info.selectionText, "translate");
@@ -112,33 +112,37 @@ function initContextMenus(){
 
 /// Translate Now Code
 function openTab(url){
-	try{
-		//console.log("openTab for url " + url);
-		//console.log("lastTabId is " + lastTabId);
-		//console.log("translate_now_reuse_tab is " + translate_now_reuse_tab);
-		
-		if(lastTabId != -1 && translate_now_reuse_tab){			
-			function onUpdated(tab) {
-				//console.log(`Updated tab: ${tab.id}`);
-			}
+	//console.log("openTab for url " + url);
+	//console.log("lastTabId is " + lastTabId);
+	//console.log("translate_now_reuse_tab is " + translate_now_reuse_tab);
 
-			function onError(error){
-				openTabInner(url);
-			}
-
+	if(lastTabId != -1 && translate_now_reuse_tab){
+		var gettingInfo = browser.tabs.get(lastTabId);
+		gettingInfo.then(onGot, onError);
+					
+		function onGot(tabInfo) {
+			//console.log("tab exists");
+			
 			var updating = browser.tabs.update(lastTabId, {
 				active: true,
 				url: url
-			});
-			updating.then(onUpdated, onError);		
-			
-			return;
+			}).then(
+				function(data){
+					//console.log(1, 'success', JSON.stringify(data));
+				},
+				function(error){
+					notify("Failed to update tab");
+					lastTabId = -1;
+				}
+			);
 		}
-	}catch(ex){
-		// go to below
-		console.log("openTab trouble" + ex);
+
+		function onError(error) {
+			openTabInner(url);
+		}
+	}else{
+		openTabInner(url);
 	}
-	openTabInner(url);
 }
 
 function openTabInner(url){
