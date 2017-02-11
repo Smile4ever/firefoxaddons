@@ -12,7 +12,7 @@
 	},
 	"applications": {
 		"gecko": {
-			"id": "translatenow@hugsmile.eu",
+			"id": "@translatenow",
 			"strict_min_version": "48.0"
 		}
 	},
