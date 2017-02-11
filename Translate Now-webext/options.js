@@ -35,7 +35,7 @@ function restoreOptions() {
 	}
 	
 	function setReuseTab(result){
-		document.querySelector("#translate_now_reuse_tab").checked = value(result) || false;
+		document.querySelector("#translate_now_reuse_tab").checked = value(result) || true;
 	}
 	
 	function setEnableSpeak(result){
