@@ -69,6 +69,9 @@ browser.runtime.onMessage.addListener(function(message) {
 			//console.log("received refresh-options");
 			init();
 			break;
+		case "notify":
+			notify(message.data);
+			break;
 		default:
 			break;
 	}
@@ -76,7 +79,13 @@ browser.runtime.onMessage.addListener(function(message) {
 
 /// Context menus
 function initContextMenus(){
-	browser.contextMenus.removeAll();
+	
+	try{
+		browser.contextMenus.onClicked.removeListener(listener);
+		browser.contextMenus.removeAll();
+	}catch(ex){
+		console.log("contextMenu remove failed: " + ex);
+	}
 	
 	browser.contextMenus.create({
 		id: "translatenow-translate",
@@ -98,16 +107,18 @@ function initContextMenus(){
 		}
 	}
 	
-	browser.contextMenus.onClicked.addListener(function(info,tab){
-		switch (info.menuItemId) {
-			case "translatenow-translate":
-				doClick(info.selectionText, "translate");
-				break;
-			case "translatenow-speak":
-				doClick(info.selectionText, "speak");
-				break;
-		}
-	});
+	browser.contextMenus.onClicked.addListener(listener);
+}
+
+function listener(info,tab){
+	switch (info.menuItemId) {
+		case "translatenow-translate":
+			doClick(info.selectionText, "translate");
+			break;
+		case "translatenow-speak":
+			doClick(info.selectionText, "speak");
+			break;
+	}
 }
 
 /// Translate Now Code
@@ -187,6 +198,7 @@ function onError(error) {
 function notify(message){
 	browser.notifications.create({
 		type: "basic",
+		iconUrl: browser.extension.getURL("icons/translatenow-64.png"),
 		title: "Translate Now",
 		message: message
 	});

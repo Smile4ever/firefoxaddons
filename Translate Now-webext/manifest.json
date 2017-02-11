@@ -13,7 +13,7 @@
 	"applications": {
 		"gecko": {
 			"id": "translatenow@hugsmile.eu",
-		"strict_min_version": "48.0"
+			"strict_min_version": "48.0"
 		}
 	},
 	"permissions": ["storage", "tabs", "contextMenus", "notifications"],

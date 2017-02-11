@@ -1,5 +1,6 @@
 function saveOptions(e) {
 	e.preventDefault();
+	browser.runtime.sendMessage({action: "notify", data: "Saved preferences"});
 	
 	/*console.log("options.js #translate_now_destination_language " + document.querySelector("#translate_now_destination_language").value);
 	console.log("options.js #translate_now_source_language " + document.querySelector("#translate_now_source_language").value);
