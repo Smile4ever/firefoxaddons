@@ -1,58 +1,73 @@
-function saveOptions(e) {
-	e.preventDefault();
+/*const PREFS = {
+	"translate_now_destination_language": {
+		"type": "value",
+		"default": "en"
+	},
+	"translate_now_source_language": {
+		"type": "value",
+		"default": "auto"
+	},
+	"translate_now_reuse_tab": {
+		"type": "checked",
+		"default": true
+	},
+	"translate_now_enable_speak": {
+		"type": "checked",
+		"default": false
+	}
+};*/
+
+function saveOptions() {
 	browser.runtime.sendMessage({action: "notify", data: "Saved preferences"});
-	
-	/*console.log("options.js #translate_now_destination_language " + document.querySelector("#translate_now_destination_language").value);
-	console.log("options.js #translate_now_source_language " + document.querySelector("#translate_now_source_language").value);
-	console.log("options.js #translate_now_reuse_tab " + document.querySelector("#translate_now_reuse_tab").value);*/
 
 	browser.storage.local.set({
-		translate_now_destination_language: document.querySelector("#translate_now_destination_language").value
-	});
-	browser.storage.local.set({
-		translate_now_source_language: document.querySelector("#translate_now_source_language").value
-	});
-	browser.storage.local.set({
-		translate_now_reuse_tab: document.querySelector("#translate_now_reuse_tab").checked
-	});
-	browser.storage.local.set({
+		translate_now_destination_language: document.querySelector("#translate_now_destination_language").value,
+		translate_now_source_language: document.querySelector("#translate_now_source_language").value,
+		translate_now_reuse_tab: document.querySelector("#translate_now_reuse_tab").checked,
 		translate_now_enable_speak: document.querySelector("#translate_now_enable_speak").checked
-	});
-	
-	setTimeout(function(){
-		browser.runtime.sendMessage({action: "refresh-options"});
-	}, 20);
+	}).then(() => browser.runtime.sendMessage({action: "refresh-options"}));
 }
+
+/*function saveOptions() { 
+	browser.runtime.sendMessage({action: "notify", data: "Saved preferences"});
+	
+	const values = {};
+	for(const p in PREFS) {
+		values[p] = document.getElementById(p)[PREFS[p].type];
+	}
+
+	browser.storage.local.set(values).then(() => browser.runtime.sendMessage({action: "refresh-options"}));
+}*/
 
 function restoreOptions() {
 
 	function setDestinationLanguage(result) {
-		document.querySelector("#translate_now_destination_language").value = value(result) || "en";
+		document.querySelector("#translate_now_destination_language").value = value(result, "en");
 	}
 	
 	function setSourceLanguage(result) {
-		document.querySelector("#translate_now_source_language").value = value(result) || "auto";
+		document.querySelector("#translate_now_source_language").value = value(result, "auto");
 	}
 	
 	function setReuseTab(result){
-		document.querySelector("#translate_now_reuse_tab").checked = value(result) || true;
+		document.querySelector("#translate_now_reuse_tab").checked = value(result, true);
 	}
 	
 	function setEnableSpeak(result){
-		document.querySelector("#translate_now_enable_speak").checked = value(result) || false;
+		document.querySelector("#translate_now_enable_speak").checked = value(result, false);
 	}
 
 	function onError(error) {
 		console.log(`Error: ${error}`);
 	}
 
-	function value(result){
+	function value(result,defaultValue){
 		for(var key in result) {
 			if(result.hasOwnProperty(key)) {
 				return result[key];
 			}
 		}
-		return undefined;
+		return defaultValue;
 	}
 	
 	var getting1 = browser.storage.local.get("translate_now_destination_language");
@@ -68,9 +83,25 @@ function restoreOptions() {
 	getting4.then(setEnableSpeak, onError);
 }
 
+
+/*function restoreOptions() {
+	browser.storage.local.get(Object.keys(PREFS)).then((result) => {
+		let val;
+		for(const p in PREFS) {
+			if(p in result) {
+				val = result[p];
+			}
+			else {
+				val = PREFS[p].default;
+			}
+			document.getElementById(p)[PREFS[p].type] = val;
+		}
+	}).catch(console.error);
+}*/
+
 function init(){
 	restoreOptions();
 }
 
-document.addEventListener("DOMContentLoaded", init);
-document.querySelector("form").addEventListener("submit", saveOptions);
+window.addEventListener("DOMContentLoaded", init, { passive: true });
+document.querySelector("form").addEventListener("submit", (e) => { e.preventDefault(); saveOptions(); }, { passive: false });

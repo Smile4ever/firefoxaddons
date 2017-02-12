@@ -11,62 +11,40 @@ var translate_now_reuse_tab;
 var translate_now_enable_speak;
 
 function init(){
-	function setDestinationLanguage(result) {
-		//console.log("background.js setDestinationLanguage " + value(result));
-		translate_now_destination_language = value(result) || "en";
+	var valueOrDefault = function(value, defaultValue){
+		if(value == undefined)
+			return defaultValue;
+		return value;
 	}
 	
-	function setSourceLanguage(result) {
-		//console.log("background.js setSourceLanguage " + value(result));
-		translate_now_source_language = value(result) || "auto";
-	}
+	browser.storage.local.get([
+		"translate_now_destination_language",
+		"translate_now_source_language",
+		"translate_now_reuse_tab",
+		"translate_now_enable_speak"
+	]).then((result) => {
+		console.log("background.js result" + JSON.stringify(result));
+		console.log("background.js setDestinationLanguage " + result.translate_now_destination_language);
+		translate_now_destination_language = valueOrDefault(result.translate_now_destination_language, "en");
 	
-	function setReuseTab(result) {
-		//console.log("background.js setReuseTab " + value(result));
-		translate_now_reuse_tab = value(result) || false;
-	}
+		console.log("background.js setSourceLanguage " + result.translate_now_source_language);
+		translate_now_source_language = valueOrDefault(result.translate_now_source_language, "auto");
 	
-	function setEnableSpeak(result) {
-		//console.log("background.js setEnableSpeak " + value(result));
-		translate_now_enable_speak = value(result) || false;
-	}
-
-	/* This function was taken from Scrollkey */
-	var value = function(result){
-		// Firefox <= 51 returns an array, which isn't correct behaviour. This code works around that bug. See also https://bugzilla.mozilla.org/show_bug.cgi?id=1328616
-		if(Array.isArray(result)){
-			result = result[0];
-		}
-		for(var key in result) {
-			if(result.hasOwnProperty(key)) {
-				return result[key];
-			}
-		}
-		return undefined;
-	}
+		console.log("background.js setReuseTab " + result.translate_now_reuse_tab);
+		translate_now_reuse_tab = valueOrDefault(result.translate_now_reuse_tab, true);
 	
-	var getting1 = browser.storage.local.get("translate_now_destination_language");
-	getting1.then(setDestinationLanguage, onError);
-	
-	var getting2 = browser.storage.local.get("translate_now_source_language");
-	getting2.then(setSourceLanguage, onError);
-	
-	var getting3 = browser.storage.local.get("translate_now_reuse_tab");
-	getting3.then(setReuseTab, onError);
-	
-	var getting4 = browser.storage.local.get("translate_now_enable_speak");
-	getting4.then(setEnableSpeak, onError);
-	
-	setTimeout(function(){
+		console.log("background.js setEnableSpeak " + result.translate_now_enable_speak);
+		translate_now_enable_speak = valueOrDefault(result.translate_now_enable_speak, false);
+		
 		initContextMenus();
-	}, 20);
+	}).catch(console.error);
+	
 }
 init();
 
 browser.runtime.onMessage.addListener(function(message) {
 	switch (message.action) {
 		case "refresh-options":
-			//console.log("received refresh-options");
 			init();
 			break;
 		case "notify":
@@ -174,8 +152,8 @@ function doClick(selectionText, action){
 	if(selectedText == null){
 		notify("Try another selection");
 	}else{
-		if(selectedText.length > 93 && action == "speak"){
-			notify("Selected text is too long");
+		if(selectedText.length > 150 && action == "speak"){
+			notify("Selected text is too long. Maximum length is 150.");
 		}else{
 			var newText = selectedText;
 			newText = encodeURIComponent(newText);
