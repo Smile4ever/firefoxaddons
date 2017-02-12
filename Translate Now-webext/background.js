@@ -23,17 +23,17 @@ function init(){
 		"translate_now_reuse_tab",
 		"translate_now_enable_speak"
 	]).then((result) => {
-		console.log("background.js result" + JSON.stringify(result));
-		console.log("background.js setDestinationLanguage " + result.translate_now_destination_language);
+		//console.log("background.js result" + JSON.stringify(result));
+		//console.log("background.js setDestinationLanguage " + result.translate_now_destination_language);
 		translate_now_destination_language = valueOrDefault(result.translate_now_destination_language, "en");
 	
-		console.log("background.js setSourceLanguage " + result.translate_now_source_language);
+		//console.log("background.js setSourceLanguage " + result.translate_now_source_language);
 		translate_now_source_language = valueOrDefault(result.translate_now_source_language, "auto");
 	
-		console.log("background.js setReuseTab " + result.translate_now_reuse_tab);
+		//console.log("background.js setReuseTab " + result.translate_now_reuse_tab);
 		translate_now_reuse_tab = valueOrDefault(result.translate_now_reuse_tab, true);
 	
-		console.log("background.js setEnableSpeak " + result.translate_now_enable_speak);
+		//console.log("background.js setEnableSpeak " + result.translate_now_enable_speak);
 		translate_now_enable_speak = valueOrDefault(result.translate_now_enable_speak, false);
 		
 		initContextMenus();
@@ -148,6 +148,7 @@ function openTabInner(url){
 function doClick(selectionText, action){
 	if(selectionText != "" || selectionText == null){
 		selectedText = selectionText;
+		//console.log("selectionText length is " + selectionText.length);
 	}
 	if(selectedText == null){
 		notify("Try another selection");
