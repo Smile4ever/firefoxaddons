@@ -1,2 +1,2 @@
 #!/bin/bash
-web-ext build --ignore-files webext-build.sh images README.md
+web-ext build --ignore-files build.sh images README.md
