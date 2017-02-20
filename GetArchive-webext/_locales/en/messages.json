@@ -1,0 +1,78 @@
+{
+  "extensionDescription": {
+    "message": "Gets a previous version from a webpage using archive.org or archive.is.",
+    "description": ""
+  },
+  "search_engine": {
+	"message": "Search engine",
+	"description": ""
+  },
+  "search_engine_descr": {
+	"message": "Search engine used by the key g",
+	"description": ""
+  },
+  "ctrl_c": {
+    "message": "CTRL+C",
+    "description": ""
+  },
+  "ctrl_c_descr": {
+    "message": "CTRL+C copies the URL if no text is selected",
+    "description": ""
+  },
+  "ctrl_c_enable": {
+    "message": "Enable CTRL+C",
+    "description": ""
+  },
+  "ctrl_c_require_focus": {
+    "message": "CTRL+C requires focus on page element",
+    "description": ""
+  },
+  "prefer_long_link": {
+    "message": "Prefer long link over the short link on archive.is",
+    "description": ""
+  },
+  "default_archive_service": {
+    "message": "Default archive service",
+	"description": "n"
+  },
+  "default_archive_service_descr": {
+    "message": "Default archive service used by the toolbar button",
+	"description": ""
+  },
+  "show_contextmenu_item_archiveorg": {
+    "message": "Show context menu item Archive.org",
+	"description": ""
+  },
+  "show_contextmenu_item_archiveis": {
+    "message": "Show context menu item Archive.is",
+	"description": ""
+  },
+  "show_contextmenu_item_webcitation": {
+    "message": "Show context menu item WebCitation",
+	"description": ""
+  },
+   "show_contextmenu_item_googlecache": {
+    "message": "Show context menu item Google Cache",
+	"description": ""
+  },
+  "automatic_forward": {
+	"message": "Pick the best link automatically (automatic forward)",
+	"description": ""
+  },
+  "related_tabs": {
+	"message": "Open new tabs after the current tab",
+	"description": ""
+  },
+  "related_tabs_descr": {
+	"message": "Open new tabs next to the current tab as related tabs",
+	"description": ""
+  },
+  "keyboard_shortcut": {
+	"message": "Keyboard shortcut",
+	"description": ""
+  },
+  "save_preferences": {
+    "message": "Save preferences",
+    "description": ""
+  }
+}
