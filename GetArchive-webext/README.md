@@ -1,5 +1,5 @@
 #Get Archive
-Gets a previous version from a webpage using archive.org, archive.is or webcitation.org.
+Gets a previous version from a webpage using archive.org, archive.is, webcitation.org or Google Cache.
 
 Options
 
