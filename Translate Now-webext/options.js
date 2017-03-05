@@ -11,6 +11,10 @@ const PREFS = {
 		"type": "checked",
 		"default": true
 	},
+	"translate_now_related_tabs": {
+		"type": "checked",
+		"default": true
+	},
 	"translate_now_enable_speak": {
 		"type": "checked",
 		"default": false

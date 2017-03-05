@@ -9,6 +9,7 @@ var globalAction = "";
 var translate_now_destination_language;
 var translate_now_source_language;
 var translate_now_reuse_tab;
+var translate_now_related_tabs;
 var translate_now_enable_speak;
 
 function init(){
@@ -22,6 +23,7 @@ function init(){
 		"translate_now_destination_language",
 		"translate_now_source_language",
 		"translate_now_reuse_tab",
+		"translate_now_related_tabs",
 		"translate_now_enable_speak"
 	]).then((result) => {
 		//console.log("background.js result" + JSON.stringify(result));
@@ -33,6 +35,9 @@ function init(){
 	
 		//console.log("background.js setReuseTab " + result.translate_now_reuse_tab);
 		translate_now_reuse_tab = valueOrDefault(result.translate_now_reuse_tab, true);
+				
+		//console.log("background.js setRelatedTabs " + result.translate_now_related_tabs);
+		translate_now_related_tabs = valueOrDefault(result.translate_now_related_tabs, true);
 	
 		//console.log("background.js setEnableSpeak " + result.translate_now_enable_speak);
 		translate_now_enable_speak = valueOrDefault(result.translate_now_enable_speak, false);
@@ -65,14 +70,11 @@ browser.runtime.onMessage.addListener(function(message) {
 function sendMessage(action, data){
 	function logTabs(tabs) {
 		for (tab of tabs) {
-			// tab.url requires the tabs permission
-			//console.log(tab.url);
 			browser.tabs.sendMessage(tab.id, {"action": action, "data": data});
 		}
 	}
 
-	var querying = browser.tabs.query({currentWindow: true, active: true});
-	querying.then(logTabs, onError);
+	browser.tabs.query({currentWindow: true, active: true}).then(logTabs, onError);
 }
 
 /// Context menus
@@ -126,9 +128,8 @@ function openTab(url){
 	//console.log("translate_now_reuse_tab is " + translate_now_reuse_tab);
 
 	if(lastTabId != -1 && translate_now_reuse_tab){
-		var gettingInfo = browser.tabs.get(lastTabId);
-		gettingInfo.then(onGot, onError);
-					
+		browser.tabs.get(lastTabId).then(onGot, onError);
+		
 		function onGot(tabInfo) {
 			//console.log("tab exists");
 			
@@ -155,15 +156,37 @@ function openTab(url){
 }
 
 function openTabInner(url){
-	var creating = browser.tabs.create({
-		url: url,
-		active: true
-	}).then(onCreated, onError);
+	var parentTabIndex = -1;
 	
-	function onCreated(tab){
-		lastTabId = tab.id;
+	function ready(tabs) {
+		parentTabIndex = tabs[0].index;
+		
+		var creating = browser.tabs.create({
+			url: url,
+			active: true
+		}).then(onCreated, onError);
+		
+		function onCreated(tab){
+			lastTabId = tab.id;
+			
+			if(translate_now_related_tabs){
+				moveTabToCurrent(tab.id, parentTabIndex);
+			}
+		}
+	}
+
+	browser.tabs.query({currentWindow: true, active: true}).then(ready, onError);
+}
+
+/// Code from Get Archive
+function moveTabToCurrent(tabId, parentTabIndex) {
+	browser.tabs.move(tabId, {index: parentTabIndex + 1}).then(onMoved, onError);
+	
+	function onMoved(tab) {
+		//onDebug("Moved:" + JSON.stringify(tab));
 	}
 }
+/// End of code from Get Archive
 
 function doClick(selectionText, action){
 	// Ideally, we want to do this
