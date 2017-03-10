@@ -21,6 +21,8 @@ var eventHandler = function(e) {
 	if (e && (e.which == 2 || e.button == 4 )) {
 		//console.log(e.target.tagName);
 		sendMessage("closeTab");
+		e.preventDefault();
+		e.stopPropagation();
 	}
 }
 
@@ -42,9 +44,13 @@ document.addEventListener("DOMContentLoaded", function(){
 			//console.log("frame " + i + " - " + iframes[i].getAttribute("src"));
 			try{
 				iframes[i].contentWindow.addEventListener("click", onClickHandler);
+				iframes[i].contentWindow.addEventListener("mousedown", eventHandler);
 			}catch(ex){
 				//console.log(ex);
 			}
 		}
 	}
 });
+
+// Disable autoscrolling
+window.addEventListener('mousedown', eventHandler);
