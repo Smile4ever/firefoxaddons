@@ -1,4 +1,4 @@
 TODO
 =============
 
-* Nothing currently
+* Make shortcut to enable autoscrolling customizable
