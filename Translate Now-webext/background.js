@@ -67,10 +67,13 @@ browser.runtime.onMessage.addListener(function(message) {
 });
 
 // See also https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/Tabs/sendMessage
-function sendMessage(action, data){
+function sendMessage(action, data, errorCallback){
 	function logTabs(tabs) {
 		for (tab of tabs) {
-			browser.tabs.sendMessage(tab.id, {"action": action, "data": data});
+			browser.tabs.sendMessage(tab.id, {"action": action, "data": data}).catch(function(){
+				onError("failed to execute " + action + "with data " + data);
+				if(errorCallback) errorCallback(data);
+			});
 		}
 	}
 
@@ -84,7 +87,7 @@ function initContextMenus(){
 		browser.contextMenus.onClicked.removeListener(listener);
 		browser.contextMenus.removeAll();
 	}catch(ex){
-		console.log("contextMenu remove failed: " + ex);
+		//console.log("contextMenu remove failed: " + ex);
 	}
 	
 	browser.contextMenus.create({
@@ -103,7 +106,7 @@ function initContextMenus(){
 
 	function onCreated(n) {
 		if (browser.runtime.lastError) {
-			console.log(`Error: ${browser.runtime.lastError}`);
+			//console.log(`Error: ${browser.runtime.lastError}`);
 		}
 	}
 	
@@ -133,7 +136,7 @@ function openTab(url){
 		function onGot(tabInfo) {
 			//console.log("tab exists");
 			
-			var updating = browser.tabs.update(lastTabId, {
+			browser.tabs.update(lastTabId, {
 				active: true,
 				url: url
 			}).then(
@@ -161,7 +164,7 @@ function openTabInner(url){
 	function ready(tabs) {
 		parentTabIndex = tabs[0].index;
 		
-		var creating = browser.tabs.create({
+		browser.tabs.create({
 			url: url,
 			active: true
 		}).then(onCreated, onError);
@@ -194,44 +197,62 @@ function doClick(selectionText, action){
 	
 	// But we now do this to circumvent https://bugzilla.mozilla.org/show_bug.cgi?id=1338898
 	globalAction = action;
-	sendMessage("getSelection");
+	sendMessage("getSelection", selectionText, priviledgedSiteNoContentScript);
+}
+
+function priviledgedSiteNoContentScript(selectionText){
+	// We are probably on addons.mozilla.org or another priviledged website
+	//notify("This website is not supported due to security restrictions.");
+	
+	// Support for addons.mozilla.org among other websites (best effort)
+	doAction(selectionText, globalAction);
 }
 
 function doAction(selectionText, action){
-	if(selectionText != "" || selectionText == null){
+	if(selectionText != "" || selectionText != null){
 		selectedText = selectionText;
 		//console.log("selectionText length is " + selectionText.length);
 	}
-	if(selectedText == null){
-		notify("Try another selection");
+	
+	if(selectedText == "" || selectedText == null){
+		notify("Please try another selection.");
+		return;
+	}
+	
+	if(selectedText.length > 195 && action == "speak"){
+		selectedText = selectedText.substring(0, 195);
+		notify("Selected text is too long. Only the first 195 characters will be spoken.");
+	}
+	
+	if(selectedText.length > 5000 && action == "translate"){
+		notify("Selected text is too long. Only the first 5000 selected characters will be translated.");
+	}
+	
+	var newText = selectedText;
+	newText = encodeURIComponent(newText);
+	newText = newText.replace("%25", "");
+	newText = newText.replace("%C2%A0", " ");
+		
+	if(action == "speak"){
+		openTab("https://translate.google.com/translate_tts?tl=en&client=tw-ob&q=" + newText);
 	}else{
-		if(selectedText.length > 195 && action == "speak"){
-			notify("Selected text is too long. Maximum length is 195.");
-		}else{
-			var newText = selectedText;
-			newText = encodeURIComponent(newText);
-			newText = newText.replace("%25", "");
-			newText = newText.replace("%C2%A0", " ");
-			if(action == "speak"){
-				openTab("http://translate.google.com/translate_tts?tl=en&client=tw-ob&q=" + newText);
-			}else{
-				openTab("http://translate.google.com/#" + translate_now_source_language + "/" + translate_now_destination_language + "/" + newText);
-			}
-		}
+		openTab("https://translate.google.com/#" + translate_now_source_language + "/" + translate_now_destination_language + "/" + newText);
 	}
 }
 
 function setSelection(selectionText){
+	//console.log("selectionText from page is " + selectionText);
 	doAction(selectionText, globalAction);
 }
 
 /// Helper functions
 function onError(error) {
-	console.log(`Error: ${error}`);
+	//console.log(`Error: ${error}`);
 }
 
 function notify(message){
-	browser.notifications.create({
+	browser.notifications.create(message.substring(0, 20).replace(" ", ""),
+	{
 		type: "basic",
 		iconUrl: browser.extension.getURL("icons/translatenow-64.png"),
 		title: "Translate Now",

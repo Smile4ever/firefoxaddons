@@ -49,6 +49,8 @@ function restoreOptions() {
 
 function init(){
 	restoreOptions();
+	document.querySelector("form").style.display = "block";
+	document.querySelector(".refreshOptions").style.display = "none";
 }
 
 window.addEventListener("DOMContentLoaded", init, { passive: true });
