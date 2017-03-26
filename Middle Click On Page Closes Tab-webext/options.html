@@ -37,7 +37,7 @@
 		}
 		
 		/* CSS used from https://github.com/kainsavage/HistoryBlock/blob/web-extension/options/options.css */
-		body, button,label,input,select {
+		body, button,label,input,select,textarea {
 		  font-family: Segoe UI, sans-serif;
 		  font-size: 16px; /* Adapted */
 		  color: #333; /* From Mozilla Firefox CSS */
@@ -97,13 +97,16 @@
 		.keyboard_shortcut{
 			max-width: 165px;
 		}
+		.longtextbox{
+			min-width: 180%;
+		}
 	</style>
     <form id="optionsform">
 		<div class="hr"></div>
 		
 		<div class="flexbox-container">
 			<div>
-				<label>Autoscrolling tipping point</label><div class="descr">A middle click to close the current tab should be less than this, otherwise autoscrolling is activated.</div>
+				<label>Autoscrolling tipping point</label><div class="descr">A middle click to close the current tab should be less than this, otherwise autoscrolling is activated if "On every page" is enabled.</div>
 			</div>
 			<div>
 				<label><input type="number" id="middleclick_autoscrolling_tipping_point"> milliseconds</label>
@@ -117,21 +120,25 @@
 		
 		<div class="flexbox-container">
 			<div>
-				<label>Enable autoscrolling on every page</label><div class="descr">And still allow middle click on page to close tab</div>
+				<label>Enable autoscrolling</label><div class="descr">And still allow middle click on page to close tab</div>
 			</div>
 			<div>
-				<label class="checkbox"><input type="checkbox" id="middleclick_autoscrolling_every_page">Enable autoscrolling on every page</label>
+				<select id="middleclick_autoscrolling">
+					<option value="always">On every page</option>
+					<option value="ondemand">On demand</option>
+					<option value="never">Never</option>
+				</select>
 			</div>
 			<div>
 				<!-- Empty -->
 			</div>
 		</div>
 	
-		<div class="hr" style="display: none"></div>		
+		<div class="hr"></div>		
 		
-		<div class="flexbox-container" style="display: none">
+		<div class="flexbox-container">
 			<div>
-				<label>Shortcut enable autoscrolling once</label><div class="descr">Shortcut to enable autoscrolling on a page</div>
+				<label>Shortcut to toggle autoscrolling</label><div class="descr">Shortcut to enable or disable autoscrolling on a page (only works in on demand mode)</div>
 			</div>
 			<div>
 				<label><input type="text" id="middleclick_autoscrolling_current_page" class="keyboard_shortcut"/></label>
@@ -141,6 +148,20 @@
 			</div>
 		</div>
 		
+		<div class="hr"></div>		
+		
+		<div class="flexbox-container">
+			<div>
+				<label>Autoscrolling URL whitelist</label><div class="descr">Always enable autoscrolling on these pages and prevent middle click from closing these websites. Even works when "Enable autoscrolling" is set to "Never".</div>
+			</div>
+			<div>
+				<label><textarea id="middleclick_autoscrolling_whitelist" rows="10" cols="40"></textarea></label>
+			</div>
+			<div>
+				<!-- Empty -->
+			</div>
+		</div>
+
         <button type="submit"><span id="save_preferences">Save preferences</span></button>
     </form>
 

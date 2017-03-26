@@ -1,15 +1,19 @@
 const PREFS = {
 	"middleclick_autoscrolling_tipping_point": {
 		"type": "value",
-		"default": "200"
+		"default": "300"
 	},
-	"middleclick_autoscrolling_every_page": {
-		"type": "checked",
-		"default": false
+	"middleclick_autoscrolling": {
+		"type": "value",
+		"default": "ondemand"
 	},
 	"middleclick_autoscrolling_current_page": {
 		"type": "value",
-		"default": "Escape"
+		"default": "Shift+Escape"
+	},
+	"middleclick_autoscrolling_whitelist": {
+		"type": "value",
+		"default": ""
 	}
 };
 

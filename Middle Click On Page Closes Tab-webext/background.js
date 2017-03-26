@@ -1,31 +1,5 @@
-/// Preferences
-var middleclick_autoscrolling_tipping_point;
-var middleclick_autoscrolling_every_page;
-var middleclick_autoscrolling_current_page;
-
-function init(){
-	var valueOrDefault = function(value, defaultValue){
-		if(value == undefined) return defaultValue;
-		return value;
-	}
-	
-	browser.storage.local.get([
-		"middleclick_autoscrolling_tipping_point",
-		"middleclick_autoscrolling_every_page",
-		"middleclick_autoscrolling_current_page"
-	]).then((result) => {
-		onVerbose("background.js middleclick_autoscrolling_tipping_point " + result.middleclick_autoscrolling_tipping_point);
-		middleclick_autoscrolling_tipping_point = valueOrDefault(result.middleclick_autoscrolling_tipping_point, "200");
-		
-		onVerbose("background.js middleclick_autoscrolling_every_page " + result.middleclick_autoscrolling_every_page);
-		middleclick_autoscrolling_every_page = valueOrDefault(result.middleclick_autoscrolling_every_page, false);
-		
-		onVerbose("background.js middleclick_autoscrolling_current_page " + result.middleclick_autoscrolling_current_page);
-		middleclick_autoscrolling_current_page = valueOrDefault(result.middleclick_autoscrolling_current_page, "Escape");
-	}).catch(console.error);
-}
-init();
-
+/// Messages
+// Listen for messages from the content script
 browser.runtime.onMessage.addListener(function(message) {
 	switch (message.action) {
 		case "closeTab":
@@ -35,7 +9,10 @@ browser.runtime.onMessage.addListener(function(message) {
 			notify(message.data);
 			break;
 		case "refresh-options":
-			init();
+			sendMessages("refreshOptions");
+			break;
+		case "onError":
+			onError(message.data);
 			break;
 		case "onDebug":
 			onDebug(message.data);
@@ -48,6 +25,32 @@ browser.runtime.onMessage.addListener(function(message) {
 	}
 });
 
+// See also https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/Tabs/sendMessage
+function sendMessage(action, data){
+	function logTabs(tabs) {
+		for (tab of tabs) {
+			browser.tabs.sendMessage(tab.id, {"action": action, "data": data}).catch(function(){
+				onError("failed to execute " + action + "with data " + data);
+			});
+		}
+	}
+
+	browser.tabs.query({currentWindow: true, active: true}).then(logTabs, onError);
+}
+
+// Send messages to all content scripts
+function sendMessages(action, data){
+	function logTabs(tabs) {
+		for (tab of tabs) {
+			browser.tabs.sendMessage(tab.id, {"action": action, "data": data}).catch(function(){
+				// no content script for this tab
+			});
+		}
+	}
+
+	browser.tabs.query({windowType:"normal"}).then(logTabs, onError);
+}
+
 /// Tab functions
 function closeTab(){
 	browser.tabs.query({currentWindow: true, active: true}).then(onSuccess, onError);
@@ -55,7 +58,7 @@ function closeTab(){
 	function onSuccess(activeTabs) {
 		var activeTab = activeTabs[0];
 		browser.tabs.remove(activeTab.id);
-		//console.log("Middle Click On Page Closes Tab " + activeTab.url);
+		//onDebug("Middle Click On Page Closes Tab " + activeTab.url);
 	}
 }
 

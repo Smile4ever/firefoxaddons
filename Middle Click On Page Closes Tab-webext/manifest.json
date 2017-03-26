@@ -3,7 +3,7 @@
 	"description": "Middle click on a page to close the current tab.",
 	"homepage_url": "http://hugsmile.eu",
 	"manifest_version": 2,
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"background": {
 		"scripts": ["background.js"]
 	},
@@ -13,7 +13,7 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"js": ["middleclick.js"],
+			"js": ["middleclick.js", "utils/keyutils.js"],
 			"run_at": "document_start"
 		}
 	],
