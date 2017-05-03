@@ -27,5 +27,42 @@ function getSelection() {
 		// I don't trust the code above, make sure we return window.getSelection() at all times when there is an error with the code above
 	}
 	
+	
+	/// Code from Get Archive
+	var frameIdentifiers = ["iframe", "frame"];
+	var i = 0;
+	
+	try{
+		for(i = 0; i < frameIdentifiers.length; i++){
+			var frames = document.getElementsByTagName(frameIdentifiers[i]);
+			var i = 0;
+			//console.log("number of frames: " + frames.length);
+			if(frames.length > 0){
+				for(i = 0; i < frames.length; i++){
+					try{
+						var frame = frames[i];
+						var idoc = frame.contentDocument || frame.contentWindow.document;
+						var frameselection = idoc.getSelection();
+						if(frameselection == null){
+							continue;
+						}
+						
+						if(frameselection.toString().length > 0){
+							//console.log("translatenow.js returning (i)frame selection");
+							return frameselection.toString();
+						}
+					}catch(innerex){
+						if(frame.getAttribute("src").indexOf("google") == -1 && frame.getAttribute("src").indexOf("facebook") == -1 && frame.getAttribute("src").indexOf("twitter") == -1){
+							//console.log("CROSS-DOMAIN IFRAME on URL " + frame.getAttribute("src"));
+						}
+					}
+				}
+			}
+		}
+	}catch(ex){
+		// I don't trust the code above, make sure we return window.getSelection() at all times when there is an error with the code above
+	}
+	/// End of code from Get Archive
+	
     return window.getSelection().toString();
 }

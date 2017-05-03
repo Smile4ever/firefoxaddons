@@ -192,12 +192,14 @@ function moveTabToCurrent(tabId, parentTabIndex) {
 /// End of code from Get Archive
 
 function doClick(selectionText, action){
-	// Ideally, we want to do this
-	// doAction(selectionText, action);
-	
-	// But we now do this to circumvent https://bugzilla.mozilla.org/show_bug.cgi?id=1338898
-	globalAction = action;
-	sendMessage("getSelection", selectionText, priviledgedSiteNoContentScript);
+	if(selectionText.length < 150){
+		// Ideally, we want to do this which also works for cross-domain iframes (nice!!)
+		doAction(selectionText, action);
+	}else{
+		// But we now do this if the selection is too long to circumvent https://bugzilla.mozilla.org/show_bug.cgi?id=1338898
+		globalAction = action;
+		sendMessage("getSelection", selectionText, priviledgedSiteNoContentScript);
+	}
 }
 
 function priviledgedSiteNoContentScript(selectionText){
