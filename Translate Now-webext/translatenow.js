@@ -4,8 +4,21 @@ browser.runtime.onMessage.addListener(onMessage);
 function onMessage(message) {
 	switch(message.action){
 		case "getSelection": 
-			sendMessage("setSelection", getSelection());
+			sendMessage("setSelection", {selection: getSelection(), pageUrl: window.location.href});
+			//sendMessage("setSelection", window.getSelection().toString();
 			break;
+		case "bingTranslate":
+			bingTranslate(message.data.translate_now_source_language, message.data.translate_now_destination_language, message.data.selectedText);
+			break;
+		case "bingSpeak":
+			bingSpeak(message.data.translate_now_source_language, message.data.translate_now_destination_language, message.data.selectedText, message.data.translate_now_to_speak);
+			break;
+		case "googleSpeak":
+			googleSpeak(message.data);
+			break;
+		/*case "setGoogleTranslateText":
+			setGoogleTranslateText(message.data);
+			break;*/
 		default:
 			break;
 	}
@@ -16,16 +29,8 @@ function sendMessage(action, data){
 }
 
 function getSelection() {
-	try{
-		if(document.activeElement != null && (document.activeElement.tagName === "TEXTAREA" || document.activeElement.tagName === "INPUT")) {
-			var inputSelectedText = document.activeElement.value.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
-			if(inputSelectedText != null && inputSelectedText != ""){
-				return inputSelectedText;
-			}
-		}
-	}catch(ex){
-		// I don't trust the code above, make sure we return window.getSelection() at all times when there is an error with the code above
-	}
+	var inputSel = getInputSelection(document);
+	if(inputSel != "") return inputSel;
 	
 	var normalSelection = window.getSelection().toString();
 	if(normalSelection != "") return normalSelection;
@@ -37,7 +42,7 @@ function getSelection() {
 		var i = 0;
 		for(i = 0; i < frameIdentifiers.length; i++){
 			var frames = document.getElementsByTagName(frameIdentifiers[i]);
-			console.log("number of frames: " + frames.length);
+			//console.log("number of frames: " + frames.length);
 			
 			if(frames.length == 0){
 				continue;
@@ -54,7 +59,12 @@ function getSelection() {
 					var idoc = frame.contentDocument || frame.contentWindow.document;
 					var frameselection = idoc.getSelection();
 					if(frameselection == null){
-						continue;
+						var inputSel = getInputSelection(idoc);
+						if(inputSel != ""){
+							return inputSel;
+						}else{
+							continue;
+						}
 					}
 					
 					if(frameselection.toString().length > 0){
@@ -74,3 +84,150 @@ function getSelection() {
 	
     return "";
 }
+
+function getInputSelection(doc){
+	try{
+		if(doc.activeElement != null && (doc.activeElement.tagName === "TEXTAREA" || doc.activeElement.tagName === "INPUT")) {
+			var inputSelectedText = doc.activeElement.value.substring(doc.activeElement.selectionStart, doc.activeElement.selectionEnd);
+			if(inputSelectedText != null && inputSelectedText != ""){
+				return inputSelectedText;
+			}
+		}
+	}catch(ex){
+		// I don't trust the code above, make sure we return an empty string so returning window.getSelection() will still work in the calling function
+		return "";
+	}
+	return "";
+}
+
+function bingTranslate(translate_now_source_language, translate_now_destination_language, selectedText){
+	setBingLanguage("sourceText", translate_now_source_language);
+	setBingLanguage("destinationText", translate_now_destination_language);
+
+	document.getElementById("srcText").value = selectedText;
+	document.getElementById("TranslateButton").click();
+}
+
+function setBingLanguage(className, value){
+	var tds = document.getElementsByClassName(className)[0].getElementsByTagName("td");
+	var i = 0;
+	for(i = 0; i < tds.length; i++){
+		if(tds[i].getAttribute("value") == value){
+			tds[i].click();
+			break;
+		}
+	}
+}
+
+function bingSpeak(translate_now_source_language, translate_now_destination_language, selectedText,translate_now_to_speak){
+	bingTranslate(translate_now_source_language, translate_now_destination_language, selectedText);
+	
+	setTimeout(function(){
+		switch(translate_now_to_speak){
+			case "original":
+				bingSpeakSource();
+				break;
+			case "translation":
+				bingSpeakDestination();
+				break;
+			case "both":
+				bingSpeakSource();
+				var length = 75 * selectedText.length;
+				//console.log("bingSpeak - length is " + length);
+
+				setTimeout(function(){
+					if(document.getElementById("srcText").value != document.getElementById("destText").innerText)
+						bingSpeakDestination();
+				}, length);
+				
+				break;
+			default:
+				break;
+		}
+	}, 1200);
+}
+
+function bingSpeakSource(){
+	var speakButton = document.getElementsByClassName("sourceText")[0].getElementsByClassName("speakButton")[0];
+	speakButton.click();
+}
+
+function bingSpeakDestination(){
+	var speakButton = document.getElementsByClassName("destinationText")[0].getElementsByClassName("speakButton")[0];
+	speakButton.click();
+}
+
+function googleSpeak(translate_now_to_speak){
+	switch(translate_now_to_speak){
+		case "original":
+			googleSpeakSource(false);
+			break;
+		case "translation":
+			googleSpeakDestination(0);
+			break;
+		case "both":
+			var isEqual = gt.getSourceText() == gt.getDestinationText();
+			googleSpeakSource(!isEqual); // play both if the texts aren't equal
+			break;
+		default:
+			break;
+	}
+}
+
+function googleSpeakSource(playDestination){	
+	var sourceText = gt.getSourceText();
+	
+	if(!gt.isSourceSpeakAvailable() && playDestination){
+		googleSpeakDestination(0);
+		return;
+	}
+	
+	var sourceSpeakLanguage = gt.getSourceSpeakLanguage();
+	if(sourceSpeakLanguage == ""){
+		setTimeout(function(){
+			sourceSpeakLanguage = gt.getSourceSpeakLanguage();
+			if(sourceSpeakLanguage == "")
+				sourceSpeakLanguage = "en";
+			var audioObj = gt.playSound(sourceSpeakLanguage, sourceText);
+			googleSpeakPlayAfter(audioObj, playDestination);
+		}, 1000);
+	}else{
+		var audioObj = gt.playSound(sourceSpeakLanguage, sourceText);
+		googleSpeakPlayAfter(audioObj, playDestination);
+	}
+}
+
+function googleSpeakPlayAfter(audioObj,playDestination){
+	if(!playDestination) return;
+	
+	var duration = 0;
+	
+	audioObj.addEventListener('loadedmetadata', function() {
+		duration = audioObj.duration * 1000;
+		googleSpeakDestination(audioObj.duration * 1000);
+	});
+	
+	setTimeout(function(){
+		if(duration == 0){
+			//console.log("playing destination text, maybe the original text cannot be spoken aloud?");
+			googleSpeakDestination(0);
+		}
+	}, 2000);
+}
+
+function googleSpeakDestination(sourceDuration){
+	if(!gt.isDestinationSpeakAvailable()) return;
+	
+	setTimeout(function(){
+		var destinationText = gt.getDestinationText();
+		var destinationSpeakLanguage = gt.getDestinationSpeakLanguage();
+
+		gt.playSound(destinationSpeakLanguage, destinationText);
+	}, sourceDuration + 150);
+}
+
+/*
+function setGoogleTranslateText(selectedText){
+	document.getElementById("source").value = selectedText;
+}
+*/

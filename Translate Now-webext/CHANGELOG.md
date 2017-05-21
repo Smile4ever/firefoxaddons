@@ -1,3 +1,26 @@
+3.0.0
+=====
+- Expanded support for languages:
+	- Added support for Amharic, Bulgarian, Corsican, Frisian, Hawaiian, Indonesian, Kyrgyz, Kurdish, Luxembourgish, Pashto, Samoan, Scottisch Gaelic, Shona, Sindhi, Sinhalese and Xhosa
+	- Dropped support for Chinese (Traditional) in favor of the general flavor "Chinese"
+	- Renamed Chinese (Simplified) to Chinese, renamed Sundanese (sic) to Sudanese Arabic
+	- Renamed Tagalog (Filipino) to Filipino (Tagalog), added Tagalog (Filipino) as primary choice
+- Add support for Bing Translator and Bing Translator Voice
+	- Added preference Translate engine to switch between Google Translate and Bing Translator
+	- Added preference Voice engine to switch between Google Translate Voice and Bing Translator Voice
+- Added support for selecting text in input elements inside iframes
+- Speak action reworked.
+	- Speak action now uses the translation page. If you want to use the old speak action for Google Translate Voice, check the preference "Use audio only for Google Translate Voice".
+	- Added preference Text to speak to decide which text needs to be spoken. Can be set to the original text, the translated text or both.
+	- Do not attempt to speak a language with Google Translate Voice that is not supported when using the new speak experience.
+	- Do not attempt to play audio twice if the source text equals the destination text.
+- Added support for full page translation using Google Translate.
+- Fixed bug #18
+- Add toolbar button to translate the current page or selection.
+	- Right click the toolbar button and select "Remove from Toolbar" to remove it from the toolbar.
+	- Automatically falls back to Google Translate for full page translation.
+	- Right click the toolbar button and select Preferences to change the preferences of Translate Now
+
 2.0.0
 =====
 

@@ -18,6 +18,34 @@ const PREFS = {
 	"translate_now_enable_speak": {
 		"type": "checked",
 		"default": false
+	},
+	"translate_now_translate_engine": {
+		"type": "value",
+		"default": "google"
+	},
+	"translate_now_speak_engine": {
+		"type": "value",
+		"default": "google"
+	},
+	"translate_now_google_speak_audio_only": {
+		"type": "checked",
+		"default": false
+	},
+	"translate_now_to_speak": {
+		"type": "value",
+		"default": "both"
+	},
+	"translate_now_context_selection": {
+		"type": "checked",
+		"default": true
+	},
+	"translate_now_context_page": {
+		"type": "checked",
+		"default": true
+	},
+	"translate_now_context_link": {
+		"type": "checked",
+		"default": true
 	}
 };
 
