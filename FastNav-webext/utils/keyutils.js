@@ -18,7 +18,7 @@ var keyutils = {
 		try{
 			var current = document.activeElement;
 			while(current != null){
-				if(current.hasAttribute("contenteditable")){
+				if(current.hasAttribute("contenteditable") || current.tagName == "INPUT" || current.tagName == "TEXTAREA"){
 					//console.log("contenteditable fix");
 					return;
 				}

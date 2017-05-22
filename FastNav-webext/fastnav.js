@@ -203,17 +203,15 @@ function generic(mode){
 		return;
 	}
 
-	for(i = 0; i < ahrefs.length; i++){
-		var tag = ahrefs[i];
-		
+	for(let href of ahrefs){
 		// Phoronix may use this as well
 		if(mode == "next"){
-			a(tag, "next");
-			a(tag, "volgende");
+			a(href, "next");
+			a(href, "volgende");
 		}
 		if(mode == "prev"){
-			a(tag, "previous");
-			a(tag, "vorige");
+			a(href, "previous");
+			a(href, "vorige");
 		}
 	}
 
