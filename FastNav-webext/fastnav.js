@@ -239,6 +239,14 @@ function generic(mode){
 		}
 	}
 	
+	// Fix bug 20
+	// Test URL: http://mspaintadventures.com/?s=6&p=001904
+	var prefixPageNumber = "";
+	for (var i = 0; i < pageNumber.length; i++) {
+		if(pageNumber[i] != "0") break;
+		prefixPageNumber += "0";
+	}
+		
 	if (isNaN(parseInt(pageNumber) + 1) == false){
 		if(mode == "next"){
 			pagenum = parseInt(pageNumber) + 1;
@@ -253,7 +261,7 @@ function generic(mode){
 		if(!isNaN(addendum)){
 			addendum = "";
 		}
-		this.replacelocation(location.substring(0,lastIndex + stringlength) + pagenum + addendum, "generic");
+		this.replacelocation(location.substring(0,lastIndex + stringlength) + prefixPageNumber + pagenum + addendum, "generic");
 	}
 }
 
