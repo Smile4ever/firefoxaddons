@@ -9,7 +9,7 @@ var pagenum;
 
 function onMessage(message) {
 	switch(message.action){
-		case "": 
+		case "":
 			// Do something
 			break;
 		default:
@@ -17,6 +17,7 @@ function onMessage(message) {
 	}
 }
 */
+
 function sendMessage(action, data){
 	browser.runtime.sendMessage({"action": action, "data": data});
 }
@@ -246,7 +247,7 @@ function generic(mode){
 		if(pageNumber[i] != "0") break;
 		prefixPageNumber += "0";
 	}
-		
+	
 	if (isNaN(parseInt(pageNumber) + 1) == false){
 		if(mode == "next"){
 			pagenum = parseInt(pageNumber) + 1;
@@ -257,7 +258,14 @@ function generic(mode){
 				return;
 			}
 		}
-		var addendum = location.substring(lastIndex + stringlength+1);
+		
+		// reworked this for bug 21
+		var addendum = "";
+		if(pageNumber.indexOf("/") > -1){
+			addendum = pageNumber.substring(pageNumber.indexOf("/"));
+		}
+		
+		// not sure if we need this.
 		if(!isNaN(addendum)){
 			addendum = "";
 		}
