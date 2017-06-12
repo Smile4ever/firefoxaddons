@@ -84,6 +84,12 @@
 		}
 		/* End of used CSS */
 		
+		.flexbox-container label{
+			display: inline;
+			padding-left: 0px;
+			text-indent: 0px;
+		}
+		
 		button::-moz-focus-inner { 
 			border: 0; 
 		}
@@ -344,7 +350,7 @@
 				<label><span id="reuse_tab">Reuse tab</span></label><div class="descr">Do not open new tabs, but always use the same tab</div>
 			</div>
 			<div>
-				<label><input type="checkbox" id="translate_now_reuse_tab">Reuse tab</label>
+				<input type="checkbox" id="translate_now_reuse_tab"><label for="translate_now_reuse_tab">Reuse tab</label>
 			</div>
 			<div>
 				<!-- Empty -->
@@ -358,7 +364,7 @@
 				<label><span data-i18n="related_tabs">Open new tabs after the current tab</span></label><div class="descr" data-i18n="related_tabs_descr">Open new tabs next to the current tab as related tabs</div>
 			</div>
 			<div>
-				<label><input type="checkbox" id="translate_now_related_tabs"/><span data-i18n="related_tabs">Open new tabs after the current tab</span></label>
+				<input type="checkbox" id="translate_now_related_tabs"/><label for="translate_now_related_tabs"><span data-i18n="related_tabs">Open new tabs after the current tab</span></label>
 			</div>
 			<div>
 				<!-- Empty -->
@@ -372,7 +378,7 @@
 				<label><span id="enable_speak">Enable Speak action</span></label><div class="descr">Will make a submenu for Translate Now instead of a single context menu item</div>
 			</div>
 			<div>
-				<label><input type="checkbox" id="translate_now_enable_speak">Enable Speak action</label>
+				<input type="checkbox" id="translate_now_enable_speak"><label for="translate_now_enable_speak">Enable Speak action</label>
 			</div>
 			<div>
 				<!-- Empty -->
@@ -420,7 +426,7 @@
 				<label><span data-i18n="google_speak_audio_only">Use audio only for Google Translate Voice</span></label><div class="descr" data-i18n="related_tabs_descr">Do not open the translation page, only speak the selected text.</div>
 			</div>
 			<div>
-				<label><input type="checkbox" id="translate_now_google_speak_audio_only"/><span data-i18n="google_speak_audio_only">Use audio only for Google Translate Voice</span></label>
+				<input type="checkbox" id="translate_now_google_speak_audio_only"/><label for="translate_now_google_speak_audio_only"><span data-i18n="google_speak_audio_only">Use audio only for Google Translate Voice</span></label>
 			</div>
 			<div>
 				<!-- Empty -->
@@ -452,9 +458,9 @@
 				<label><span id="show_context_menu_for">Show context menu for</span></label><div class="descr">For which contexts do you wish to show the Translate Now context menu items? If unsure, don't change this option.</div>
 			</div>
 			<div>
-				<label style="padding-bottom: 5px;"><input type="checkbox" id="translate_now_context_selection"/><span data-i18n="context_selection">Selection</span></label>
-				<label style="padding-bottom: 5px;"><input type="checkbox" id="translate_now_context_page"/><span data-i18n="context_page">Page</span></label>
-				<label style="padding-bottom: 5px;"><input type="checkbox" id="translate_now_context_link"/><span data-i18n="context_link">Link</span></label>
+				<input type="checkbox" id="translate_now_context_selection"/><label for="translate_now_context_selection" style="padding-bottom: 5px;"><span data-i18n="context_selection">Selection</span></label>
+				<input type="checkbox" id="translate_now_context_page"/><label for="translate_now_context_page" style="padding-bottom: 5px;"><span data-i18n="context_page">Page</span></label>
+				<input type="checkbox" id="translate_now_context_link"/><label for="translate_now_context_link" style="padding-bottom: 5px;"><span data-i18n="context_link">Link</span></label>
 			</div>
 			<div>
 				<!-- Empty -->
