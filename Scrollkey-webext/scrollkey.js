@@ -2,25 +2,37 @@ var scrollValue;
 var horizontalScroll;
 var scrollPageDownPageUp;
 
-var scrollUp = function(id){
-	getScrollValue(id);
-	getHorizontalScroll(id+100);
-	setTimeout(function(){
-		if(horizontalScroll == true){
-			window.scrollBy(scrollValue * -1, 0);
-		}else{
-			window.scrollBy(0, scrollValue  * -1);
-		}
-	}, 20);
+function sendMessage(action, data){
+	browser.runtime.sendMessage({"action": action, "data": data});
 }
-var scrollDown = function(id){
+
+var scrollUp = function(id, win){
+	//console.log("scrollling up");
+	scrollDownOrUp(id, -1, win);
+}
+
+var scrollDown = function(id, win){
+	//console.log("scrollling down");
+	scrollDownOrUp(id, 1, win);
+}
+
+var scrollDownOrUp = function(id, factor, win){
 	getScrollValue(id);
 	getHorizontalScroll(id+100);
 	setTimeout(function(){
 		if(horizontalScroll == true){
-			window.scrollBy(scrollValue, 0);
+			if(win.document.body.scrollWidth == win.document.documentElement.clientWidth){
+				sendMessage("notify", browser.i18n.getMessage("notify_tip_horizontal")); // "This page cannot be scrolled horizontally. Change the preferences to scroll vertically or try another shortcut."
+			}
+			win.scrollBy(scrollValue * factor, 0);
 		}else{
-			window.scrollBy(0, scrollValue);
+			/*console.log("body.scrollHeight is " + win.document.body.scrollHeight);
+			console.log("body.clientHeight is " + win.document.documentElement.clientHeight);*/
+
+			if(win.document.body.scrollHeight == win.document.documentElement.clientHeight){
+				sendMessage("notify", browser.i18n.getMessage("notify_tip_vertical")); // "This page cannot be scrolled vertically. Change the preferences to scroll horizontally or try another shortcut."
+			}
+			win.scrollBy(0, scrollValue * factor);
 		}
 	}, 20);
 }
@@ -48,8 +60,7 @@ var getScrollValue = function(id){
 		pref = "scrollkey_scrollvalue_alt"; //2
 	}
 	
-	var getting1 = browser.storage.local.get(pref);
-    getting1.then(setScrollValue, onError);
+	browser.storage.sync.get(pref).then(setScrollValue, onError);
 }
 
 var setScrollValue = function(result){
@@ -69,8 +80,7 @@ var getHorizontalScroll = function(id){
 		pref = "scrollkey_horizontal_scroll_alt";
 	}
 	
-	var getting1 = browser.storage.local.get(pref);
-    getting1.then(setHorizontalScroll, onError);
+	browser.storage.sync.get(pref).then(setHorizontalScroll, onError);
 }
 
 var setHorizontalScroll = function(result){
@@ -81,8 +91,7 @@ var setHorizontalScroll = function(result){
 }
 
 var getScrollPageDownPageUp = function(){
-	var getting1 = browser.storage.local.get("scrollkey_scroll_pagedown_pageup");
-    getting1.then(setScrollPageDownPageUp, onError);
+	browser.storage.sync.get("scrollkey_scroll_pagedown_pageup").then(setScrollPageDownPageUp, onError);
 }
 
 var setScrollPageDownPageUp = function(result){
@@ -101,81 +110,150 @@ var onError = function(result){
 	
 }
 
-window.addEventListener("keydown", function(event){
-	if (event.defaultPrevented || document.activeElement.tagName.toLowerCase() != "body"){
-		return;
-	}
-	
-	// j = 74
-	// k = 75
-	// PageDown = 34
-	// PageUp = 33
-	// Home = 36
-	// End = 35
-	
-	// normal = 0
-	// shift = 1
-	// alt = 2
-	var ok = false;
-	
-	if (!event.ctrlKey && !event.metaKey) {
-		if(!event.shiftKey && !event.altKey && event.keyCode == 74){
-			// j
-			ok = true;
-			scrollDown(0);
-		}
-		
-		if(!event.shiftKey && !event.altKey && event.keyCode == 75){
-			// k
-			ok = true;
-			scrollUp(0);
-		}
-		
-		if(event.shiftKey && !event.altKey && event.keyCode == 74){
-			// shift+j
-			ok = true;
-			scrollDown(1);
-		}
-		
-		if(event.shiftKey && !event.altKey && event.keyCode == 75){
-			// shift+k
-			ok = true;
-			scrollUp(1);
-		}
-		
-		if(event.altKey && !event.shiftKey && event.keyCode == 74){
-			// alt+j
-			ok = true;
-			scrollDown(2);
-		}
-		
-		if(event.altKey && !event.shiftKey && event.keyCode == 75){
-			// alt+k
-			ok = true;
-			scrollUp(2);
-		}
-		
-		if(!event.altKey && !event.shiftKey && event.keyCode == 34){
-			//PageDown
-			getScrollPageDownPageUp(); // won't take effect this time, but it will take effect next time which is good enough
-			if(scrollPageDownPageUp){
-				ok = true;
-				scrollDown(0);
+/// Iframe handling
+function addKeydownToIframes(){
+	/// Code from Get Archive, adapted for Scrollkey
+	// Test URL: https://www.w3schools.com/html/html_iframe.asp
+	var frameIdentifiers = ["iframe", "frame"];
+	try{
+		var i = 0;
+		for(i = 0; i < frameIdentifiers.length; i++){
+			var frames = document.getElementsByTagName(frameIdentifiers[i]);
+			//var iframes = document.getElementsByTagName("iframe");
+			//console.log("number of frames: " + frames.length);
+
+			if(frames.length == 0){
+				continue;
+			}
+			
+			//console.log("number of iframes: " + iframes.length);
+			
+			var j = 0;
+			for(j = 0; j < frames.length; j++){
+				var frame = frames[j];
+				if(frame.getAttribute("src") == null){
+					continue;
+				}
+				if(frame.getAttribute("src").indexOf("google") > -1 || frame.getAttribute("src").indexOf("facebook") > -1 || frame.getAttribute("src").indexOf("twitter") > -1){
+					continue;
+				}
+				try{
+					var frame = frames[j];
+					var idoc = frame.contentWindow;
+					addKeydown(idoc);
+				}catch(innerex){
+					//console.log(innerex);
+					//console.log("CROSS-DOMAIN IFRAME on URL " + frame.getAttribute("src"));
+				}
 			}
 		}
-		
-		if(!event.altKey && !event.shiftKey && event.keyCode == 33){
-			//PageUp
-			getScrollPageDownPageUp(); // won't take effect this time, but it will take effect next time which is good enough
-			if(scrollPageDownPageUp){
-				ok = true;
-				scrollUp(0);
-			}
-		}
+	}catch(ex){
+		//console.log("exception!");
+		//console.log(ex);
+		// I don't trust the code above
 	}
+	/// End of code from Get Archive
+}
+
+setTimeout(function(){
+	addKeydownToIframes();
+}, 500);
+
+setTimeout(function(){
+	addKeydownToIframes();
+}, 2000);
+/// End of iframe handling
+
+addKeydown(window);
 	
-	// don't allow for double actions for a single event
-	if(ok){
-		event.preventDefault();
-	}
-});
+function addKeydown(w){
+	//try{
+		w.addEventListener("keydown", function(event){
+			if (event.defaultPrevented || event.target.ownerDocument.activeElement.tagName.toLowerCase() != "body"){
+				return;
+			}
+			
+			var win = event.target.ownerDocument.defaultView;
+			
+			// j = 74
+			// k = 75
+			// PageDown = 34
+			// PageUp = 33
+			// Home = 36
+			// End = 35
+			
+			// normal = 0
+			// shift = 1
+			// alt = 2
+			var ok = false;
+			
+			if (!event.ctrlKey && !event.metaKey) {
+				if(!event.shiftKey && !event.altKey && event.keyCode == 74){
+					// j
+					ok = true;
+					scrollDown(0, win);
+				}
+				
+				if(!event.shiftKey && !event.altKey && event.keyCode == 75){
+					// k
+					ok = true;
+					scrollUp(0, win);
+				}
+				
+				if(event.shiftKey && !event.altKey && event.keyCode == 74){
+					// shift+j
+					ok = true;
+					scrollDown(1, win);
+				}
+				
+				if(event.shiftKey && !event.altKey && event.keyCode == 75){
+					// shift+k
+					ok = true;
+					scrollUp(1, win);
+				}
+				
+				if(event.altKey && !event.shiftKey && event.keyCode == 74){
+					// alt+j
+					ok = true;
+					scrollDown(2, win);
+				}
+				
+				if(event.altKey && !event.shiftKey && event.keyCode == 75){
+					// alt+k
+					ok = true;
+					scrollUp(2, win);
+				}
+				
+				if(!event.altKey && !event.shiftKey && event.keyCode == 34){
+					//PageDown
+					getScrollPageDownPageUp(); // won't take effect this time, but it will take effect next time which is good enough
+					if(scrollPageDownPageUp){
+						ok = true;
+						scrollDown(0, win);
+					}
+				}
+				
+				if(!event.altKey && !event.shiftKey && event.keyCode == 33){
+					//PageUp
+					getScrollPageDownPageUp(); // won't take effect this time, but it will take effect next time which is good enough
+					if(scrollPageDownPageUp){
+						ok = true;
+						scrollUp(0, win);
+					}
+				}
+			}
+			
+			// don't allow for double actions for a single event
+			if(ok){
+				event.preventDefault();
+			}
+		});
+	/*}catch(ex){
+		console.log(w.location.href);
+		if(w == null){
+			console.log("window is null");
+		}else{
+			console.log(ex);
+		}
+	}*/
+}

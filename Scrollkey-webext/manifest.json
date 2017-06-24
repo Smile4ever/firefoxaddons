@@ -1,35 +1,35 @@
 {
-  "manifest_version": 2,
-  "name": "Scrollkey",
-  "version": "1.1.0",
-  "description": "__MSG_extensionDescription__",
-  "homepage_url": "http://hugsmile.eu",
-  "default_locale": "en",
-  "icons": {
-    "16": "icons/scrollkey-16.png",
-	"32": "icons/scrollkey-32.png",
-	"64": "icons/scrollkey-64.png",
-	"128": "icons/scrollkey-128.png"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["scrollkey.js"],
-      "run_at": "document_start"
-    }
-  ],
-
-  "applications": {
-    "gecko": {
-      "id": "scrollkey@hugsmile.eu",
-	  "strict_min_version": "48.0"
-    }
-  },
-
-  "options_ui": {
-    "page": "options.html"
-  },
-
-  "permissions": ["storage"]
-
+	"manifest_version": 2,
+	"name": "Scrollkey",
+	"version": "2.0.0",
+	"description": "__MSG_extensionDescription__",
+	"homepage_url": "http://hugsmile.eu",
+	"default_locale": "en",
+	"background": {
+		"scripts": ["background.js"]
+	},
+	"icons": {
+		"16": "icons/scrollkey.svg",
+		"32": "icons/scrollkey.svg",
+		"64": "icons/scrollkey.svg",
+		"128": "icons/scrollkey.svg"
+	},
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"js": ["scrollkey.js"],
+			"run_at": "document_start"
+		}
+	],
+	"applications": {
+		"gecko": {
+			"id": "scrollkey@hugsmile.eu",
+			"strict_min_version": "48.0"
+		}
+	},
+	"options_ui": {
+		"page": "options.html",
+		"browser_style": true
+	},
+	"permissions": ["storage", "tabs", "notifications"]
 }

@@ -38,5 +38,17 @@
   "savepreferences": {
     "message": "Enregistrer les préférences",
     "description": ""
+  },
+  "notify_preferences_saved": {
+    "message": "Préférences enregistrés",
+    "description": ""
+  },
+  "notify_tip_horizontal": {
+	"message": "This page cannot be scrolled horizontally. Change the preferences to scroll vertically or try another shortcut.",
+	"description": "Not translated yet"  
+  },
+  "notify_tip_vertical": {
+	"message": "This page cannot be scrolled vertically. Change the preferences to scroll horizontally or try another shortcut.",
+	"description": ""  
   }
 }

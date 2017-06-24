@@ -38,5 +38,17 @@
   "savepreferences": {
     "message": "Voorkeuren opslaan",
     "description": ""
+  },
+  "notify_preferences_saved": {
+    "message": "Voorkeuren opgeslagen",
+    "description": ""
+  },
+  "notify_tip_horizontal": {
+	"message": "Deze pagina kan niet horizontaal gescrold worden. Verander de voorkeuren om verticaal te scrollen of probeer een andere sneltoets.",
+	"description": ""  
+  },
+  "notify_tip_vertical": {
+	"message": "Deze pagina kan niet verticaal gescrold worden. Verander de voorkeuren om horizontaal te scrollen of probeer een andere sneltoets.",
+	"description": ""  
   }
 }
