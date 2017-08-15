@@ -6,7 +6,7 @@
 	"manifest_version": 2,
 	"version": "3.0.0",
 	"background": {
-		"scripts": ["background.js"]
+		"scripts": ["background.js", "shared.js"]
 	},
 	"icons": {
 		"64": "icons/getarchive-64.png"
@@ -14,21 +14,23 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"js": ["getarchive.js"],
+			"js": ["getarchive.js", "utils/keyutils.js", "shared.js"],
 			"run_at": "document_start"
 		}
 	],
 	"applications": {
 		"gecko": {
 			"id": "getarchive@hugsmile.eu",
-			"strict_min_version": "48.0"
+			"strict_min_version": "53.0"
 		}
 	},
-	"permissions": ["storage", "tabs", "contextMenus", "notifications", "clipboardRead", "clipboardWrite", "history", "activeTab"],
+	"permissions": ["storage", "tabs", "contextMenus", "notifications", "clipboardRead", "clipboardWrite", "history", "activeTab", "webRequest", "webRequestBlocking", "https://web.archive.org/*:80*"],
 	"options_ui": {
-		"page": "options.html"
+		"page": "options.html",
+		"browser_style": true
 	},
 	"browser_action": {
-		"default_icon": "icons/getarchive-64.png"
+		"default_icon": "icons/getarchive-64.png",
+		"browser_style": true
 	}
 }

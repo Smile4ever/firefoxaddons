@@ -6,7 +6,6 @@ var lastParentTabIndex = -1;
 var globalArchiveService = "";
 var wait = false; // used in handleUpdated()
 var oldUrl = ""; // used in changeUrl()
-var currentTabUrl = "";
 
 var ui_contextMenus = false;
 
@@ -19,6 +18,7 @@ var getarchive_show_contextmenu_item_googlecache;
 var getarchive_automatic_forward;
 var getarchive_related_tabs;
 var getarchive_default_archive_service;
+var getarchive_automatic_retrieval;
 
 function init(){
 	var valueOrDefault = function(value, defaultValue){
@@ -32,7 +32,9 @@ function init(){
 		"getarchive_show_contextmenu_item_webcitation",
 		"getarchive_show_contextmenu_item_googlecache",
 		"getarchive_automatic_forward",
-		"getarchive_related_tabs"
+		"getarchive_related_tabs",
+		"getarchive_defauflt_archive_service",
+		"getarchive_automatic_retrieval"
 	]).then((result) => {
 		onVerbose("background.js getarchive_show_contextmenu_item_archiveorg " + result.getarchive_show_contextmenu_item_archiveorg);
 		getarchive_show_contextmenu_item_archiveorg = valueOrDefault(result.getarchive_show_contextmenu_item_archiveorg, true);
@@ -44,7 +46,7 @@ function init(){
 		getarchive_show_contextmenu_item_webcitation = valueOrDefault(result.getarchive_show_contextmenu_item_webcitation, false);
 		
 		onVerbose("background.js getarchive_show_contextmenu_item_googlecache " + result.getarchive_show_contextmenu_item_googlecache);
-		getarchive_show_contextmenu_item_googlecache = valueOrDefault(result.getarchive_show_contextmenu_item_googlecache, false);
+		getarchive_show_contextmenu_item_googlecache = valueOrDefault(result.getarchive_show_contextmenu_item_googlecache, true);
 		
 		onVerbose("background.js getarchive_automatic_forward " + result.getarchive_automatic_forward);
 		getarchive_automatic_forward = valueOrDefault(result.getarchive_automatic_forward, true);
@@ -54,7 +56,10 @@ function init(){
 				
 		onVerbose("background.js getarchive_default_archive_service " + result.getarchive_default_archive_service);
 		getarchive_default_archive_service = valueOrDefault(result.getarchive_default_archive_service, "archive.org");
-				
+		
+		onVerbose("background.js getarchive_automatic_retrieval " + result.getarchive_automatic_retrieval);
+		getarchive_automatic_retrieval = valueOrDefault(result.getarchive_automatic_retrieval, true);
+		
 		browser.browserAction.onClicked.removeListener(clickToolbarButton);
 		browser.browserAction.onClicked.addListener(clickToolbarButton);
 
@@ -119,14 +124,28 @@ browser.runtime.onMessage.addListener(function(message) {
 // See also https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/Tabs/sendMessage
 function sendMessage(action, data){
 	function logTabs(tabs) {
+		//console.log("tabs length is " + tabs.length);
 		for (tab of tabs) {
-			browser.tabs.sendMessage(tab.id, {"action": action, "data": data}).catch(function(){
-				noContentScript({action: action, data: data});
+			//console.log("tab with title " + tab.title);
+			browser.tabs.sendMessage(tab.id, {"action": action, "data": data}).then(
+				function(){
+					if(isProblemLoadingPage(tab)) noContentScript({action: action, data: data, tab: tab}); // Make the browser action work on "Problem loading page" pages on second try
+				}
+			).catch(function(){
+				//console.log("noContentScript");
+				noContentScript({action: action, data: data, tab: tab});
 			});
 		}
 	}
 
 	browser.tabs.query({currentWindow: true, active: true}).then(logTabs, onError);
+}
+
+function sendMessageToTab(action, data, tabId){
+	//console.log("tabId is " + tabId);
+	browser.tabs.sendMessage(tabId, {"action": action, "data": data}).catch(function(){
+		noContentScript({action: action, data: data});
+	});
 }
 
 function removeContextMenus(){
@@ -137,6 +156,11 @@ function removeContextMenus(){
 		browser.contextMenus.remove("getarchive-archiveis");
 		browser.contextMenus.remove("getarchive-webcitationorg");
 		browser.contextMenus.remove("getarchive-googlecache");
+		/*browser.contextMenus.remove("getarchive-tb-archiveorg");
+		browser.contextMenus.remove("getarchive-tb-archiveis");
+		browser.contextMenus.remove("getarchive-tb-webcitationorg");
+		browser.contextMenus.remove("getarchive-tb-googlecache");
+		browser.contextMenus.remove("getarchive-tb-preferences");*/
 	}catch(ex){
 		onError("contextMenu remove failed: " + ex);
 	}
@@ -144,11 +168,12 @@ function removeContextMenus(){
 
 function addContextMenus(){
 	ui_contextMenus = true;
+	// See also https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/contextMenus/ContextType
 	if(getarchive_show_contextmenu_item_archiveorg){
 		browser.contextMenus.create({
 			id: "getarchive-archiveorg",
 			title: "Get Archive.org",
-			contexts: ["all"]
+			contexts: ["audio", "editable", "frame", "image", "link", "page", "selection", "tab", "video"]
 		}, onCreated);
 	}
 
@@ -156,7 +181,7 @@ function addContextMenus(){
 		browser.contextMenus.create({
 			id: "getarchive-archiveis",
 			title: "Get Archive.is",
-			contexts: ["all"]
+			contexts: ["audio", "editable", "frame", "image", "link", "page", "selection", "tab", "video"]
 		}, onCreated);
 	}
 	
@@ -164,7 +189,7 @@ function addContextMenus(){
 		browser.contextMenus.create({
 			id: "getarchive-webcitationorg",
 			title: "Get WebCitation.org",
-			contexts: ["all"]
+			contexts: ["audio", "editable", "frame", "image", "link", "page", "selection", "tab", "video"]
 		}, onCreated);
 	}
 
@@ -172,7 +197,7 @@ function addContextMenus(){
 		browser.contextMenus.create({
 			id: "getarchive-googlecache",
 			title: "Get Google Cache",
-			contexts: ["all"]
+			contexts: ["audio", "editable", "frame", "image", "link", "page", "selection", "tab", "video"]
 		}, onCreated);
 	}
 
@@ -186,6 +211,45 @@ function addContextMenus(){
 	
 }
 
+function addContextMenusToolbarButton(){
+	browser.contextMenus.create({
+		id: "getarchive-tb-archiveorg",
+		title: "Get Archive.org",
+		contexts: ["browser_action"]
+	}, onCreated);
+
+	browser.contextMenus.create({
+		id: "getarchive-tb-archiveis",
+		title: "Get Archive.is",
+		contexts: ["browser_action"]
+	}, onCreated);
+
+	
+	browser.contextMenus.create({
+		id: "getarchive-tb-webcitationorg",
+		title: "Get WebCitation.org",
+		contexts: ["browser_action"]
+	}, onCreated);
+
+	browser.contextMenus.create({
+		id: "getarchive-tb-googlecache",
+		title: "Get Google Cache",
+		contexts: ["browser_action"]
+	}, onCreated);
+	
+	browser.contextMenus.create({
+		id: "getarchive-tb-preferences",
+		title: "Preferences",
+		contexts: ["browser_action"]
+	}, onCreated);
+	
+	function onCreated(n) {
+		/*if (browser.runtime.lastError) {
+			onError(browser.runtime.lastError);
+		}*/
+	}
+}
+
 /// Context menus
 function initContextMenus(){
 	
@@ -193,22 +257,29 @@ function initContextMenus(){
 	setTimeout(function(){
 		addContextMenus();
 	}, 50);
-	
+	addContextMenusToolbarButton();
 }
 
 function listener(info,tab){
 	switch (info.menuItemId) {
 		case "getarchive-archiveorg":
+		case "getarchive-tb-archiveorg":
 			doClick(info, "archive.org");
 			break;
 		case "getarchive-archiveis":
+		case "getarchive-tb-archiveis":
 			doClick(info, "archive.is");
 			break;
 		case "getarchive-webcitationorg":
+		case "getarchive-tb-webcitationorg":
 			doClick(info, "webcitation.org");
 			break;
 		case "getarchive-googlecache":
+		case "getarchive-tb-googlecache":
 			doClick(info, "webcache.googleusercontent.com");
+			break;
+		case "getarchive-tb-preferences":
+			openPreferences();
 			break;
 	}
 }
@@ -217,20 +288,21 @@ function listener(info,tab){
 browser.tabs.onActivated.addListener(handleActivatedUI);
 
 function handleActivatedUI(activeInfo) {
-	onDebug("handleActivatedUI active tabId: " + activeInfo.tabId);
+	//onVerbose("handleActivatedUI active tabId: " + activeInfo.tabId);
 	updateUI(activeInfo.tabId, "handleActivatedUI");
 }
 
 browser.tabs.onUpdated.addListener(handleUpdatedUI);
 
 function handleUpdatedUI(tabId, changeInfo, tabInfo) {
-	if(tabInfo.title == "Problem loading page"){
-		if(lastTabIdServerNotFound == tabId && lastTabIdServerNotFound != -1){
-			onDebug("Doing nothing for problem loading page");
+	if(isProblemLoadingPage(tabInfo) && getarchive_automatic_retrieval == true){
+		if((lastTabIdServerNotFound == tabId && lastTabIdServerNotFound != -1) || tabInfo.url.indexOf("gfk") > -1 || (tabInfo.url.indexOf("http://") == -1 && tabInfo.url.indexOf("https://") == -1)){
+			//console.log("Doing nothing for problem loading page");
 			return;
 		}else{
 			lastTabIdServerNotFound = tabId;
-			onDebug("handleUpdatedUI: PROBLEM LOADING PAGE (OK)" + tabInfo.title);
+			//console.log("handleUpdatedUI: PROBLEM LOADING PAGE (OK)" + tabInfo.title);
+			if(tabInfo.url.indexOf("https://web.archive.org/web/2005/") > -1) return; // archive.org might be down
 			var goToUrl = shimGetGenericLinkHelper(getarchive_default_archive_service, tabInfo.url);
 			notify("Detected \"problem loading page\", automatically getting the archived version..");
 			changeUrlWithTabId(goToUrl, lastTabIdServerNotFound);
@@ -243,10 +315,10 @@ function handleUpdatedUI(tabId, changeInfo, tabInfo) {
 
 function updateUI(tabId, reason){
 	function logTabs(tab) {
-		onDebug("updateUI " + reason + " : " + tab.url);
+		onVerbose("updateUI " + reason + ": " + tab.url);
 
 		if (tab.url.indexOf("about:") > -1 && (tab.url.indexOf("about:newtab") == -1 || tab.status == "complete") && (tab.url.indexOf("about:blank") == -1 || tab.status == "complete")) {
-			onDebug("updateUI disabled tab with url " + tab.url);
+			onVerbose("updateUI disabled tab with url " + tab.url);
 			browser.browserAction.disable(tab.id);
 			browser.browserAction.setIcon({
 				path: "icons/getarchive-disabled-64.png",
@@ -279,7 +351,19 @@ function updateUI(tabId, reason){
 }
 
 function clickToolbarButton(){
+	//console.log("sending message getContextLinkUrl");
 	sendMessage("getContextLinkUrl");
+}
+
+function isProblemLoadingPage(tab){
+	if(tab == null) return false;
+	
+	 // Content Encoding Error
+	if(tab.url.indexOf("facebook.com") == -1 && tab.url.indexOf("google.com") == -1 && tab.url.indexOf("youtube.com") == -1){
+		if(tab.title == "Problem loading page") return true;
+		if(tab.favIconUrl == "chrome://global/skin/icons/warning-16.png") return true;
+	}
+	return false;
 }
 
 /// Shim functions
@@ -288,21 +372,35 @@ function clickToolbarButton(){
 function shimGetContextLinkUrl(){
 	function logTabs(tabs) {
 		for (tab of tabs) {
-			shimGetGenericLink(getarchive_default_archive_service, tab.url);
+			//console.log("tab.title is " + tab.title);
+			shimGetGenericLink(getarchive_default_archive_service, tab.url, tab);
 		}
 	}
 
+	//console.log("you clicked the browser action!");
 	browser.tabs.query({currentWindow: true, active: true}).then(logTabs, onError);		
 }
 
 // shim function which has the same result in the end, but does not require a content script
-function shimGetGenericLink(archiveService,contextLinkUrl){
-	openFocusedTab(shimGetGenericLinkHelper(archiveService,contextLinkUrl));
+function shimGetGenericLink(archiveService,contextLinkUrl,tab){
+	// Fix bug https://web.archive.org/web/2005/http://wii.nintendo.nl/13470.html -> click on toolbar button
+	let isToolbar = false;
+	if(contextLinkUrl.lastIndexOf("://") > 20){
+		contextLinkUrl = shared.getPartialUrl(contextLinkUrl);
+		//console.log("contextLinkUrl is now " + contextLinkUrl);
+		isToolbar = true;
+	}
+	
+	if(isProblemLoadingPage(tab) || isToolbar){
+		changeUrl(shimGetGenericLinkHelper(archiveService,contextLinkUrl));
+	}else{
+		openFocusedTab(shimGetGenericLinkHelper(archiveService,contextLinkUrl));
+	}
 }
 
 function shimGetGenericLinkHelper(archiveService, contextLinkUrl){
-	onDebug("archiveService is " + archiveService);
-	onDebug("contextLinkUrl is " + contextLinkUrl);
+	//console.log("archiveService is " + archiveService);
+	//console.log("contextLinkUrl is " + contextLinkUrl);
 		
 	globalArchiveService = archiveService;
 		
@@ -319,7 +417,7 @@ function shimGetGenericLinkHelper(archiveService, contextLinkUrl){
 			baseUrl = "http://webcitation.org/query?url=";
 			break;
 		case "webcache.googleusercontent.com":
-			baseUrl = "http://webcache.googleusercontent.com/search?safe=off&site=&source=hp&q=cache%3A";
+			baseUrl = "http://webcache.googleusercontent.com/search?q=cache%3A";
 			break;
 	}
 	return baseUrl + contextLinkUrl;
@@ -332,18 +430,18 @@ function noContentScript(message){
 			shimGetContextLinkUrl();
 			break;
 		case "getGenericLink":
-			shimGetGenericLink(message.data.archiveService, message.data.contextLinkUrl);
+			shimGetGenericLink(message.data.archiveService, message.data.contextLinkUrl, message.tab);
 			break;
 		default:
 			break;
 	}
-	//onDebug("You clicked the toolbar button, action " + message.action);
-	onDebug("noContentScript: action " + message.action);
+	//console.log("You clicked the toolbar button, action " + message.action);
+	//console.log("noContentScript: action " + message.action);
 }
 
 function setContextLinkUrl(data){
 	globalArchiveService = data.archiveService;
-	doAction(data.contextLinkUrl, data.archiveService);
+	doAction(data.contextLinkUrl, data.archiveService, data.isContextMenu);
 }
 
 /// Tab functions
@@ -351,7 +449,7 @@ function closeTab(){
 	function logTabs(tabs) {
 		for (tab of tabs) {
 			function onRemoved() {
-				onDebug(`Removed`);
+				//console.log(`Get Archive: Removed ` + tab.url);
 			}
 
 			browser.tabs.remove(tab.id).then(onRemoved, onError);
@@ -370,6 +468,11 @@ function openFocusedTab(url){
 }
 
 function openInnerTab(url,active){
+	if(url.indexOf("https://archive.is/https://archive.is/") > -1){
+		//console.log("Prevent bug from showing");
+		return;
+	}
+	
 	function logTabs(tabs) {
 		for (tab of tabs) {
 			lastParentTabIndex = tab.index;
@@ -388,7 +491,7 @@ function moveTabToCurrent(tabId) {
 	browser.tabs.move(tabId, {index: lastParentTabIndex + 1}).then(onMoved, onError);
 	
 	function onMoved(tab) {
-		onDebug("Moved:" + JSON.stringify(tab));
+		//console.log("Moved:" + JSON.stringify(tab));
 	}
 }
 
@@ -397,8 +500,8 @@ function changeUrl(url){
 }
 
 function changeUrlWithTabId(url,tabId){
-	onDebug("changeUrl: " + url);
-	onDebug("attached handleUpdated for archive.is and archive.org");
+	//console.log("changeUrl: " + url);
+	//console.log("attached handleUpdated for archive.is and archive.org");
 	browser.tabs.onUpdated.addListener(handleUpdated);
 	
 	function onGotCurrentTabs(tabs) {
@@ -414,7 +517,7 @@ function changeUrlWithTabId(url,tabId){
 			url: url
 		}).then(
 			function(data){
-				onDebug(JSON.stringify(data));
+				//console.log(JSON.stringify(data));
 			},
 			function(error){
 				notify("Failed to update tab");
@@ -432,7 +535,7 @@ function changeUrlWithTabId(url,tabId){
 
 function addUrlToHistory(url){
 	function onAdded() {
-		onDebug("Added " + url + " to the history");
+		//console.log("Added " + url + " to the history");
 	}
 
 	browser.history.addUrl({url: url}).then(onAdded);
@@ -441,7 +544,7 @@ function addUrlToHistory(url){
 /// GetArchive specific
 function onCreatedTab(tab) {
 	lastTabId = tab.id;
-	onDebug(`Created new tab: ${tab.id}`);
+	//console.log(`Created new tab: ${tab.id}`);
 	
 	// move tab to the current one if lastParentTabIndex is set
 	// workaround for Bug 1238314 - Implement browser.tabs opener functionality (https://bugzilla.mozilla.org/show_bug.cgi?id=1238314)
@@ -449,6 +552,7 @@ function onCreatedTab(tab) {
 		moveTabToCurrent(tab.id);
 	}
 	
+	//if(tab.url.indexOf("google.") == -1) TODO: fix this, it doesn't work
 	browser.tabs.onUpdated.addListener(handleUpdated);
 }
 
@@ -456,13 +560,13 @@ function onCreatedTab(tab) {
 function handleUpdated(tabId, changeInfo, tabInfo) {
 	if(lastTabId != -1){
 		if(tabId != lastTabId){
-			onDebug("tabId " + tabId + " is not lastTabId " + lastTabId);
+			//console.log("tabId " + tabId + " is not lastTabId " + lastTabId);
 			return;
 		}
 	}
 	
 	if(changeInfo.status == undefined){
-		onDebug("handleUpdated changeInfo.status was not changed, state is now " + changeInfo.status);
+		//console.log("handleUpdated changeInfo.status was not changed, state is now " + changeInfo.status);
 		return;
 	}
 	
@@ -472,14 +576,17 @@ function handleUpdated(tabId, changeInfo, tabInfo) {
 	onVerbose("New tab Info: ");
 	onVerbose(tabInfo);
 	
-	if(tabInfo.title == "" || tabInfo.title == "Internet Archive Wayback Machine" || tabInfo.title.indexOf("pdf.js") > -1){
-		onDebug("Waiting to copy URL.");
+	if(tabInfo.title == "" || tabInfo.title == "Internet Archive Wayback Machine" || tabInfo.title.indexOf("pdf.js") > -1 || tabInfo.id == undefined){
+		//console.log("Waiting to copy URL.");
 		return;
 	}
 	
 	if(tabInfo.url == oldUrl){
-		onDebug("The same as the old URL.");
+		//console.log("The same as the old URL. Url was " + tabInfo.url + " and title was " + tabInfo.title);
+		//removeListenerHandleUpdated("The same as the old URL. Title was " + tabInfo.title);
 		return;
+	}else{
+		//console.log("New URL was " + tabInfo.url + " and title was " + tabInfo.title);
 	}
 	
 	if(tabInfo.url.indexOf("archive.is") > -1){
@@ -492,44 +599,55 @@ function handleUpdated(tabId, changeInfo, tabInfo) {
 							notify("Get Archive was unable to find an archived page. Try searching by pressing g on your keyboard.");
 							return;
 						}else{
-							onDebug("handleUpdated: Starting timer to prevent listener from staying attached for too long");
+							//console.log("handleUpdated: Starting timer to prevent listener from staying attached for too long. Title was " + tabInfo.title);
 							setTimeout(function(){
 								removeListenerHandleUpdated("Removed listener: timeout while waiting for an archived page. Title was " + tabInfo.title);
 							}, 10000);
 						}
 					}
-					onDebug("Waiting..");
+					//console.log("Waiting..");
 					return;
 				}
 				wait = true;
+				//console.log("handleUpdated getGenericLink with archiveService archive.is and contextLinkUrl " + tabInfo.url);
+				removeListenerHandleUpdated("Removed listener: everything was OK. Title was " + tabInfo.title); // TODO: recently added, verify this. If not sure, remove it.
+				doAction(tabInfo.url, "archive.is", false);
+				browser.tabs.onUpdated.addListener(handleUpdated); // TODO: recently added, verify this. If not sure, remove it.
+				//sendMessage("getGenericLink", {archiveService: "archive.is", contextLinkUrl: tabInfo.url});
 				
-				onDebug("handleUpdated getGenericLink with archiveService archive.is and contextLinkUrl" + tabInfo.url);
-				sendMessage("getGenericLink", {archiveService: "archive.is", contextLinkUrl: tabInfo.url});
 				return;
 			}
 			wait = false;
 		}else{
 			if(tabInfo.url.length > 35){
-				onDebug("The length is greater than 35");
+				//console.log("The length is greater than 35");
 				return;
 			}
 		}	
 	}
 	
-	onDebug("handleUpdated globalArchiveService is " + globalArchiveService);
-	
+	//console.log("handleUpdated globalArchiveService is " + globalArchiveService);
+
 	if(tabInfo.url.indexOf("archive.is") > -1 || tabInfo.url.indexOf("webcitation.org") > -1 || tabInfo.url.indexOf("archive.org") > -1 || globalArchiveService == ""){
 		if(tabInfo.title.indexOf("Error") == -1 || tabInfo.title.indexOf("Internet Archive Wayback Machine") == -1){
-			if(tabInfo.url.indexOf(".pdf") > -1 || tabInfo.url.indexOf(".txt") > -1){
+			if(tabInfo.url.indexOf(".pdf") > -1 || tabInfo.url.indexOf(".txt") > -1 || tabInfo.title == ""){
 				// TEST URL: http://infomotions.com/etexts/gutenberg/dirs/etext04/lwam110.txt to archive.org -> no copy to clipboard if this code is disabled
 				removeListenerHandleUpdated("Removed listener: copied URL. Title was " + tabInfo.title);
-				onDebug("handleUpdated tab status is " + tabInfo.status);
+				//console.log("handleUpdated tab status is " + tabInfo.status);
+
+				var timeout = 1400;
+				if(tabInfo.url.indexOf("archive.org") > -1 && tabInfo.title == ""){
+					//console.log("Increasing timeout");
+					timeout = 4000;
+				}
 
 				setTimeout(function(){
-					sendMessage("copyCurrentUrlToClipboard");
-				}, 1400);
+					//sendMessageToTab("copyUrlToClipboard", {url: tabInfo.url, title: tabInfo.title}, tabInfo.id);
+					sendMessage("copyUrlToClipboard", {url: tabInfo.url, title: tabInfo.title});
+				}, timeout);
 			}else{
-				sendMessage("copyCurrentUrlToClipboard");
+				//sendMessageToTab("copyUrlToClipboard", "", tabInfo.id);
+				sendMessage("copyUrlToClipboard", {url: tabInfo.url, title: tabInfo.title});
 				removeListenerHandleUpdated("Removed listener: copied URL. Title was " + tabInfo.title);
 			}
 		}else{
@@ -541,7 +659,7 @@ function handleUpdated(tabId, changeInfo, tabInfo) {
 }
 
 function removeListenerHandleUpdated(reason){
-	onDebug(reason);
+	//console.log(reason);
 	browser.tabs.onUpdated.removeListener(handleUpdated);
 	globalArchiveService = "";
 	oldUrl = "";
@@ -549,67 +667,93 @@ function removeListenerHandleUpdated(reason){
 }
 
 /// Get Archive code
+function openPreferences(){
+	function onOpened() {
+		//console.log(`Options page opened`);
+	}
+
+	browser.runtime.openOptionsPage().then(onOpened, onError);	
+}
+
 function doClick(info, archiveService){
-	if(info.pageUrl)
+	var isContextMenu = true;
+	
+	if(info.pageUrl){
 		lastUrl = info.pageUrl;
+		isContextMenu = false;
+	}
 	
-	if(info.frameUrl)
+	if(info.frameUrl){
 		lastUrl = info.frameUrl;
-	
-	if(info.selectionText && info.selectionText != ""){
-		if(info.selectionText.indexOf("://") > -1){
-			if(info.selectionText.length == 150){
-				sendMessage("getSelection");
-				return;
+		isContextMenu = false;
+	}
+		
+	// Prefer direct links instead of a selection
+	if(!info.srcUrl && !info.linkUrl){
+		if(info.selectionText && info.selectionText != ""){
+			if(info.selectionText.indexOf("://") > -1){
+				if(info.selectionText.length == 150){
+					sendMessage("getSelection");
+					return;
+				}else{
+					lastUrl = info.selectionText;
+					isContextMenu = true;
+				}
 			}else{
-				lastUrl = info.selectionText;
+				sendMessage("getSelectionHtml");
+				return;
 			}
-		}else{
-			sendMessage("getSelectionHtml");
-			return;
 		}
 	}
 	
-	if(info.srcUrl)
+	if(info.srcUrl){
 		lastUrl = info.srcUrl;
+		isContextMenu = true;
+	}
 	
-	if(info.linkUrl)
+	if(info.linkUrl){
 		lastUrl = info.linkUrl;
+		isContextMenu = true;
+	}
 	
-	doAction(lastUrl, archiveService);
+	//console.log("doClick isContextMenu " + isContextMenu);
+	//console.log("lastUrl is " + lastUrl);
+	//console.log("archiveService is " + archiveService);
+
+	doAction(lastUrl, archiveService, isContextMenu);
 }
 
-function doAction(url, archiveService){
-	if(url == "" || url == null){
+function doAction(url, archiveService, isContextMenu){
+	/*if(url == "" || url == null){
 		notify("Try another selection");
 		return;
-	}
+	}*/
 	lastUrl = url;
-	sendMessage("getGenericLink", {archiveService: archiveService, contextLinkUrl:lastUrl});
+	sendMessage("getGenericLink", {archiveService: archiveService, contextLinkUrl:lastUrl, isContextMenu: isContextMenu});
 }
 
 // Got selection back from the content script, now go do the action
 function setSelection(selectionText){
-	doAction(selectionText, globalArchiveService);
+	doAction(selectionText, globalArchiveService, true);
 }
 
 // Open archive page for every link in selection
 // The magic happens in getarchive.js
 function setSelectionHtml(urls){
-	for(let url in urls)
+	for(let url of urls)
 	{
-		doAction(urls[url], globalArchiveService);
+		doAction(url, globalArchiveService, true);
 	}
 }
 
 /// Helper functions
 function onError(error) {
-	console.log(`Error: ${error}`);
+	console.error(`${error}`);
 }
 
-// onDebug function should be used instead of console.log to prevent the console from showing messages in release mode
+// onDebug function should be used instead of //console.log to prevent the console from showing messages in release mode
 function onDebug(info) {
-	console.log(info);
+	//console.log(info);
 }
 
 // Enable this to see information about preferences loading and other information that clutters up the browser console
@@ -624,11 +768,30 @@ function notify(message){
 		message = message.message;
 	}
 	
-	message = message.replace("&", "&amp;");
-	browser.notifications.create({
+	message = message.replace(new RegExp("&", 'g'), "&amp;");
+	
+	browser.notifications.create(message.substring(0, 20).replace(" ", ""),
+	{
 		type: "basic",
 		iconUrl: browser.extension.getURL("icons/getarchive-64.png"),
 		title: title,
 		message: message
 	});
 }
+
+// Webrequest: remove :80 from URLs on archive.org
+function cleanURL(details) {
+	//console.log("cleaning URL: url is: " + details.url);
+    var url = details.url.replace(":80", "");
+    //console.log("cleaning after replace URL: url is: " + url);
+
+    return { redirectUrl: url };
+}
+
+// Prevent archive.org from adding :80 to URLs
+browser.webRequest.onBeforeRequest.addListener(
+    cleanURL,
+    {urls: ["https://web.archive.org/*:80*"]},
+    ["blocking"]
+);
+

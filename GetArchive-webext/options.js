@@ -58,6 +58,10 @@ const PREFS = {
 	"getarchive_googlecache_keyboard_shortcut": {
 		"type": "value",
 		"default": "CTRL+6"
+	},
+	"getarchive_automatic_retrieval": {
+		"type": "checked",
+		"default": true
 	}
 };
 
@@ -167,6 +171,8 @@ function init(){
 	fillLists();
 	restoreOptions();
 	i18n();
+	document.querySelector("form").style.display = "block";
+	document.querySelector(".refreshOptions").style.display = "none";
 }
 
 window.addEventListener("DOMContentLoaded", init, { passive: true });

@@ -68,9 +68,21 @@
 	"description": ""
   },
   "keyboard_shortcut": {
-	"message": "Keyboard shortcut",
+	"message": "Keyboard shortcut: ",
 	"description": ""
   },
+  "automatic_retrieval": {
+	"message": "Automatic retrieval for \"Problem loading page\"",
+	"description": ""
+  },
+  "automatic_retrieval_descr": {
+	"message": "Automatically retrieve pages that display the error page \"Problem loading page\" using the default archive service",
+	"description": ""
+  },
+  "options_for": {
+	"message": "Options for ",
+	"description": ""
+  }, 
   "save_preferences": {
     "message": "Save preferences",
     "description": ""
