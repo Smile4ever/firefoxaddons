@@ -6,3 +6,4 @@ install:
 
 script:
   - npm run build:neat-url
+  - npm run build:translate-now
