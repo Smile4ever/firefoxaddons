@@ -1,3 +1,7 @@
+2.0.1
+=====
+- Fix "cannot scroll" notification appearing on some sites when scrolling is available by calculating scroll limit differently
+
 2.0.0
 =====
 

@@ -2,18 +2,11 @@ var scrollValue;
 var horizontalScroll;
 var scrollPageDownPageUp;
 
+const UP = -1;
+const DOWN = 1;
+
 function sendMessage(action, data){
 	browser.runtime.sendMessage({"action": action, "data": data});
-}
-
-var scrollUp = function(id, win){
-	//console.log("scrollling up");
-	scrollDownOrUp(id, -1, win);
-}
-
-var scrollDown = function(id, win){
-	//console.log("scrollling down");
-	scrollDownOrUp(id, 1, win);
 }
 
 var scrollDownOrUp = function(id, factor, win){
@@ -21,18 +14,20 @@ var scrollDownOrUp = function(id, factor, win){
 	getHorizontalScroll(id+100);
 	setTimeout(function(){
 		if(horizontalScroll == true){
-			if(win.document.body.scrollWidth == win.document.documentElement.clientWidth){
-				sendMessage("notify", browser.i18n.getMessage("notify_tip_horizontal")); // "This page cannot be scrolled horizontally. Change the preferences to scroll vertically or try another shortcut."
-			}
 			win.scrollBy(scrollValue * factor, 0);
+						
+			var limit = Math.max( win.document.body.scrollWidth, win.document.body.offsetWidth, win.document.documentElement.clientWidth, win.document.documentElement.scrollWidth, win.document.documentElement.offsetWidth) - win.innerWidth;
+			
+			if(limit <= 0)
+				sendMessage("notify", browser.i18n.getMessage("notify_tip_horizontal")); // "This page cannot be scrolled horizontally. Change the preferences to scroll vertically or try another shortcut."
 		}else{
-			/*console.log("body.scrollHeight is " + win.document.body.scrollHeight);
-			console.log("body.clientHeight is " + win.document.documentElement.clientHeight);*/
-
-			if(win.document.body.scrollHeight == win.document.documentElement.clientHeight){
-				sendMessage("notify", browser.i18n.getMessage("notify_tip_vertical")); // "This page cannot be scrolled vertically. Change the preferences to scroll horizontally or try another shortcut."
-			}
 			win.scrollBy(0, scrollValue * factor);
+			
+			// https://stackoverflow.com/questions/17688595/finding-the-maximum-scroll-position-of-a-page
+			var limit = Math.max( win.document.body.scrollHeight, win.document.body.offsetHeight, win.document.documentElement.clientHeight, win.document.documentElement.scrollHeight, win.document.documentElement.offsetHeight) - win.innerHeight;
+					
+			if(limit <= 0)
+				sendMessage("notify", browser.i18n.getMessage("notify_tip_vertical")); // "This page cannot be scrolled vertically. Change the preferences to scroll horizontally or try another shortcut."
 		}
 	}, 20);
 }
@@ -191,37 +186,37 @@ function addKeydown(w){
 				if(!event.shiftKey && !event.altKey && event.keyCode == 74){
 					// j
 					ok = true;
-					scrollDown(0, win);
+					scrollDownOrUp(0, DOWN, win);
 				}
 				
 				if(!event.shiftKey && !event.altKey && event.keyCode == 75){
 					// k
 					ok = true;
-					scrollUp(0, win);
+					scrollDownOrUp(0, UP, win);
 				}
 				
 				if(event.shiftKey && !event.altKey && event.keyCode == 74){
 					// shift+j
 					ok = true;
-					scrollDown(1, win);
+					scrollDownOrUp(1, DOWN, win);
 				}
 				
 				if(event.shiftKey && !event.altKey && event.keyCode == 75){
 					// shift+k
 					ok = true;
-					scrollUp(1, win);
+					scrollDownOrUp(1, UP, win);
 				}
 				
 				if(event.altKey && !event.shiftKey && event.keyCode == 74){
 					// alt+j
 					ok = true;
-					scrollDown(2, win);
+					scrollDownOrUp(2, DOWN, win);
 				}
 				
 				if(event.altKey && !event.shiftKey && event.keyCode == 75){
 					// alt+k
 					ok = true;
-					scrollUp(2, win);
+					scrollDownOrUp(2, UP, win);
 				}
 				
 				if(!event.altKey && !event.shiftKey && event.keyCode == 34){
@@ -229,7 +224,7 @@ function addKeydown(w){
 					getScrollPageDownPageUp(); // won't take effect this time, but it will take effect next time which is good enough
 					if(scrollPageDownPageUp){
 						ok = true;
-						scrollDown(0, win);
+						scrollDownOrUp(0, DOWN, win);
 					}
 				}
 				
@@ -238,7 +233,7 @@ function addKeydown(w){
 					getScrollPageDownPageUp(); // won't take effect this time, but it will take effect next time which is good enough
 					if(scrollPageDownPageUp){
 						ok = true;
-						scrollUp(0, win);
+						scrollDownOrUp(0, UP, win);
 					}
 				}
 			}

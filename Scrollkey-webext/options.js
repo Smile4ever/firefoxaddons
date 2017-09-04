@@ -40,8 +40,6 @@ function saveOptions() {
 
 function restoreOptions() {
 	browser.storage.sync.get(Object.keys(PREFS)).then((result) => {
-		console.log("restoreOptions from sync storage:");
-		console.log(result);
 		let val;
 		for(let p in PREFS) {
 			if(p in result) {
