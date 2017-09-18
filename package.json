@@ -1,7 +1,10 @@
 {
   "scripts": {
     "build:neat-url": "cd \"Neat URL-webext\"; web-ext build --overwrite-dest --ignore-files build.sh images *.md",
-    "build:translate-now": "cd \"Translate Now-webext\"; web-ext build --overwrite-dest --ignore-files build.sh images *.md"
+    "build:translate-now": "cd \"Translate Now-webext\"; web-ext build --overwrite-dest --ignore-files build.sh images *.md",
+    "build:fast-nav": "cd \"FastNav-webext\"; web-ext build --overwrite-dest --ignore-files build.sh images *.md",
+    "build:get-archive": "cd \"GetArchive-webext\"; web-ext build --overwrite-dest --ignore-files build.sh images *.md",
+    "build:scroll-key": "cd \"Scrollkey-webext\"; web-ext build --overwrite-dest --ignore-files build.sh images *.md"
   },
   "repository": {
     "type": "git",

@@ -7,3 +7,6 @@ install:
 script:
   - npm run build:neat-url
   - npm run build:translate-now
+  - npm run build:fast-nav
+  - npm run build:get-archive
+  - npm run build:scroll-key
