@@ -3,7 +3,7 @@
 	"description": "Quickly navigate to the next page with your keyboard. Press n to go to the next page, press p to go to the previous page.",
 	"homepage_url": "http://hugsmile.eu",
 	"manifest_version": 2,
-	"version": "1.0.3",
+	"version": "1.1.0",
 	"background": {
 		"scripts": ["background.js"]
 	},
@@ -23,5 +23,9 @@
 			"strict_min_version": "48.0"
 		}
 	},
-	"permissions": ["tabs", "notifications"]
+	"permissions": ["tabs", "notifications", "storage"],
+	"options_ui": {
+		"page": "options.html",
+		"browser_style": true
+	}
 }
