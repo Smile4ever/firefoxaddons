@@ -3,7 +3,7 @@
 	"description": "Press F8 delete a MediaWiki (talk) page.",
 	"homepage_url": "http://hugsmile.eu",
 	"manifest_version": 2,
-	"version": "1.0.0",
+	"version": "5.0.0",
 	"background": {
 		"scripts": ["background.js"]
 	},
@@ -22,7 +22,7 @@
 	],
 	"applications": {
 		"gecko": {
-			"id": "fastdelete-webext@hugsmile.eu",
+			"id": "fastdelete@hugsmile.eu",
 			"strict_min_version": "53.0"
 		}
 	},
