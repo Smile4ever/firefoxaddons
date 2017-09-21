@@ -1,4 +1,4 @@
-1.0.0
+5.0.0
 =====
 - WebExtensions port of Fast Delete
 - FastDelete has no longer supports the key "Delete", only F8
