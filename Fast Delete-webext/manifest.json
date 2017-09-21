@@ -1,0 +1,41 @@
+{
+	"name": "Fast Delete",
+	"description": "Press F8 delete a MediaWiki (talk) page.",
+	"homepage_url": "http://hugsmile.eu",
+	"manifest_version": 2,
+	"version": "1.0.0",
+	"background": {
+		"scripts": ["background.js"]
+	},
+	"icons": {
+		"16": "icons/fastdelete-16.png",
+		"32": "icons/fastdelete-32.png",
+		"64": "icons/fastdelete-64.png",
+		"128": "icons/fastdelete-128.png"
+	},
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"js": ["fastdelete.js"],
+			"run_at": "document_start"
+		}
+	],
+	"applications": {
+		"gecko": {
+			"id": "fastdelete-webext@hugsmile.eu",
+			"strict_min_version": "53.0"
+		}
+	},
+	"commands": {
+		"f8-received": {
+			"suggested_key": { "default": "F8" },
+			"description": "Send a 'f8-received' event to the extension"
+		}
+	},
+	"permissions": [
+		"tabs", "storage", "history", "notifications"
+	],
+	"options_ui": {
+		"page": "options.html"
+	}
+}

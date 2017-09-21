@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+	<style>
+		/* Used from http://stackoverflow.com/questions/306252/how-to-align-checkboxes-and-their-labels-consistently-cross-browsers */
+		label {
+			display: block;
+			padding-left: 15px;
+			text-indent: -15px;
+		}
+		
+		input[type=checkbox] {
+			width: 13px;
+			height: 13px;
+			padding: 0;
+			margin:0;
+			margin-right: 3px;
+			vertical-align: bottom;
+			position: relative;
+			top: -1px;
+			*overflow: hidden;
+		}
+		/* End of used CSS */
+		
+		input[type=number]{
+			max-width: 4em;
+		}
+		
+		body{
+			margin:0;
+			padding:0;
+		}
+		
+		/* CSS used from https://github.com/kainsavage/HistoryBlock/blob/web-extension/options/options.css */
+		body, button {
+		  font-family: Segoe UI, sans-serif;
+		  font-size: 15px;
+		  color: #333; /* From Mozilla Firefox CSS */
+		}
+
+		button {
+		  padding: 4px 20px;
+		  background-color: #fbfbfb;
+		  border: 1px solid #bbb;
+		  border-radius: 2px; /* From Mozilla Firefox CSS */
+		  margin: 0 4px;
+		}
+
+		button:hover {
+		  background-color: #ebebeb;
+		}
+		/* End of used CSS */
+
+		.descr{
+			margin-inline-start: 1em;
+			-moz-box-align: center;
+			font-size: 0.85em;
+			/* font-size: 1.25rem; */
+			color: gray;
+		}
+		
+		.hr{
+			border-bottom: 1px solid #bbb
+		}
+		
+		/* CSS used from https://davidwalsh.name/flexbox-column */
+		.flexbox-container {
+			display: -ms-flex;
+			display: -webkit-flex;
+			display: flex;
+		}
+
+		.flexbox-container > div {
+			width: 33%;
+			padding: 10px;
+		}
+
+		.flexbox-container > div:first-child {
+			margin-right: 20px;
+		}
+		/* End of used CSS */
+		
+		.flexbox-container label{
+			display: inline;
+			padding-left: 0px;
+			text-indent: 0px;
+		}
+		
+		button::-moz-focus-inner { 
+			border: 0; 
+		}
+	</style>
+
+	<div class="refreshOptions">
+		Refresh this page (F5) to see the options of Fast Delete
+	</div>
+    <form id="optionsform" style="display: none">
+		<div class="hr"></div>
+		
+		<div class="flexbox-container">
+			<div>
+				<label><span>Use Safe Mode</span></label><div class="descr">Enable this option to use Fast Delete in bot mode (in combination with watch_category_basic).</div>
+			</div>
+			<div>
+				<input type="checkbox" id="fastdelete_safemode"><label for="fastdelete_safemode"><span>Use Safe Mode</span></label>
+			</div>
+			<div>
+				<!-- Empty -->
+			</div>
+		</div>
+		
+		<div class="hr"></div>
+		
+		<div class="flexbox-container">
+			<div>
+				<label><span>Only delete talk pages with bot notifications</span></label><div class="descr">If this option is not checked, a few other delete reasons can be used in Safe Mode as well.</div>
+			</div>
+			<div>
+				<input type="checkbox" id="fastdelete_onlybotnotifications"/><label for="fastdelete_onlybotnotifications"><span>Only delete talk pages with bot notifications</span></label>
+			</div>
+			<div>
+				<!-- Empty -->
+			</div>
+		</div>
+	
+		<div class="hr"></div>
+		
+		<div class="flexbox-container">
+			<div>
+				<label><span>Automatically confirm deletion on nl.wikipedia.org</span></label><div class="descr">If this option is not checked, Fast Delete will only show the deletion page on nl.wikipedia.org without submitting the deletion request.</div>
+			</div>
+			<div>
+				<input type="checkbox" id="fastdelete_autoconfirm_wikipedia"/><label for="fastdelete_autoconfirm_wikipedia"><span>Automatically confirm deletion on nl.wikipedia.org</span></label>
+			</div>
+			<div>
+				<!-- Empty -->
+			</div>
+		</div>
+	
+		<div class="advanced" style="display:none">
+			<div class="hr"></div>
+			
+			<div class="flexbox-container">
+				<div>
+					<label><span>Debug: doSubmit</span></label><div class="descr">If this option is not checked, pages will not be deleted.</div>
+				</div>
+				<div>
+					<input type="checkbox" id="fastdelete_debug_dosubmit"/><label for="fastdelete_debug_dosubmit"><span>Debug: doSubmit</span></label>
+				</div>
+				<div>
+					<!-- Empty -->
+				</div>
+			</div>
+		</div>
+
+		
+        <button type="submit"><span id="savepreferences">Save preferences</span></button>
+    </form>
+
+    <script src="options.js" defer></script>
+
+  </body>
+
+</html>
