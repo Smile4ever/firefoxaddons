@@ -150,7 +150,9 @@ function initContextMenus(){
 		createContextMenu("translatenow-google-translate", "Translate with Google", selectionPageContext);
 	if(translate_now_translate_engine == "bing")
 		createContextMenu("translatenow-bing-translate", "Translate with Bing", selectionContext);
-	
+	if(translate_now_translate_engine == "deepl")
+		createContextMenu("translatenow-deepl-translate", "Translate with DeepL", selectionContext);
+
 	if(translate_now_enable_speak){
 		if(translate_now_speak_engine == "google")
 			createContextMenu("translatenow-google-speak", "Speak with Google Translate Voice", selectionContext);
@@ -217,12 +219,9 @@ function listener(info,tab){
 }
 
 function clickToolbarButton(){
-	if(translate_now_translate_engine == "google")
-		globalAction = "google-translate";
-				
-	if(translate_now_translate_engine == "bing")
-		globalAction = "bing-translate";
-	
+	if(translate_now_translate_engine == "google" || translate_now_translate_engine == "bing" || translate_now_translate_engine == "deepl")
+		globalAction = translate_now_translate_engine + "-translate";
+
 	// selectionText is unknown at this point, so pass an empty string
 	sendMessage("getSelection", "", priviledgedSiteNoContentScript);
 }
@@ -233,7 +232,6 @@ browser.browserAction.onClicked.addListener(clickToolbarButton);
 function openTab(url){
 	//console.log("openTab for url " + url);
 	//console.log("lastTabId is " + lastTabId);
-	//console.log("translate_now_reuse_tab is " + translate_now_reuse_tab);
 
 	if(lastTabId != -1 && translate_now_reuse_tab){
 		browser.tabs.get(lastTabId).then(onGot, onError);
@@ -386,6 +384,15 @@ function doAction(selectionText, pageUrl, action){
 			browser.tabs.onUpdated.removeListener(pageLoaded);
 		}, 5000);
 	}
+
+	if(action.indexOf("deepl") > -1){
+		openTab("https://www.deepl.com/translator");
+		browser.tabs.onUpdated.addListener(pageLoaded);
+		setTimeout(function(){
+			// Remove the listener when the page fails to load within 5 seconds
+			browser.tabs.onUpdated.removeListener(pageLoaded);
+		}, 5000);
+	}
 }
 
 function pageLoaded(tabId, changeInfo, tabInfo){
@@ -399,6 +406,12 @@ function pageLoaded(tabId, changeInfo, tabInfo){
 		browser.tabs.onUpdated.removeListener(pageLoaded);
 	}
 	
+	if(tabInfo.url.indexOf("https://www.deepl.com/translator") > -1){
+		if(globalAction == "deepl-translate")
+			sendMessage("deeplTranslate", {translate_now_source_language: translate_now_source_language, translate_now_destination_language: translate_now_destination_language, selectedText: selectedText});
+		browser.tabs.onUpdated.removeListener(pageLoaded);
+	}
+
 	// HTTP -> HTTPS redirect
 	if(tabInfo.url.indexOf("https://translate.google.com") > -1){
 		if(globalAction == "google-speak")

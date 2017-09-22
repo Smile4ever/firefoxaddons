@@ -61,7 +61,7 @@ function saveOptions() {
 }
 
 function restoreOptions() {
-	browser.storage.local.get(Object.keys(PREFS)).then((result) => {
+	return browser.storage.local.get(Object.keys(PREFS)).then((result) => {
 		let val;
 		for(let p in PREFS) {
 			if(p in result) {
@@ -75,8 +75,42 @@ function restoreOptions() {
 	}).catch(console.error);
 }
 
+function translateEngineChangedEvent(event){
+	if(!event.target.value) return;
+	translateEngineChangedValue(event.target.value);
+}
+
+function translateEngineChangedValue(value){
+	if(!value) return;
+
+	updateSupportedLanguages(value, "translate_now_destination_language");
+	updateSupportedLanguages(value, "translate_now_source_language");
+}
+
+function translateEngineInit(value){
+	translateEngineChangedValue(translate_now_translate_engine.options[translate_now_translate_engine.selectedIndex].value);
+	document.getElementById("translate_now_translate_engine").addEventListener("change", translateEngineChangedEvent);
+}
+
+function updateSupportedLanguages(value, id){
+	let languages = document.getElementById(id).getElementsByTagName("option");
+
+	for(let lang of languages){
+		let c = lang.getAttribute("class");
+		if(c == null) c = "";
+
+		if(value == "deepl" && c.indexOf("deepl") == -1){
+			lang.style.display = "none";
+			continue;
+		}
+
+		lang.style.display = "block";
+	}
+}
+
 function init(){
-	restoreOptions();
+	restoreOptions().then(translateEngineInit, null);
+
 	document.querySelector("form").style.display = "block";
 	document.querySelector(".refreshOptions").style.display = "none";
 }

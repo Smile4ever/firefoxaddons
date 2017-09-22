@@ -1,3 +1,7 @@
+3.1.0
+=====
+- Add support for DeepL
+
 3.0.0
 =====
 - Expanded support for languages:

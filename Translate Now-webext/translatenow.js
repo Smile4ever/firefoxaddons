@@ -13,6 +13,9 @@ function onMessage(message) {
 		case "bingSpeak":
 			bingSpeak(message.data.translate_now_source_language, message.data.translate_now_destination_language, message.data.selectedText, message.data.translate_now_to_speak);
 			break;
+		case "deeplTranslate":
+			deeplTranslate(message.data.translate_now_source_language, message.data.translate_now_destination_language, message.data.selectedText);
+			break;
 		case "googleSpeak":
 			googleSpeak(message.data);
 			break;
@@ -155,6 +158,25 @@ function bingSpeakSource(){
 function bingSpeakDestination(){
 	var speakButton = document.getElementsByClassName("destinationText")[0].getElementsByClassName("speakButton")[0];
 	speakButton.click();
+}
+
+// DeepL only supports Dutch, English, German, French, Spanish, Italian and Polish
+function deeplTranslate(translate_now_source_language, translate_now_destination_language, selectedText){
+	setDeeplLanguage("dl_select_source_language", translate_now_source_language.toUpperCase());
+	setDeeplLanguage("dl_select_target_language", translate_now_destination_language.toUpperCase());
+
+	insertAtCursor(document.getElementById("LMT__sourceEdit"), selectedText);
+}
+
+function setDeeplLanguage(id, value){
+	var tds = document.getElementById(id).getElementsByTagName("td");
+	var i = 0;
+	for(i = 0; i < tds.length; i++){
+		if(tds[i].getAttribute("value") == value){
+			tds[i].click();
+			break;
+		}
+	}
 }
 
 function googleSpeak(translate_now_to_speak){

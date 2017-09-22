@@ -90,8 +90,8 @@
 			text-indent: 0px;
 		}
 		
-		button::-moz-focus-inner { 
-			border: 0; 
+		button::-moz-focus-inner {
+			border: 0;
 		}
 	</style>
 
@@ -107,7 +107,7 @@
 			</div>
 			<div>
 				<select id="translate_now_destination_language">
-					<option value="en">English (default)</option>
+					<option value="en" class="deepl">English (default)</option>
 					<option value="af">Afrikaans</option>
 					<option value="sq">Albanian</option>
 					<option value="am">Amharic</option><!-- New since 3.0 -->
@@ -129,17 +129,17 @@
 					<option value="hr">Croatian</option>
 					<option value="cs">Czech</option>
 					<option value="da">Danish</option>
-					<option value="nl">Dutch</option>
-					<option value="en">English</option>
+					<option value="nl" class="deepl">Dutch</option>
+					<option value="en" class="deepl">English</option>
 					<option value="eo">Esperanto</option>
 					<option value="et">Estonian</option>
 					<option value="tl">Filipino (Tagalog)</option><!-- Renamed from Tagalog (Filipino) / Alias for Tagalog -->
 					<option value="fi">Finnish</option>
-					<option value="fr">French</option>
+					<option value="fr" class="deepl">French</option>
 					<option value="fy">Frisian</option><!-- New since 3.0 -->
 					<option value="gl">Galician</option>
 					<option value="ka">Georgian</option>
-					<option value="de">German</option>
+					<option value="de" class="deepl">German</option>
 					<option value="el">Greek</option>
 					<option value="gu">Gujarati</option>
 					<option value="ht">Haitian Creole</option>
@@ -153,7 +153,7 @@
 					<option value="ig">Igbo</option>
 					<option value="id">Indonesian</option>
 					<option value="ga">Irish</option>
-					<option value="it">Italian</option>
+					<option value="it" class="deepl">Italian</option>
 					<option value="ja">Japanese</option>
 					<option value="jw">Javanese</option>
 					<option value="kn">Kannada</option>
@@ -180,7 +180,7 @@
 					<option value="no">Norwegian</option>
 					<option value="ps">Pashto</option><!-- New since 3.0 -->
 					<option value="fa">Persian</option>
-					<option value="pl">Polish</option>
+					<option value="pl" class="deepl">Polish</option>
 					<option value="pt">Portuguese</option>
 					<option value="pa">Punjabi</option>
 					<option value="ro">Romanian</option>
@@ -195,7 +195,7 @@
 					<option value="sk">Slovak</option>
 					<option value="sl">Slovenian</option>
 					<option value="so">Somali</option>
-					<option value="es">Spanish</option>
+					<option value="es" class="deepl">Spanish</option>
 					<option value="su">Sudanese Arabic</option><!-- Renamed from Sundanese -->
 					<option value="sw">Swahili</option>
 					<option value="sv">Swedish</option>
@@ -229,7 +229,7 @@
 			</div>
 			<div>
 				<select id="translate_now_source_language">
-					<option value="auto">Detect automatically</option>
+					<option value="auto" class="deepl">Detect automatically</option>
 					<option value="af">Afrikaans</option>
 					<option value="sq">Albanian</option>
 					<option value="am">Amharic</option><!-- New since 3.0 -->
@@ -251,17 +251,17 @@
 					<option value="hr">Croatian</option>
 					<option value="cs">Czech</option>
 					<option value="da">Danish</option>
-					<option value="nl">Dutch</option>
-					<option value="en">English</option>
+					<option value="nl" class="deepl">Dutch</option>
+					<option value="en" class="deepl">English</option>
 					<option value="eo">Esperanto</option>
 					<option value="et">Estonian</option>
 					<option value="tl">Filipino (Tagalog)</option><!-- Renamed from Tagalog (Filipino) / Alias for Tagalog -->
 					<option value="fi">Finnish</option>
-					<option value="fr">French</option>
+					<option value="fr" class="deepl">French</option>
 					<option value="fy">Frisian</option><!-- New since 3.0 -->
 					<option value="gl">Galician</option>
 					<option value="ka">Georgian</option>
-					<option value="de">German</option>
+					<option value="de" class="deepl">German</option>
 					<option value="el">Greek</option>
 					<option value="gu">Gujarati</option>
 					<option value="ht">Haitian Creole</option>
@@ -275,7 +275,7 @@
 					<option value="ig">Igbo</option>
 					<option value="id">Indonesian</option>
 					<option value="ga">Irish</option>
-					<option value="it">Italian</option>
+					<option value="it" class="deepl">Italian</option>
 					<option value="ja">Japanese</option>
 					<option value="jw">Javanese</option>
 					<option value="kn">Kannada</option>
@@ -302,7 +302,7 @@
 					<option value="no">Norwegian</option>
 					<option value="ps">Pashto</option><!-- New since 3.0 -->
 					<option value="fa">Persian</option>
-					<option value="pl">Polish</option>
+					<option value="pl" class="deepl">Polish</option>
 					<option value="pt">Portuguese</option>
 					<option value="pa">Punjabi</option>
 					<option value="ro">Romanian</option>
@@ -317,7 +317,7 @@
 					<option value="sk">Slovak</option>
 					<option value="sl">Slovenian</option>
 					<option value="so">Somali</option>
-					<option value="es">Spanish</option>
+					<option value="es" class="deepl">Spanish</option>
 					<option value="su">Sudanese Arabic</option><!-- Renamed from Sundanese -->
 					<option value="sw">Swahili</option>
 					<option value="sv">Swedish</option>
@@ -395,6 +395,7 @@
 				<select id="translate_now_translate_engine">
 					<option value="google">Google Translate</option>
 					<option value="bing">Bing Translator</option>
+					<option value="deepl">DeepL Translator</option>
 				</select>
 			</div>
 			<div>
