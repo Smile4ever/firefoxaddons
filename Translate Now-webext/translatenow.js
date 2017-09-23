@@ -179,6 +179,21 @@ function setDeeplLanguage(id, value){
 	}
 }
 
+function insertAtCursor(myField, myValue) {
+	if(myField == undefined)
+		return; // please try again
+
+	if (myField.selectionStart || myField.selectionStart == '0') {
+		var startPos = myField.selectionStart;
+		var endPos = myField.selectionEnd;
+		myField.value = myField.value.substring(0, startPos)
+			+ myValue
+			+ myField.value.substring(endPos, myField.value.length);
+	} else {
+		myField.value += myValue;
+	}
+}
+
 function googleSpeak(translate_now_to_speak){
 	switch(translate_now_to_speak){
 		case "original":
