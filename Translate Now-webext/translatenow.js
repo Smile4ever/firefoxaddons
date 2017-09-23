@@ -162,35 +162,20 @@ function bingSpeakDestination(){
 
 // DeepL only supports Dutch, English, German, French, Spanish, Italian and Polish
 function deeplTranslate(translate_now_source_language, translate_now_destination_language, selectedText){
+	document.getElementById("LMT__sourceEdit").value = selectedText;
+
 	setDeeplLanguage("dl_select_source_language", translate_now_source_language.toUpperCase());
 	setDeeplLanguage("dl_select_target_language", translate_now_destination_language.toUpperCase());
-
-	insertAtCursor(document.getElementById("LMT__sourceEdit"), selectedText);
 }
 
 function setDeeplLanguage(id, value){
-	var tds = document.getElementById(id).getElementsByTagName("td");
+	var lis = document.getElementById(id).getElementsByTagName("li");
 	var i = 0;
-	for(i = 0; i < tds.length; i++){
-		if(tds[i].getAttribute("value") == value){
-			tds[i].click();
+	for(i = 0; i < lis.length; i++){
+		if(lis[i].getAttribute("dl-value") == value){
+			lis[i].click();
 			break;
 		}
-	}
-}
-
-function insertAtCursor(myField, myValue) {
-	if(myField == undefined)
-		return; // please try again
-
-	if (myField.selectionStart || myField.selectionStart == '0') {
-		var startPos = myField.selectionStart;
-		var endPos = myField.selectionEnd;
-		myField.value = myField.value.substring(0, startPos)
-			+ myValue
-			+ myField.value.substring(endPos, myField.value.length);
-	} else {
-		myField.value += myValue;
 	}
 }
 

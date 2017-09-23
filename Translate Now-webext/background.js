@@ -78,12 +78,13 @@ function init(){
 		
 		initContextMenus();
 		
-		function format(speak_engine){
-			if(speak_engine == "google") return "Google Translate";
-			if(speak_engine == "bing") return "Bing Translator";
+		function format(translate_engine){
+			if(translate_engine == "google") return "Google Translate";
+			if(translate_engine == "bing") return "Bing Translator";
+			if(translate_engine == "deepl") return "DeepL Translator";
 		}
 		
-		browser.browserAction.setTitle({title: "Translate Now - " + format(translate_now_speak_engine)});
+		browser.browserAction.setTitle({title: "Translate Now - " + format(translate_now_translate_engine)});
 	}).catch(console.error);
 }
 init();
@@ -112,7 +113,7 @@ function sendMessage(action, data, errorCallback){
 		for (tab of tabs) {
 			browser.tabs.sendMessage(tab.id, {"action": action, "data": data}).catch(function(){
 				onError("failed to execute " + action + "with data " + data);
-				if(errorCallback) errorCallback(data);
+				if(errorCallback) errorCallback(data, tab.url);
 			});
 		}
 	}
@@ -310,12 +311,12 @@ function doClick(selectionText, pageUrl, action){
 		sendMessage("getSelection", selectionText, priviledgedSiteNoContentScript);
 }
 
-function priviledgedSiteNoContentScript(selectionText){
+function priviledgedSiteNoContentScript(selectionText, pageUrl){
 	// We are probably on addons.mozilla.org or another priviledged website
 	//notify("This website is not supported due to security restrictions.");
 	
 	// Support for addons.mozilla.org among other websites (best effort)
-	doAction(selectionText, globalAction);
+	doAction(selectionText, pageUrl, globalAction);
 }
 
 function doAction(selectionText, pageUrl, action){

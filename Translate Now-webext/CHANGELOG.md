@@ -1,3 +1,14 @@
+3.1.2
+=====
+- Fix badge text
+- Fix for priviledged sites
+- Fix for DeepL languages not correctly set
+- Insert DeepL source text differently
+
+3.1.1
+=====
+- Fix for DeepL source text not being inserted
+
 3.1.0
 =====
 - Add support for DeepL
