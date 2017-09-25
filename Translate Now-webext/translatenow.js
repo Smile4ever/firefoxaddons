@@ -3,9 +3,8 @@ browser.runtime.onMessage.addListener(onMessage);
 
 function onMessage(message) {
 	switch(message.action){
-		case "getSelection": 
+		case "getSelection":
 			sendMessage("setSelection", {selection: getSelection(), pageUrl: window.location.href});
-			//sendMessage("setSelection", window.getSelection().toString();
 			break;
 		case "bingTranslate":
 			bingTranslate(message.data.translate_now_source_language, message.data.translate_now_destination_language, message.data.selectedText);
@@ -162,6 +161,37 @@ function bingSpeakDestination(){
 
 // DeepL only supports Dutch, English, German, French, Spanish, Italian and Polish
 function deeplTranslate(translate_now_source_language, translate_now_destination_language, selectedText){
+	// First try
+	deeplTranslateInternal(translate_now_source_language, translate_now_destination_language, selectedText);
+
+	var e = document.createEvent('HTMLEvents');
+	e.initEvent("keyup", false, true);
+	document.getElementById("LMT__targetEdit").dispatchEvent(e);
+
+	var e2 = document.createEvent('HTMLEvents');
+	e2.initEvent("keyup", false, true);
+	document.getElementById("LMT__sourceEdit").dispatchEvent(e);
+
+	// Check if there is text in the target box
+	let targetText = document.getElementById("LMT__targetEdit").value;
+	document.getElementById("LMT__targetEdit").click();
+
+	// Retry
+	if(targetText == null || targetText == ""){
+		deeplTranslateInternal(translate_now_source_language, translate_now_destination_language, selectedText);
+	}
+
+	// Inform the user of failure and how to resolve the failure into success
+	setTimeout(function(){
+		let targetText2 = document.getElementById("LMT__targetEdit").value;
+
+		if(targetText2 == null || targetText2 == ""){
+			document.getElementById("LMT__targetEdit").value = "Loading translation. Press ENTER if your translation does not appear within 4 seconds.";
+		}
+	}, 2000);
+}
+
+function deeplTranslateInternal(translate_now_source_language, translate_now_destination_language, selectedText){
 	document.getElementById("LMT__sourceEdit").value = selectedText;
 
 	setDeeplLanguage("dl_select_source_language", translate_now_source_language.toUpperCase());

@@ -1,3 +1,8 @@
+3.1.3
+=====
+- DeepL support should now work in more cases, and help the user if it doesn't work within 4 seconds
+- Selections longer than 150 characters should be considered OK to use. Will allow for selections > 150 characters on priviledged sites.
+
 3.1.2
 =====
 - Fix badge text

@@ -305,7 +305,7 @@ function doClick(selectionText, pageUrl, action){
 	// Ideally, we want to use selectionText this which also works for cross-domain iframes (nice!!)
 	// But we now use a content script if the selection is too long to circumvent https://bugzilla.mozilla.org/show_bug.cgi?id=1338898
 	
-	if(selectionText.length < 150 || pageUrl != "")
+	if(selectionText.length < 150 || pageUrl != "" || selectionText.length > 150)
 		doAction(selectionText, pageUrl, action);
 	else
 		sendMessage("getSelection", selectionText, priviledgedSiteNoContentScript);
@@ -354,7 +354,7 @@ function doAction(selectionText, pageUrl, action){
 		}		
 		
 		var newText = googletranslate.getNewText(selectedText);
-			
+
 		if(action == "google-speak"){
 			if(translate_now_google_speak_audio_only){
 				openTab(googletranslate.getSpeakUrlSource(translate_now_destination_language, newText));
