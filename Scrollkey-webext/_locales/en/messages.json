@@ -8,11 +8,11 @@
     "description": ""
   },
   "scrollvalueshift": {
-    "message": "Scroll value (Shift)",
+    "message": "Scroll value (hold Shift)",
     "description": ""
   },
   "scrollvaluealt": {
-    "message": "Scroll value (Alt)",
+    "message": "Scroll value (hold Alt)",
     "description": ""
   },
   "pixels": {
