@@ -1,18 +1,18 @@
 {
   "extensionDescription": {
-    "message": "Scroll Seiten in VIM Stil mit den j und k Tasten.",
+    "message": "Scrolle Seiten wie in VIM mit j und k.",
     "description": "Beschreibung der Erweiterung."
   },
   "scrollvalue": {
-    "message": "Scrollwert",
+    "message": "Scrollweite",
     "description": ""
   },
   "scrollvalueshift": {
-    "message": "Scrollwert (Shift)",
+    "message": "Scrollweite (Shift)",
     "description": ""
   },
   "scrollvaluealt": {
-    "message": "Scrollwert (Alt)",
+    "message": "Scrollweite (Alt)",
     "description": ""
   },
   "pixels": {
@@ -20,19 +20,19 @@
     "description": ""
   },
   "pagedownpageup": {
-    "message": "PageDown und PageUp blättern den oben angegebenen Wert",
+    "message": "PageDown und PageUp scrollen um den oben angegebenen Wert weiter",
     "description": ""
   },
   "horizontalscroll": {
-    "message": "Verwenden Sie die Tastenkombination J/K für horizontalen Bildlauf",
+    "message": "Verwende j und k für horizontales Scrollen",
     "description": ""
   },
   "horizontalscrollshift": {
-    "message": "Verwenden Sie die Tastenkombination Shift+J/Shift+K für horizontalen Bildlauf",
+    "message": "Verwende Shift+j und Shift+k für horizontales Scrollen",
     "description": ""
   },
   "horizontalscrollalt": {
-    "message": "Verwenden Sie die Tastenkombination Alt+J/Alt+K für horizontalen Bildlauf",
+    "message": "Verwende Alt+j und Alt+k für horizontales Scrollen",
     "description": ""
   },
   "savepreferences": {
@@ -44,11 +44,11 @@
     "description": ""
   },
   "notify_tip_horizontal": {
-	"message": "This page cannot be scrolled horizontally. Change the preferences to scroll vertically or try another shortcut.",
-	"description": "Not translated yet"  
+	"message": "Auf dieser Seite kann nicht horizontal gescrollt werden. Ändere die Einstellungen um vertikal zu scrollen oder versuche eine andere Tastenkombination",
+	"description": ""
   },
   "notify_tip_vertical": {
-	"message": "This page cannot be scrolled vertically. Change the preferences to scroll horizontally or try another shortcut.",
-	"description": ""  
+	"message": "Auf dieser Seite kann nicht vertikal gescrollt werden. Ändere die Einstellungen um vertikal zu scrollen oder versuche eine andere Tastenkombination",
+	"description": ""
   }
 }
