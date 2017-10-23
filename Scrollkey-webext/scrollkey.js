@@ -159,6 +159,9 @@ setTimeout(function(){
 }, 2000);
 /// End of iframe handling
 
+last_g = new Date();
+const DOUBLE_KEYDOWN_THRESHOLD = 250;
+
 addKeydown(window);
 	
 function addKeydown(w){
@@ -183,6 +186,18 @@ function addKeydown(w){
 			var ok = false;
 			
 			if (!event.ctrlKey && !event.metaKey) {
+				if (!event.shiftKey && !event.altKey && event.keyCode == 71) {
+					// g
+					if (new Date().getTime() - last_g.getTime() < DOUBLE_KEYDOWN_THRESHOLD)
+				    		window.scrollTo(0, 0);
+					last_g = new Date();
+			    	}
+
+				if (event.shiftKey && !event.altKey && event.keyCode == 71) {
+					// G = shift + g
+					window.scrollTo(0, document.body.scrollHeight);
+			    	}
+
 				if(!event.shiftKey && !event.altKey && event.keyCode == 74){
 					// j
 					ok = true;
