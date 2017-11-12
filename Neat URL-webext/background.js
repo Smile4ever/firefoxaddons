@@ -549,6 +549,12 @@ function cleanURL(details) {
 	if(decodedLeanURL == decodedDetailsURL || decodedLeanURL == decodedOriginalDetailsURL){
 		return;
 	}*/
+		
+    // Prevent from add "=" at the end of leanURL
+    if(leanURL.charAt(leanURL.length-1) == "=" && leanURL.charAt(leanURL.length-1) != details.url.charAt(details.url.length-1)){
+        leanURL = leanURL.substr(0,leanURL.length-1);
+    }
+
     if(originalDetailsUrl == leanURL.href) return;
 
 	// Don't change the URL if any of these is true
