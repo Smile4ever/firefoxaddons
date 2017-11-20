@@ -166,15 +166,15 @@ function deeplTranslate(translate_now_source_language, translate_now_destination
 
 	var e = document.createEvent('HTMLEvents');
 	e.initEvent("keyup", false, true);
-	document.getElementById("LMT__targetEdit").dispatchEvent(e);
+	document.getElementsByClassName("lmt__target_textarea")[0].dispatchEvent(e);
 
 	var e2 = document.createEvent('HTMLEvents');
 	e2.initEvent("keyup", false, true);
-	document.getElementById("LMT__sourceEdit").dispatchEvent(e);
+	document.getElementsByClassName("lmt__source_textarea")[0].dispatchEvent(e);
 
 	// Check if there is text in the target box
-	let targetText = document.getElementById("LMT__targetEdit").value;
-	document.getElementById("LMT__targetEdit").click();
+	let targetText = document.getElementsByClassName("lmt__target_textarea")[0].value;
+	document.getElementsByClassName("lmt__target_textarea")[0].click();
 
 	// Retry
 	if(targetText == null || targetText == ""){
@@ -183,16 +183,16 @@ function deeplTranslate(translate_now_source_language, translate_now_destination
 
 	// Inform the user of failure and how to resolve the failure into success
 	setTimeout(function(){
-		let targetText2 = document.getElementById("LMT__targetEdit").value;
+		let targetText2 = document.getElementsByClassName("lmt__target_textarea")[0].value;
 
 		if(targetText2 == null || targetText2 == ""){
-			document.getElementById("LMT__targetEdit").value = "Loading translation. Press ENTER if your translation does not appear within 4 seconds.";
+			document.getElementsByClassName("lmt__target_textarea")[0].value = "Loading translation. Press ENTER if your translation does not appear within 4 seconds.";
 		}
 	}, 2000);
 }
 
 function deeplTranslateInternal(translate_now_source_language, translate_now_destination_language, selectedText){
-	document.getElementById("LMT__sourceEdit").value = selectedText;
+	document.getElementsByClassName("lmt__source_textarea")[0].value = selectedText;
 
 	setDeeplLanguage("dl_select_source_language", translate_now_source_language.toUpperCase());
 	setDeeplLanguage("dl_select_target_language", translate_now_destination_language.toUpperCase());

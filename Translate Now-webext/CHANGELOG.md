@@ -1,3 +1,7 @@
+3.1.4
+=====
+- Fix: DeepL no longer working, fixes #87
+
 3.1.3
 =====
 - DeepL support should now work in more cases, and help the user if it doesn't work within 4 seconds
