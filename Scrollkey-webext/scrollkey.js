@@ -14,14 +14,20 @@ var scrollDownOrUp = function(id, factor, win){
 	getHorizontalScroll(id+100);
 	setTimeout(function(){
 		if(horizontalScroll == true){
-			win.scrollBy(scrollValue * factor, 0);
+			win.scrollBy({
+			  left: scrollValue * factor,
+			  behavior: 'smooth',
+			});
 						
 			var limit = Math.max( win.document.body.scrollWidth, win.document.body.offsetWidth, win.document.documentElement.clientWidth, win.document.documentElement.scrollWidth, win.document.documentElement.offsetWidth) - win.innerWidth;
 			
 			if(limit <= 0)
 				sendMessage("notify", browser.i18n.getMessage("notify_tip_horizontal")); // "This page cannot be scrolled horizontally. Change the preferences to scroll vertically or try another shortcut."
 		}else{
-			win.scrollBy(0, scrollValue * factor);
+			win.scrollBy({
+			  top: scrollValue * factor,
+			  behavior: 'smooth',
+			});
 			
 			// https://stackoverflow.com/questions/17688595/finding-the-maximum-scroll-position-of-a-page
 			var limit = Math.max( win.document.body.scrollHeight, win.document.body.offsetHeight, win.document.documentElement.clientHeight, win.document.documentElement.scrollHeight, win.document.documentElement.offsetHeight) - win.innerHeight;
