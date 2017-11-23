@@ -15,10 +15,13 @@ function sendMessage(action, data){
 }
 
 function eventHandler(e) {
-	if(e.target.tagName == "INPUT" || e.target.tagName == "TEXTAREA"){
-		return; // don't do this please, this usually provides a dropdown in a text area
+	let forbidden = ["INPUT", "TEXTAREA", "VIDEO", "AUDIO"];
+	for(let f of forbidden){
+		if(e.target.tagName == f){
+			return; // don't do this please, this usually provides a dropdown in a text area
+		}
 	}
-	
+
 	e.preventDefault();
 	e.cancelBubble = true;
 	if (e.stopPropagation) e.stopPropagation();
