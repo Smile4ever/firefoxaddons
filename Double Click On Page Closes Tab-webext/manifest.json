@@ -3,12 +3,12 @@
 	"description": "Double click on a page to close the current tab.",
 	"homepage_url": "http://hugsmile.eu",
 	"manifest_version": 2,
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"background": {
 		"scripts": ["background.js"]
 	},
 	"icons": {
-		"64": "icons/closetabicon.png"
+		"512": "icons/closetabicon.png"
 	},
 	"content_scripts": [
 		{
