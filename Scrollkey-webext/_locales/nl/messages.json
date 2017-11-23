@@ -19,6 +19,10 @@
     "message": "pixels",
     "description": ""
   },
+  "scrollvalue_descr": {
+	"message": "Scrollwaarde (J/K)",
+    "description": ""
+  },
   "pagedownpageup": {
     "message": "PageDown en PageUp scrollen de waarde zoals hierboven aangegeven",
     "description": ""
@@ -35,6 +39,26 @@
     "message": "Gebruik de sneltoets Alt+J/Alt+K voor horizontaal scrollen",
     "description": ""
   },
+  "smoothscrolling": {
+    "message": "Smooth scrolling",
+    "description": ""
+  },
+  "smoothscrolling_use": {
+	"message": "Gebruik smooth scrolling",
+    "description": ""
+  },
+  "smoothscrolling_descr": {
+    "message": "Scroll met een mooie animatie",
+    "description": ""
+  },
+  "blacklist": {
+    "message": "Zwarte lijst van domeinen",
+    "description": ""
+  },
+  "blacklist_descr": {
+    "message": "Kommagescheiden lijst van domeinen. Scrollkey zal niet werken op deze websites.",
+    "description": ""
+  },
   "savepreferences": {
     "message": "Voorkeuren opslaan",
     "description": ""
@@ -45,10 +69,10 @@
   },
   "notify_tip_horizontal": {
 	"message": "Deze pagina kan niet horizontaal gescrold worden. Verander de voorkeuren om verticaal te scrollen of probeer een andere sneltoets.",
-	"description": ""  
+	"description": ""
   },
   "notify_tip_vertical": {
 	"message": "Deze pagina kan niet verticaal gescrold worden. Verander de voorkeuren om horizontaal te scrollen of probeer een andere sneltoets.",
-	"description": ""  
+	"description": ""
   }
 }

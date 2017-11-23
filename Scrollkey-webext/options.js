@@ -26,10 +26,18 @@ const PREFS = {
 	"scrollkey_scroll_pagedown_pageup": {
 		"type": "checked",
 		"default": false
+	},
+	"scrollkey_blacklist": {
+		"type": "value",
+		"default": ""
+	},
+	"scrollkey_smooth_scrolling": {
+		"type": "checked",
+		"default": false
 	}
 };
 
-function saveOptions() { 
+function saveOptions(){
 	const values = {};
 	for(let p in PREFS) {
 		values[p] = document.getElementById(p)[PREFS[p].type];
@@ -53,28 +61,26 @@ function restoreOptions() {
 	}).catch(console.error);
 }
 
-function i18n() {
-	document.querySelector("#scrollvalue").textContent = browser.i18n.getMessage("scrollvalue"); // "Scrollwaarde"
-	document.querySelector("#pagedownpageup").textContent = browser.i18n.getMessage("pagedownpageup"); // "PageDown en PageUp scrollen de waarde zoals hierboven aangegeven"
-	document.querySelector("#horizontalscroll").textContent = browser.i18n.getMessage("horizontalscroll"); // "Gebruik de sneltoets hierboven voor horizontaal scrollen"
-	document.querySelector("#pixels").textContent = browser.i18n.getMessage("pixels"); // "pixels"
+function i18n(){
+	var i18nElements = document.querySelectorAll('[data-i18n]');
 
-	document.querySelector("#scrollvalueshift").textContent = browser.i18n.getMessage("scrollvalueshift"); // "Scrollwaarde (Shift)"
-	document.querySelector("#pixelsshift").textContent = browser.i18n.getMessage("pixels"); // "pixels"
-	document.querySelector("#horizontalscrollshift").textContent = browser.i18n.getMessage("horizontalscrollshift"); // "Gebruik de sneltoets Shift+J/Shift+K voor horizontaal scrollen"
-  
-	document.querySelector("#scrollvaluealt").textContent = browser.i18n.getMessage("scrollvaluealt"); // "Scrollwaarde (Alt)"
-	document.querySelector("#horizontalscrollalt").textContent = browser.i18n.getMessage("horizontalscrollalt"); // "Gebruik de sneltoets Alt+J/Alt+K voor horizontaal scrollen"
-	document.querySelector("#pixelsalt").textContent = browser.i18n.getMessage("pixels"); // "pixels"
-
-	document.querySelector("#savepreferences").textContent = browser.i18n.getMessage("savepreferences"); // "Voorkeuren opslaan"
+	for(let i in i18nElements){
+		try{
+			if(i18nElements[i].getAttribute == null)
+				continue;
+			i18n_attrib = i18nElements[i].getAttribute("data-i18n");
+			i18nElements[i].textContent = browser.i18n.getMessage(i18n_attrib);
+		}catch(ex){
+			console.error("i18n id " + IDS[id] + " not found");
+		}
+	}
 }
 
 function init(){
 	restoreOptions();
+	i18n();
 	document.querySelector("form").style.display = "block";
 	document.querySelector(".refreshOptions").style.display = "none";
-	i18n();
 }
 
 window.addEventListener("DOMContentLoaded", init, { passive: true });

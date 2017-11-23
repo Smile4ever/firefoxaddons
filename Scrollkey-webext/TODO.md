@@ -1,5 +1,6 @@
 TODO
 ==
 
-* Implement refresh-options in scrollkey.js
-* Phase out setTimeout usage
+* Add screenshots to the README
+* Improve localisations (some things are untranslated)
+** Only English and Dutch is OK

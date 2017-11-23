@@ -35,6 +35,26 @@
     "message": "Verwende Alt+j und Alt+k für horizontales Scrollen",
     "description": ""
   },
+  "smoothscrolling": {
+    "message": "Smooth scrolling",
+    "description": ""
+  },
+  "smoothscrolling_use": {
+	"message": "Use smooth scrolling",
+    "description": ""
+  },
+  "smoothscrolling_descr": {
+    "message": "Scroll with a nice animation",
+    "description": ""
+  },
+  "blacklist": {
+    "message": "Domain blacklist",
+    "description": ""
+  },
+  "blacklist_descr": {
+    "message": "Comma separated list of domains. Scrollkey will not work on these websites.",
+    "description": ""
+  },
   "savepreferences": {
     "message": "Einstellungen speichern",
     "description": ""

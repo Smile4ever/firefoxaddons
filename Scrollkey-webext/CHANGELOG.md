@@ -1,6 +1,15 @@
+3.0.0
+=====
+- Implement optional smooth scrolling (off by default)
+- Implement blacklist feature, fixes #29
+- Rework options screen - use flexbox instead of table
+- Use more generic localisation method
+- Phase out setTimeout usage
+
 2.0.1
 =====
 - Fix "cannot scroll" notification appearing on some sites when scrolling is available by calculating scroll limit differently
+- Drop migration path from Scrollkey 1.1.0 (no users of that version anymore)
 
 2.0.0
 =====
