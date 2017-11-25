@@ -5,6 +5,7 @@
 - Rework options screen - use flexbox instead of table
 - Use more generic localisation method
 - Phase out setTimeout usage
+- Implement scroll to top with gg, scroll to bottom with GG
 
 2.0.1
 =====

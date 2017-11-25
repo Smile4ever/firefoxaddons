@@ -1,6 +1,5 @@
 TODO
 ==
 
-* Add screenshots to the README
-* Improve localisations (some things are untranslated)
-** Only English and Dutch is OK
+* Improve localisations (some languages are only partially translated)
+* Make shortcuts configurable
