@@ -238,24 +238,10 @@ function openTab(url){
 		browser.tabs.get(lastTabId).then(onGot, onError);
 		
 		function onGot(tabInfo) {
-			//console.log("tab exists");
-						
 			browser.tabs.update(lastTabId, {
 				active: true,
 				url: url
-			}).then(
-				function(data){
-					//console.log(1, 'success', JSON.stringify(data));
-					/*if(globalAction == "google-translate"){
-						console.log("Google Translate - reuse tab fix");
-						sendMessageToTab("setGoogleTranslateText", selectedText, lastTabId);
-					}*/
-				},
-				function(error){
-					notify("Failed to update tab");
-					lastTabId = -1;
-				}
-			);
+			});
 		}
 
 		function onError(error) {

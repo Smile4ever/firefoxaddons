@@ -1,3 +1,12 @@
+3.1.5
+=====
+- Fix iframe selection not working when using toolbar button
+- Solve a warning about browser_style
+- Pass selection value that we have
+- Allow for nested iframes, 1 level beneath the iframe (iframe in iframe)
+- Change var usage to let usage
+- Cleanups
+
 3.1.4
 =====
 - Fix: DeepL no longer working, fixes #87

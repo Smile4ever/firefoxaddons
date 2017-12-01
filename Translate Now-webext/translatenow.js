@@ -4,7 +4,7 @@ browser.runtime.onMessage.addListener(onMessage);
 function onMessage(message) {
 	switch(message.action){
 		case "getSelection":
-			sendMessage("setSelection", {selection: getSelection(), pageUrl: window.location.href});
+			sendMessage("setSelection", {selection: getSelection(message.data), pageUrl: window.location.href});
 			break;
 		case "bingTranslate":
 			bingTranslate(message.data.translate_now_source_language, message.data.translate_now_destination_language, message.data.selectedText);
@@ -30,67 +30,83 @@ function sendMessage(action, data){
 	browser.runtime.sendMessage({"action": action, "data": data});
 }
 
-function getSelection() {
-	var inputSel = getInputSelection(document);
+function getSelection(safeSelection) {
+	let inputSel = getInputSelection(document);
 	if(inputSel != "") return inputSel;
 	
-	var normalSelection = window.getSelection().toString();
+	let normalSelection = window.getSelection().toString();
 	if(normalSelection != "") return normalSelection;
 	
 	/// Code from Get Archive
 	// Test URL: https://archive.is/2013.07.03-031317/http://neppi.blog.shinobi.jp/ねっぴーのこと/恩師増田宏三先生を悼む	
-	var frameIdentifiers = ["iframe", "frame"];
+	let frameIdentifiers = ["iframe", "frame"];
 	try{
-		var i = 0;
+		let i = 0;
 		for(i = 0; i < frameIdentifiers.length; i++){
-			var frames = document.getElementsByTagName(frameIdentifiers[i]);
+			let frames = document.getElementsByTagName(frameIdentifiers[i]);
 			//console.log("number of frames: " + frames.length);
 			
-			if(frames.length == 0){
-				continue;
-			}
-			
-			var j = 0;
+			let j = 0;
 			for(j = 0; j < frames.length; j++){
-				var frame = frames[j];
-				if(frame.getAttribute("src").indexOf("google") == -1 && frame.getAttribute("src").indexOf("facebook") == -1 && frame.getAttribute("src").indexOf("twitter") == -1){
-					continue;
-				}
-				try{
-					var frame = frames[j];
-					var idoc = frame.contentDocument || frame.contentWindow.document;
-					var frameselection = idoc.getSelection();
-					if(frameselection == null){
-						var inputSel = getInputSelection(idoc);
-						if(inputSel != ""){
-							return inputSel;
-						}else{
-							continue;
-						}
-					}
+				let frame = frames[j];
+
+				let result = getIframeText(frame, window.location.href);
+				if(result == "continue") continue;
+				if(result != "exit") return result;
+				
+				for(k = 0; k < frameIdentifiers.length; k++){
+					let innerFrames = frame.getElementsByTagName(frameIdentifiers[k]);
 					
-					if(frameselection.toString().length > 0){
-						//console.log("translatenow.js returning (i)frame selection");
-						return frameselection.toString();
+					for(l = 0; l < innerFrames.length; l++){
+						let innerFrame = innerFrames[l];
+						
+						let result = getIframeText(innerFrame, frame.baseURI);
+						if(result == "continue") continue;
+						if(result != "exit") return result;
 					}
-				}catch(innerex){
-					//console.log("CROSS-DOMAIN IFRAME on URL " + frame.getAttribute("src"));
 				}
-			}
-			
+			}	
 		}
 	}catch(ex){
-		// I don't trust the code above, return an empty string at all times when there is an error with the code above
+		// I don't trust the code above, return the default value at all times when there is an error with the code above
+		console.log("exception: " + ex);
 	}
 	/// End of code from Get Archive
 	
-    return "";
+    return safeSelection;
+}
+
+function getIframeText(frame, parent){
+	//console.log("baseURI: " + frame.document.baseURI + " parent is " + parent);
+	try{		
+		let doc = frame.document || frame.contentWindow || frame.contentDocument;
+
+		let frameselection = doc.getSelection();
+		
+		if(frameselection == null){
+			inputSel = getInputSelection(doc);
+			if(inputSel != ""){
+				return inputSel;
+			}else{
+				return "continue";
+			}
+		}else if(frameselection.toString().length > 0){
+			//console.log("translatenow.js returning (i)frame selection");
+			return frameselection.toString();
+		}
+		
+		return "exit";
+	}catch(innerex){
+		//console.log("innerex " + innerex);
+		//console.log("CROSS-DOMAIN IFRAME on URL " + frame.getAttribute("src"));
+		return "exit";
+	}
 }
 
 function getInputSelection(doc){
 	try{
 		if(doc.activeElement != null && (doc.activeElement.tagName === "TEXTAREA" || doc.activeElement.tagName === "INPUT")) {
-			var inputSelectedText = doc.activeElement.value.substring(doc.activeElement.selectionStart, doc.activeElement.selectionEnd);
+			let inputSelectedText = doc.activeElement.value.substring(doc.activeElement.selectionStart, doc.activeElement.selectionEnd);
 			if(inputSelectedText != null && inputSelectedText != ""){
 				return inputSelectedText;
 			}
@@ -111,8 +127,8 @@ function bingTranslate(translate_now_source_language, translate_now_destination_
 }
 
 function setBingLanguage(className, value){
-	var tds = document.getElementsByClassName(className)[0].getElementsByTagName("td");
-	var i = 0;
+	let tds = document.getElementsByClassName(className)[0].getElementsByTagName("td");
+	let i = 0;
 	for(i = 0; i < tds.length; i++){
 		if(tds[i].getAttribute("value") == value){
 			tds[i].click();
@@ -134,7 +150,7 @@ function bingSpeak(translate_now_source_language, translate_now_destination_lang
 				break;
 			case "both":
 				bingSpeakSource();
-				var length = 75 * selectedText.length;
+				let length = 75 * selectedText.length;
 				//console.log("bingSpeak - length is " + length);
 
 				setTimeout(function(){
@@ -150,12 +166,12 @@ function bingSpeak(translate_now_source_language, translate_now_destination_lang
 }
 
 function bingSpeakSource(){
-	var speakButton = document.getElementsByClassName("sourceText")[0].getElementsByClassName("speakButton")[0];
+	let speakButton = document.getElementsByClassName("sourceText")[0].getElementsByClassName("speakButton")[0];
 	speakButton.click();
 }
 
 function bingSpeakDestination(){
-	var speakButton = document.getElementsByClassName("destinationText")[0].getElementsByClassName("speakButton")[0];
+	let speakButton = document.getElementsByClassName("destinationText")[0].getElementsByClassName("speakButton")[0];
 	speakButton.click();
 }
 
@@ -164,11 +180,11 @@ function deeplTranslate(translate_now_source_language, translate_now_destination
 	// First try
 	deeplTranslateInternal(translate_now_source_language, translate_now_destination_language, selectedText);
 
-	var e = document.createEvent('HTMLEvents');
+	let e = document.createEvent('HTMLEvents');
 	e.initEvent("keyup", false, true);
 	document.getElementsByClassName("lmt__target_textarea")[0].dispatchEvent(e);
 
-	var e2 = document.createEvent('HTMLEvents');
+	let e2 = document.createEvent('HTMLEvents');
 	e2.initEvent("keyup", false, true);
 	document.getElementsByClassName("lmt__source_textarea")[0].dispatchEvent(e);
 
@@ -199,8 +215,8 @@ function deeplTranslateInternal(translate_now_source_language, translate_now_des
 }
 
 function setDeeplLanguage(id, value){
-	var lis = document.getElementById(id).getElementsByTagName("li");
-	var i = 0;
+	let lis = document.getElementById(id).getElementsByTagName("li");
+	let i = 0;
 	for(i = 0; i < lis.length; i++){
 		if(lis[i].getAttribute("dl-value") == value){
 			lis[i].click();
@@ -218,7 +234,7 @@ function googleSpeak(translate_now_to_speak){
 			googleSpeakDestination(0);
 			break;
 		case "both":
-			var isEqual = gt.getSourceText() == gt.getDestinationText();
+			let isEqual = gt.getSourceText() == gt.getDestinationText();
 			googleSpeakSource(!isEqual); // play both if the texts aren't equal
 			break;
 		default:
@@ -227,24 +243,24 @@ function googleSpeak(translate_now_to_speak){
 }
 
 function googleSpeakSource(playDestination){	
-	var sourceText = gt.getSourceText();
+	let sourceText = gt.getSourceText();
 	
 	if(!gt.isSourceSpeakAvailable() && playDestination){
 		googleSpeakDestination(0);
 		return;
 	}
 	
-	var sourceSpeakLanguage = gt.getSourceSpeakLanguage();
+	let sourceSpeakLanguage = gt.getSourceSpeakLanguage();
 	if(sourceSpeakLanguage == ""){
 		setTimeout(function(){
 			sourceSpeakLanguage = gt.getSourceSpeakLanguage();
 			if(sourceSpeakLanguage == "")
 				sourceSpeakLanguage = "en";
-			var audioObj = gt.playSound(sourceSpeakLanguage, sourceText);
+			let audioObj = gt.playSound(sourceSpeakLanguage, sourceText);
 			googleSpeakPlayAfter(audioObj, playDestination);
 		}, 1000);
 	}else{
-		var audioObj = gt.playSound(sourceSpeakLanguage, sourceText);
+		let audioObj = gt.playSound(sourceSpeakLanguage, sourceText);
 		googleSpeakPlayAfter(audioObj, playDestination);
 	}
 }
@@ -252,7 +268,7 @@ function googleSpeakSource(playDestination){
 function googleSpeakPlayAfter(audioObj,playDestination){
 	if(!playDestination) return;
 	
-	var duration = 0;
+	let duration = 0;
 	
 	audioObj.addEventListener('loadedmetadata', function() {
 		duration = audioObj.duration * 1000;
@@ -271,15 +287,9 @@ function googleSpeakDestination(sourceDuration){
 	if(!gt.isDestinationSpeakAvailable()) return;
 	
 	setTimeout(function(){
-		var destinationText = gt.getDestinationText();
-		var destinationSpeakLanguage = gt.getDestinationSpeakLanguage();
+		let destinationText = gt.getDestinationText();
+		let destinationSpeakLanguage = gt.getDestinationSpeakLanguage();
 
 		gt.playSound(destinationSpeakLanguage, destinationText);
 	}, sourceDuration + 150);
 }
-
-/*
-function setGoogleTranslateText(selectedText){
-	document.getElementById("source").value = selectedText;
-}
-*/
