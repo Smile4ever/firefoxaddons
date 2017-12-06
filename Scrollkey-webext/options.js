@@ -1,4 +1,12 @@
 const PREFS = {
+	"scrollkey_scrollvaluedown": {
+		"type": "value",
+		"default": 74
+	},
+	"scrollkey_scrollvalueup": {
+		"type": "value",
+		"default": 75
+	},
 	"scrollkey_scrollvalue": {
 		"type": "value",
 		"default": 400
