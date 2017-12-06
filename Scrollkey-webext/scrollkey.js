@@ -18,6 +18,10 @@ let scrollkey_scrollvalue;
 let scrollkey_scrollvalue_shift;
 let scrollkey_scrollvalue_alt;
 
+// Scrollvaluekey
+let scrollkey_scrollvaluedown;
+let scrollkey_scrollvalueup;
+
 // Blacklist (array)
 let scrollkey_blacklist;
 
@@ -43,6 +47,8 @@ function init(){
 		"scrollkey_horizontal_scroll",
 		"scrollkey_horizontal_scroll_shift",
 		"scrollkey_horizontal_scroll_alt",
+		"scrollkey_scrollvaluedown",
+		"scrollkey_scrollvalueup",
 		"scrollkey_scrollvalue",
 		"scrollkey_scrollvalue_shift",
 		"scrollkey_scrollvalue_alt",
@@ -58,6 +64,9 @@ function init(){
 		scrollkey_horizontal_scroll = valueOrDefault(result.scrollkey_horizontal_scroll, false);
 		scrollkey_horizontal_scroll_shift = valueOrDefault(result.scrollkey_horizontal_scroll_shift, false);
 		scrollkey_horizontal_scroll_alt = valueOrDefault(result.scrollkey_horizontal_scroll_alt, false);
+
+		scrollkey_scrollvaluedown = valueOrDefault(result.scrollkey_scrollvaluedown, 74);
+		scrollkey_scrollvalueup = valueOrDefault(result.scrollkey_scrollvalueup, 75);
 
 		scrollkey_scrollvalue = valueOrDefault(result.scrollkey_scrollvalue, 400);
 		scrollkey_scrollvalue_shift = valueOrDefault(result.scrollkey_scrollvalue_shift, 400);
@@ -277,37 +286,37 @@ function addKeydown(w){
 		var ok = false;
 
 		if (!event.ctrlKey && !event.metaKey) {
-			if(!event.shiftKey && !event.altKey && event.keyCode == 74){
+			if(!event.shiftKey && !event.altKey && event.keyCode == scrollkey_scrollvaluedown){
 				// j
 				ok = true;
 				scrollDownOrUp(0, DOWN, win);
 			}
 
-			if(!event.shiftKey && !event.altKey && event.keyCode == 75){
+			if(!event.shiftKey && !event.altKey && event.keyCode == scrollkey_scrollvalueup){
 				// k
 				ok = true;
 				scrollDownOrUp(0, UP, win);
 			}
 
-			if(event.shiftKey && !event.altKey && event.keyCode == 74){
+			if(event.shiftKey && !event.altKey && event.keyCode == scrollkey_scrollvaluedown){
 				// shift+j
 				ok = true;
 				scrollDownOrUp(1, DOWN, win);
 			}
 
-			if(event.shiftKey && !event.altKey && event.keyCode == 75){
+			if(event.shiftKey && !event.altKey && event.keyCode == scrollkey_scrollvalueup){
 				// shift+k
 				ok = true;
 				scrollDownOrUp(1, UP, win);
 			}
 
-			if(event.altKey && !event.shiftKey && event.keyCode == 74){
+			if(event.altKey && !event.shiftKey && event.keyCode == scrollkey_scrollvaluedown){
 				// alt+j
 				ok = true;
 				scrollDownOrUp(2, DOWN, win);
 			}
 
-			if(event.altKey && !event.shiftKey && event.keyCode == 75){
+			if(event.altKey && !event.shiftKey && event.keyCode == scrollkey_scrollvalueup){
 				// alt+k
 				ok = true;
 				scrollDownOrUp(2, UP, win);
