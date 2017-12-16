@@ -1,3 +1,11 @@
+1.2.0
+=====
+* Support for /page34
+* Support for MoneyGram photo gallery
+* Fix leading zero being added when not needed
+* Make the code easier to understand
+* Support for extensions like jpg or html which follow the page number
+
 1.1.0
 =====
 - Add "scroll back" functionality for reading comics (can be disabled in the options)

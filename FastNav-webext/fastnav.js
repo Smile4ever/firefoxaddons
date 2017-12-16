@@ -91,10 +91,13 @@ function replacelocationbyurl(value, website){
 }
 
 function generic(mode){
-	let location= window.location.href;
+	let location = window.location.href;
 	let lastIndex = location.lastIndexOf("=");
 	let pageNumber = location.substring(lastIndex+1);
 	let stringlength = 1;
+	let foundMatch = lastIndex > -1; // was foundMatch = false
+	let prefix = "";
+	let extension = "";
 
 	let ahrefs = document.getElementsByTagName("a");
 	let i = 0;
@@ -242,35 +245,105 @@ function generic(mode){
 		//
 	}
 	
-	let foundMatch = false;
-	// generic
-	if(lastIndex == -1){
-		//page-1
+	if(location.indexOf("moneygram-live.com") > -1){
+		for(let index = 1; index < 10; index++){
+			if(moneyGramPhoto(index, mode)) return;
+		}
+	}
+	
+	// https://moneygram-live.com/wp-content/uploads/2017/12/2326.jpg
+	if(!foundMatch){
+		lastIndex = location.lastIndexOf(".");
+		if(lastIndex >= (location.length - 5)){
+			// Dealing with an extension, let's take the substring and assign the rest to extension (taking into account the slash)
+			let temp = location.substring(0, lastIndex);
+			extension = location.substring(lastIndex);
 
+			// Copy-paste from below
+			if(!foundMatch){
+				lastIndex = temp.lastIndexOf("page-");
+				if(lastIndex != -1){
+					prefix     = temp.substring(0, lastIndex + 5);
+					pageNumber = temp.substring(lastIndex + 5);
+					foundMatch = true;
+				}
+			}
+
+			// /page1
+			// https://www.febelfin.be/sites/default/files/pocket/files/assets/basic-html/page34.html
+			if(!foundMatch){
+				lastIndex = temp.lastIndexOf("/page");
+				if(lastIndex != -1){
+					prefix     = temp.substring(0, lastIndex + 5)
+					pageNumber = temp.substring(lastIndex + 5);
+					foundMatch = true;
+				}
+			}
+
+			// WordPress, i.e. https://frostwire.wordpress.com/page/2/
+			if(!foundMatch){
+				lastIndex = temp.lastIndexOf("/page/");
+				if(lastIndex != -1){
+					prefix     = temp.substring(0, lastIndex + 6);
+					pageNumber = temp.substring(lastIndex + 6);
+					foundMatch = true;
+				}
+			}
+			
+			// generic with extension
+			if(!foundMatch){
+				lastIndex = temp.lastIndexOf("/");
+				if(lastIndex != -1){
+					prefix     = temp.substring(0, lastIndex + 1);
+					pageNumber = temp.substring(lastIndex + 1);
+					foundMatch = true;
+				}
+			}
+		}
+	}
+	
+	if(!foundMatch){
+		extension = "";
+	}
+	
+	//page-1
+	if(!foundMatch){
 		lastIndex = location.lastIndexOf("page-");
-		if(lastIndex != -1 && !foundMatch){
-			stringlength = 5;
-			pageNumber = location.substring(lastIndex+stringlength);
+		if(lastIndex != -1){
+			prefix     = location.substring(0, lastIndex + 5);
+			pageNumber = location.substring(lastIndex + 5);
 			foundMatch = true;
 		}
+	}
 
-		// WordPress, i.e. https://frostwire.wordpress.com/page/2/
+	// /page1
+	if(!foundMatch){
+		lastIndex = location.lastIndexOf("/page");
+		if(lastIndex != -1){
+			prefix     = location.substring(0, lastIndex + 5)
+			pageNumber = location.substring(lastIndex + 5);
+			foundMatch = true;
+		}
+	}
 
+	// WordPress, i.e. https://frostwire.wordpress.com/page/2/
+	if(!foundMatch){
 		lastIndex = location.lastIndexOf("/page/");
-		if(lastIndex != -1 && !foundMatch){
-			stringlength = 6;
-			pageNumber = location.substring(lastIndex+stringlength);
+		if(lastIndex != -1){
+			prefix     = location.substring(0, lastIndex + 6);
+			pageNumber = location.substring(lastIndex + 6);
 			foundMatch = true;
 		}
-
-		// https://site.org/user/5989765/
+	}
+	
+	// https://site.org/user/5989765/
+	if(!foundMatch){
 		lastIndex = location.lastIndexOf("/");
 		lastIndex = location.lastIndexOf("/", lastIndex - 1);
 
-		if(lastIndex != -1 && !foundMatch){
-			stringlength = 1;
-			pageNumber = location.substring(lastIndex+stringlength);
-			//console.log("pageNumber is " + pageNumber);
+		if(lastIndex != -1){
+			prefix     = location.substring(0, lastIndex + 1);
+			pageNumber = location.substring(lastIndex + 1);
 			foundMatch = true;
 		}
 	}
@@ -282,27 +355,34 @@ function generic(mode){
 		startI = 1;
 	}
 
-	// This belongs to bug 20, but we need the declaration earlier.
-	let prefixPageNumber = "";
+	// Declarations for bug 20
+	let leadingZeros = "";
+	let pageNumberLength = pageNumber.length;
 	
-	let endsWithZero = pageNumber.lastIndexOf("0") == pageNumber.length - 1;
-	if(endsWithZero && mode == "prev"){
-		prefixPageNumber = "0";
-	}
-
-	// Fix bug 20
-	// Test URL: http://mspaintadventures.com/?s=6&p=001904
-	for (let i = startI; i < pageNumber.length; i++) {
-		if(pageNumber[i] != "0") break;
-		prefixPageNumber += "0";
-	}
-	
-	if (isNaN(parseInt(pageNumber) + 1) == false){
+	if (isNumber(parseInt(pageNumber) + 1)){
 		let pagenum = parseInt(pageNumber);
 
 		if(mode == "next") pagenum += 1;
 		if(mode == "prev") pagenum -= 1;
 		if(pagenum < 0) return;
+
+		// Fix bug 20
+		// Test URL: http://mspaintadventures.com/?s=6&p=001904
+		// Test URL: http://mspaintadventures.com/?s=6&p=009999
+		// Prevent 09 on Phoronix / Test URL: https://www.phoronix.com/scan.php?page=article&item=epyc-7601-linux&num=10
+		if(pageNumber.indexOf("0") == 0){
+			if(pageNumberLength != (pagenum + "").length){
+				let endsWithZero = pageNumber.lastIndexOf("0") == pageNumber.length - 1;
+				if(endsWithZero && mode == "prev"){
+					leadingZeros = "0";
+				}
+				
+				for (let i = startI; i < pageNumber.length; i++) {
+					if(pageNumber[i] != "0") break;
+					leadingZeros += "0";
+				}
+			}
+		}
 
 		// reworked this for bug 21
 		let addendum = "";
@@ -311,11 +391,19 @@ function generic(mode){
 		}
 
 		// not sure if we need this.
-		if(!isNaN(addendum)){
+		if(isNumber(addendum)){
 			addendum = "";
 		}
-		this.replacelocationbyurl(location.substring(0,lastIndex + stringlength) + prefixPageNumber + pagenum + addendum, "generic");
+		addendum += extension;
+		
+		if(prefix == "") prefix = location.substring(0,lastIndex + stringlength);
+		
+		this.replacelocationbyurl(prefix + leadingZeros + pagenum + addendum, "generic");
 	}
+}
+
+function isNumber(n){
+	return !isNaN(n);
 }
 
 function a(tag, term){
@@ -394,4 +482,38 @@ function genericOpen(){
 		if(profielBezoeken != null)
 			profielBezoeken.click();
 	}
+	
+	if(location.indexOf("moneygram-live.com") > -1){
+		// There is no dash of significance present
+		if(document.title.indexOf("Seite nicht gefunden") > -1){
+			if(window.location.href.replace("wp-content", "").replace("moneygram-live.com", "").indexOf("-") == -1){
+				if(mode == "next"){
+					window.location.href = window.location.href.replace(".jpg", "-1.jpg");
+					return true;
+				}
+			}
+		}
+	}
+}
+
+function moneyGramPhoto(index, mode){
+	let newPageIndex = index + 1;
+	let newPageIndexString = "";
+	
+	if(mode == "prev"){
+		newPageIndex = index - 1;
+	}
+	
+	// Index 0 does not exist
+	if(newPageIndex != 0){
+		newPageIndexString = "-" + newPageIndex;
+	}
+
+	// Does current index exist? If so, increment or decrement it
+	if (window.location.href.indexOf("-" + index) > -1){
+		window.location.href = window.location.href.replace("-" + index + ".jpg", newPageIndexString + ".jpg");
+		return true;
+	}
+	
+	return false;
 }
