@@ -5,6 +5,7 @@
 * Fix leading zero being added when not needed
 * Make the code easier to understand
 * Support for extensions like jpg or html which follow the page number
+* Updated README
 
 1.1.0
 =====
