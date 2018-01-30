@@ -1,3 +1,15 @@
+3.1.0
+=============
+* Add a way to disable all shortcuts at once, fixes #100
+* Add Dutch localisation
+* Make the option column flexbox layout more fluid
+* Add icons to the context menu items for compatible versions of Firefox
+* Code and file cleanup
+* Add light/dark icons
+* Add settings icon from Tab Center Redux
+* Add new localisation messages
+* Updated README slightly, including updated screenshots
+
 3.0.0
 =============
 

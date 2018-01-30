@@ -1,0 +1,126 @@
+{
+  "extensionDescription": {
+    "message": "Een oude versie ophalen van een webpagina via archive.org, archive.is of webcitation.org.",
+    "description": ""
+  },
+  "search_engine": {
+	"message": "Zoekmachine",
+	"description": ""
+  },
+  "search_engine_descr": {
+	"message": "Zoekmachine gebruikt met de toets g",
+	"description": ""
+  },
+  "ctrl_c": {
+    "message": "CTRL+C",
+    "description": ""
+  },
+  "ctrl_c_descr": {
+    "message": "CTRL+C kopieert de URL als geen tekst is geselecteerd",
+    "description": ""
+  },
+  "ctrl_c_enable": {
+    "message": "Gebruik CTRL+C",
+    "description": ""
+  },
+  "ctrl_c_require_focus": {
+    "message": "CTRL+C vereist focus op het pagina-element",
+    "description": ""
+  },
+  "prefer_long_link": {
+    "message": "Verkies de lange link in plaats van de korte link op archive.is",
+    "description": ""
+  },
+  "default_archive_service": {
+    "message": "Standaard archiefdienst",
+	"description": "n"
+  },
+  "default_archive_service_descr": {
+    "message": "Standaard archiefdienst gebruikt door de werkbalkknop",
+	"description": ""
+  },
+  "show_contextmenu_item_archiveorg": {
+    "message": "Toon context menu item voor Archive.org",
+	"description": ""
+  },
+  "show_contextmenu_item_archiveis": {
+    "message": "Toon context menu item voor Archive.is",
+	"description": ""
+  },
+  "show_contextmenu_item_webcitation": {
+    "message": "Toon context menu item voor WebCitation",
+	"description": ""
+  },
+   "show_contextmenu_item_googlecache": {
+    "message": "Toon context menu item voor Google Cache",
+	"description": ""
+  },
+  "automatic_forward": {
+	"message": "Kies de beste link automatisch (automatisch doorsturen)",
+	"description": ""
+  },
+  "related_tabs": {
+	"message": "Open nieuwe tabbladen na het huidige tabblad",
+	"description": ""
+  },
+  "related_tabs_descr": {
+	"message": "Open nieuwe tabbladen naast het huidige tabblad als gerelateerde tabbladen",
+	"description": ""
+  },
+  "keyboard_shortcut": {
+	"message": "Sneltoets: ",
+	"description": ""
+  },
+  "automatic_retrieval": {
+	"message": "Automatisch ophalen voor \"Probleem bij laden pagina\"",
+	"description": ""
+  },
+  "automatic_retrieval_descr": {
+	"message": "Haal pagina's automatisch op die de foutpagina \"Probleem bij laden pagina\" tonen met de standaard archiefdienst",
+	"description": ""
+  },
+  "disable_all_shortcuts": {
+	"message": "Alle sneltoetsen uitschakelen",
+	"description": ""
+  },
+  "disable_all_shortcuts_descr": {
+	"message": "Alle acties uitschakelen die worden opgeroepen door sneltoetsen",
+	"description": ""
+  },
+  "icon_theme": {
+    "message": "Icoonthema",
+    "description": ""
+  },
+  "icon_theme_descr": {
+    "message": "Donkere icoontjes worden standaard gebruikt. Je kan deze optie veranderen om lichte icoontjes te gebruiken.",
+    "description": ""
+  },
+  "icon_theme_dark": {
+    "message": "Gebruik altijd donkere icoontjes",
+    "description": ""
+  },
+  "icon_theme_light": {
+    "message": "Gebruik altijd lichte icoontjes",
+    "description": ""
+  },
+  "icon_theme_dark_notiflight": {
+    "message": "Gebruik donkere icoontjes behalve voor notificaties",
+    "description": ""
+  },
+  "icon_theme_light_notifdark": {
+    "message": "Gebruik lichte icoontjes behalve voor notificaties",
+    "description": ""
+  },
+  "options_for": {
+	"message": "Opties voor ",
+	"description": ""
+  },
+  "save_preferences": {
+    "message": "Voorkeuren opslaan",
+    "description": ""
+  },
+  "notify_preferences_saved": {
+	"message": "Voorkeuren opgeslagen",
+	"description": ""
+  }
+}

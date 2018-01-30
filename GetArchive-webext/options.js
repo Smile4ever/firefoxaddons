@@ -62,6 +62,14 @@ const PREFS = {
 	"getarchive_automatic_retrieval": {
 		"type": "checked",
 		"default": true
+	},
+	"getarchive_disable_all_shortcuts": {
+		"type": "checked",
+		"default": false
+	},
+	"getarchive_icon_theme": {
+		"type": "value",
+		"default": "dark"
 	}
 };
 
@@ -104,14 +112,18 @@ function sendMessage(action, data){
 }
 
 function saveOptions() { 
-	sendMessage("notify", "Saved preferences");
-	
 	const values = {};
 	for(let p in PREFS) {
 		values[p] = document.getElementById(p)[PREFS[p].type];
 	}
 
-	browser.storage.local.set(values).then(() => sendMessage("refresh-options"));
+	browser.storage.local.set(values).then(() => {
+		sendMessage("refresh-options");
+		
+		setTimeout(function(){
+			browser.runtime.sendMessage({action: "notify", data: browser.i18n.getMessage("notify_preferences_saved")});
+		}, 10);
+	});
 }
 
 function restoreOptions() {

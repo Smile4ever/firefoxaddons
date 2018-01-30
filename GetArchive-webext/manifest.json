@@ -4,12 +4,12 @@
 	"homepage_url": "http://hugsmile.eu",
 	"default_locale": "en",
 	"manifest_version": 2,
-	"version": "3.0.0",
+	"version": "3.1.0",
 	"background": {
-		"scripts": ["background.js", "shared.js"]
+		"scripts": ["background.js", "shared.js", "toolbaricon.js"]
 	},
 	"icons": {
-		"64": "icons/getarchive-64.png"
+		"64": "icons/dark/getarchive-64.png"
 	},
 	"content_scripts": [
 		{
@@ -30,7 +30,7 @@
 		"browser_style": true
 	},
 	"browser_action": {
-		"default_icon": "icons/getarchive-64.png",
+		"default_icon": "icons/dark/getarchive-64.png",
 		"browser_style": true
 	}
 }

@@ -1,18 +1,19 @@
 /// Global variables
-var getarchive_lastcopy = "";
-var origin = "code";
-var insertOrPauseLocked = false;
+let getarchive_lastcopy = "";
+let origin = "code";
+let insertOrPauseLocked = false;
 
 /// Preferences
-var getarchive_search_engine = "google";
-var getarchive_enable_ctrl_c = true;
-var getarchive_require_focus = true;
-var getarchive_prefer_long_link = true;
-var getarchive_default_archive_service = "archive.org";
-var getarchive_archiveorg_keyboard_shortcut = "";
-var getarchive_archiveis_keyboard_shortcut = "";
-var getarchive_webcitation_keyboard_shortcut = "";
-var getarchive_googlecache_keyboard_shortcut = "";
+let getarchive_search_engine = "google";
+let getarchive_enable_ctrl_c = true;
+let getarchive_require_focus = true;
+let getarchive_prefer_long_link = true;
+let getarchive_default_archive_service = "archive.org";
+let getarchive_archiveorg_keyboard_shortcut = "";
+let getarchive_archiveis_keyboard_shortcut = "";
+let getarchive_webcitation_keyboard_shortcut = "";
+let getarchive_googlecache_keyboard_shortcut = "";
+let getarchive_disable_all_shortcuts = false;
 
 // Listen for messages from the background script
 browser.runtime.onMessage.addListener(onMessage);
@@ -65,38 +66,26 @@ function init(){
 		"getarchive_archiveorg_keyboard_shortcut",
 		"getarchive_archiveis_keyboard_shortcut",
 		"getarchive_webcitation_keyboard_shortcut",
-		"getarchive_googlecache_keyboard_shortcut"
+		"getarchive_googlecache_keyboard_shortcut",
+		"getarchive_disable_all_shortcuts"
 	]).then((result) => {
-		onVerbose("getarchive.js getarchive_search_engine " + result.getarchive_search_engine);
 		getarchive_search_engine = valueOrDefault(result.getarchive_search_engine, "google");
-		
-		onVerbose("getarchive.js getarchive_enable_ctrl_c " + result.getarchive_enable_ctrl_c);
 		getarchive_enable_ctrl_c = valueOrDefault(result.getarchive_enable_ctrl_c, true);
-		
-		onVerbose("getarchive.js getarchive_require_focus " + result.getarchive_require_focus);
 		getarchive_require_focus = valueOrDefault(result.getarchive_require_focus, true);
-		
-		onVerbose("getarchive.js getarchive_prefer_long_link " + result.getarchive_prefer_long_link);
 		getarchive_prefer_long_link = valueOrDefault(result.getarchive_prefer_long_link, true);
-				
-		onVerbose("getarchive.js getarchive_default_archive_service " + result.getarchive_default_archive_service);
 		getarchive_default_archive_service = valueOrDefault(result.getarchive_default_archive_service, "archive.org");
 		
 		// Keyboard shortcuts
-		onVerbose("getarchive.js getarchive_archiveorg_keyboard_shortcut " + result.getarchive_archiveorg_keyboard_shortcut);
 		getarchive_archiveorg_keyboard_shortcut = valueOrDefault(result.getarchive_archiveorg_keyboard_shortcut, "CTRL+3");
-		
-		onVerbose("getarchive.js getarchive_archiveis_keyboard_shortcut " + result.getarchive_archiveis_keyboard_shortcut);
 		getarchive_archiveis_keyboard_shortcut = valueOrDefault(result.getarchive_archiveis_keyboard_shortcut, "CTRL+4");
-		
-		onVerbose("getarchive.js getarchive_webcitation_keyboard_shortcut " + result.getarchive_webcitation_keyboard_shortcut);
 		getarchive_webcitation_keyboard_shortcut = valueOrDefault(result.getarchive_webcitation_keyboard_shortcut, "CTRL+5");
-		
-		onVerbose("getarchive.js getarchive_googlecache_keyboard_shortcut " + result.getarchive_googlecache_keyboard_shortcut);
 		getarchive_googlecache_keyboard_shortcut = valueOrDefault(result.getarchive_googlecache_keyboard_shortcut, "CTRL+6");
+		getarchive_disable_all_shortcuts = valueOrDefault(result.getarchive_disable_all_shortcuts, false);
 		
+		if(!getarchive_disable_all_shortcuts){
+			addKeydown();
+		}
 	}).catch(console.error);
-	
 }
 init();
 
@@ -804,221 +793,225 @@ var getarchive = {
 	}
 }
 
-window.addEventListener("keydown", function (event) {
-	if (event.defaultPrevented)
-		return;
-	
-	var clipboardText = "";
-		
-	if((event.keyCode == 45 || event.keyCode == 19) && !insertOrPauseLocked){
-		var previouslyActiveElement = document.activeElement;
-		var scrollbarTop = previouslyActiveElement.scrollTop;
-		
-		var caretPos = 0;
-		if (previouslyActiveElement.selectionStart || previouslyActiveElement.selectionStart == '0')
-			caretPos = previouslyActiveElement.selectionStart;
-		
-		//console.log("caretPos is " + caretPos);
-		var length = previouslyActiveElement.innerHTML.length || previouslyActiveElement.value.length;
-		//console.log("length is " + length);
-		
-		insertOrPauseLocked = true;
-		
-		var input = document.createElement("textarea");
-		input.setAttribute("contenteditable", "true");
-		previouslyActiveElement.parentElement.appendChild(input);
+function addKeydown(){
+	window.addEventListener("keydown", function (event) {
+		if (event.defaultPrevented)
+			return;
 
-		input.focus();
-		document.execCommand("Paste");
-		clipboardText = input.textContent;
-		//console.log("clipboard read resulted in " + clipboardText);
-		
-		// Cleanup
-		previouslyActiveElement.parentElement.removeChild(input);	
-	}
-	
-	if(event.keyCode == 45 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
-		// insert
-		event.preventDefault();
-		//console.log("INSERT EVENT!");
-		getarchive.insertText(previouslyActiveElement, clipboardText);
-	}
-	
-	if(event.keyCode == 19 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
-		// pause/break
-		event.preventDefault();
-		//console.log("PAUSE EVENT!");
-		clipboardText = getarchive.pastecomment(previouslyActiveElement, clipboardText);
-	}
-	
-	if(event.keyCode == 45 || event.keyCode == 19){
-		if(caretPos != 0)
-			caretPos += clipboardText.length;
-						
-		previouslyActiveElement.focus();
-		
-		setTimeout(function(){
-			previouslyActiveElement.setSelectionRange(caretPos, caretPos);
-			if(scrollbarTop != null && scrollbarTop != undefined){
-				previouslyActiveElement.scrollTop = scrollbarTop;
-			}
-			insertOrPauseLocked = false;
-		}, 25);
-		
-		setTimeout(function(){
-			insertOrPauseLocked = false;
-		}, 100);
-	}
-	
-	var activeElementToLower = document.activeElement.tagName.toLowerCase();
-	if(getarchive_require_focus && (activeElementToLower == "textarea" || activeElementToLower == "input")){
-		return;
-	}
+		var clipboardText = "";
 
-	if(window.getSelection().toString().length != 0){
-		return;
-	}
-	
-	keyutils.parseKeyboardShortcut(getarchive_archiveorg_keyboard_shortcut, event, function(result){
-		//sendMessage("notify", "You hit getarchive_archiveorg_keyboard_shortcut");
-		getarchive.getContextLinkUrl("archive.org");
-	}, true);
-	
-	keyutils.parseKeyboardShortcut(getarchive_archiveis_keyboard_shortcut, event, function(result){
-		//sendMessage("notify", "You hit getarchive_archiveis_keyboard_shortcut");
-		getarchive.getContextLinkUrl("archive.is");
-	}, true);
-	
-	keyutils.parseKeyboardShortcut(getarchive_webcitation_keyboard_shortcut, event, function(result){
-		//sendMessage("notify", "You hit getarchive_webcitation_keyboard_shortcut");
-		getarchive.getContextLinkUrl("webcitation.org");
-	}, true);
-	
-	keyutils.parseKeyboardShortcut(getarchive_googlecache_keyboard_shortcut, event, function(result){
-		//sendMessage("notify", "You hit getarchive_googlecache_keyboard_shortcut");
-		getarchive.getContextLinkUrl("webcache.googleusercontent.com");
-	}, true);
-	
-	// key 3 => keycode 99
-	keyutils.parseKeyboardShortcut("3", event, function(result){
-		//if(event.keyCode == 99 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+		if((event.keyCode == 45 || event.keyCode == 19) && !insertOrPauseLocked){
+			var previouslyActiveElement = document.activeElement;
+			var scrollbarTop = previouslyActiveElement.scrollTop;
+
+			var caretPos = 0;
+			if (previouslyActiveElement.selectionStart || previouslyActiveElement.selectionStart == '0')
+				caretPos = previouslyActiveElement.selectionStart;
+
+			//console.log("caretPos is " + caretPos);
+			var length = previouslyActiveElement.innerHTML.length || previouslyActiveElement.value.length;
+			//console.log("length is " + length);
+
+			insertOrPauseLocked = true;
+
+			var input = document.createElement("textarea");
+			input.setAttribute("contenteditable", "true");
+			previouslyActiveElement.parentElement.appendChild(input);
+
+			input.focus();
+			document.execCommand("Paste");
+			clipboardText = input.textContent;
+			//console.log("clipboard read resulted in " + clipboardText);
+
+			// Cleanup
+			previouslyActiveElement.parentElement.removeChild(input);
+		}
+
+		if(event.keyCode == 45 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+			// insert
 			event.preventDefault();
-			//console.log("KEY 3 EVENT!");
+			//console.log("INSERT EVENT!");
+			getarchive.insertText(previouslyActiveElement, clipboardText);
+		}
+
+		if(event.keyCode == 19 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+			// pause/break
+			event.preventDefault();
+			//console.log("PAUSE EVENT!");
+			clipboardText = getarchive.pastecomment(previouslyActiveElement, clipboardText);
+		}
+
+		if(event.keyCode == 45 || event.keyCode == 19){
+			if(caretPos != 0)
+				caretPos += clipboardText.length;
+
+			previouslyActiveElement.focus();
+
+			setTimeout(function(){
+				previouslyActiveElement.setSelectionRange(caretPos, caretPos);
+				if(scrollbarTop != null && scrollbarTop != undefined){
+					previouslyActiveElement.scrollTop = scrollbarTop;
+				}
+				insertOrPauseLocked = false;
+			}, 25);
+
+			setTimeout(function(){
+				insertOrPauseLocked = false;
+			}, 100);
+		}
+
+		var activeElementToLower = document.activeElement.tagName.toLowerCase();
+		if(getarchive_require_focus && (activeElementToLower == "textarea" || activeElementToLower == "input")){
+			return;
+		}
+
+		if(window.getSelection().toString().length != 0){
+			return;
+		}
+
+		keyutils.parseKeyboardShortcut(getarchive_archiveorg_keyboard_shortcut, event, function(result){
+			//sendMessage("notify", "You hit getarchive_archiveorg_keyboard_shortcut");
 			getarchive.getContextLinkUrl("archive.org");
-		//}
-	}, true);
-	
-	// key 4 => keycode 100
-	keyutils.parseKeyboardShortcut("4", event, function(result){
-	//if(event.keyCode == 100 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
-		event.preventDefault();
-		//console.log("KEY 4 EVENT!");
-		getarchive.getContextLinkUrl("archive.is");
-	}, true);
-	
-	// key 5 => keycode 101
-	keyutils.parseKeyboardShortcut("5", event, function(result){
-	//if(event.keyCode == 101 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
-		event.preventDefault();
-		//console.log("KEY 5 EVENT!");
-		getarchive.getContextLinkUrl("webcitation.org");
-	}, true);
-	
-	// key 6 => keycode 102
-	keyutils.parseKeyboardShortcut("6", event, function(result){
-	//if(event.keyCode == 102 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
-		event.preventDefault();
-		//console.log("KEY 6 EVENT!");
-		getarchive.getContextLinkUrl("webcache.googleusercontent.com");
-	}, true);
-	
-	// key 3 azerty => keycode 51
-	keyutils.parseKeyboardShortcut("\"", event, function(result){
-	//if(event.keyCode == 51 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
-		//console.log("KEY 3 AZERTY EVENT!");
-		getarchive.getContextLinkUrl("archive.org");
-	}, true);
-	
-	// key 4 azerty => keycode 52
-	keyutils.parseKeyboardShortcut("'", event, function(result){
-	//if(event.keyCode == 52 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
-		event.preventDefault();
-		//console.log("KEY 4 AZERTY EVENT!");
-		getarchive.getContextLinkUrl("archive.org");
-	}, true);
-	
-	// key 5 azerty => keycode 53
-	keyutils.parseKeyboardShortcut("(", event, function(result){
-	//if(event.keyCode == 53 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
-		event.preventDefault();
-		//console.log("KEY 5 AZERTY EVENT!");
-		getarchive.getContextLinkUrl("webcitation.org");
-	}, true);
-	
-	// key 6 azerty => keycode 54
-	keyutils.parseKeyboardShortcut("§", event, function(result){
-	//if(event.keyCode == 54 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
-		event.preventDefault();
-		//console.log("KEY 6 AZERTY EVENT!");
-		getarchive.getContextLinkUrl("webcache.googleusercontent.com");
-	}, true);
-	
-	// key g => keycode 71
-	keyutils.parseKeyboardShortcut("g", event, function(result){
-	//if(event.keyCode == 71 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
-		event.preventDefault();
-		//console.log("KEY G SEARCH EVENT!");
-		getarchive.goSearch();
-	}, true);
-	
-	// key x => keycode 88
-	keyutils.parseKeyboardShortcut("x", event, function(result){
-	//if(event.keyCode == 88 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
-		event.preventDefault();
-		//console.log("KEY X CLOSE TAB EVENT!");
-		sendMessage("closeTab");
-	}, true);
-	
-	// key c => keycode 67
-	if(window.location.href.indexOf("archive.org") > -1 || window.location.href.indexOf("archive.is") > -1 || window.location.href.indexOf("archive.li") > -1){
-		keyutils.parseKeyboardShortcut("c", event, function(result){
-		//if(event.keyCode == 67 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
-			event.preventDefault();
-			//console.log("KEY C COPY URL EVENT!");
-			if(getarchive.isCopySafe()){
-				origin = "user";
-				getarchive.copyUrlToClipboard(false);
-				origin = "code";
-				sendMessage("closeTab");
-			}
 		}, true);
-	}
-	
-	// key Alt+L => keycode 76
-	keyutils.parseKeyboardShortcut("Alt+L", event, function(result){
-	//if(event.keyCode == 76 && !event.shiftKey && !event.ctrlKey && event.altKey && !event.metaKey){
-		event.preventDefault();
-		//console.log("KEY L OPEN VERWIJZINGENZOEKEN");
-		window.location.href = "https://nl.wikipedia.org/w/index.php?title=Special%3ALinkSearch&target=" + window.location.href;
-	}, true);
-	
-	if (event.keyCode == 67 && !event.shiftKey && event.ctrlKey && !event.altKey && !event.metaKey) {
-		if(!getarchive_enable_ctrl_c){
-			return;
-		}
-		
-		if(!getarchive.isCopySafe()){
-			return;
-		}
-		
-		//console.log("activeElement is " + document.activeElement.tagName.toLowerCase());
 
-		origin = "user";
-		getarchive.copyUrlToClipboard(false); // false = do not check for invalid pages, just copy the current URL
-		origin = "code";
-	
-		// don't allow for double actions for a single event
-		event.preventDefault();
-		return;
-	}
-}, true);
+		keyutils.parseKeyboardShortcut(getarchive_archiveis_keyboard_shortcut, event, function(result){
+			//sendMessage("notify", "You hit getarchive_archiveis_keyboard_shortcut");
+			getarchive.getContextLinkUrl("archive.is");
+		}, true);
+
+		keyutils.parseKeyboardShortcut(getarchive_webcitation_keyboard_shortcut, event, function(result){
+			//sendMessage("notify", "You hit getarchive_webcitation_keyboard_shortcut");
+			getarchive.getContextLinkUrl("webcitation.org");
+		}, true);
+
+		keyutils.parseKeyboardShortcut(getarchive_googlecache_keyboard_shortcut, event, function(result){
+			//sendMessage("notify", "You hit getarchive_googlecache_keyboard_shortcut");
+			getarchive.getContextLinkUrl("webcache.googleusercontent.com");
+		}, true);
+
+		// key 3 => keycode 99
+		keyutils.parseKeyboardShortcut("3", event, function(result){
+			//if(event.keyCode == 99 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+				event.preventDefault();
+				//console.log("KEY 3 EVENT!");
+				getarchive.getContextLinkUrl("archive.org");
+			//}
+		}, true);
+
+		// key 4 => keycode 100
+		keyutils.parseKeyboardShortcut("4", event, function(result){
+		//if(event.keyCode == 100 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+			event.preventDefault();
+			//console.log("KEY 4 EVENT!");
+			getarchive.getContextLinkUrl("archive.is");
+		}, true);
+
+		// key 5 => keycode 101
+		keyutils.parseKeyboardShortcut("5", event, function(result){
+		//if(event.keyCode == 101 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+			event.preventDefault();
+			//console.log("KEY 5 EVENT!");
+			getarchive.getContextLinkUrl("webcitation.org");
+		}, true);
+
+		// key 6 => keycode 102
+		keyutils.parseKeyboardShortcut("6", event, function(result){
+		//if(event.keyCode == 102 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+			event.preventDefault();
+			//console.log("KEY 6 EVENT!");
+			getarchive.getContextLinkUrl("webcache.googleusercontent.com");
+		}, true);
+
+		// key 3 azerty => keycode 51
+		keyutils.parseKeyboardShortcut("\"", event, function(result){
+		//if(event.keyCode == 51 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+			//console.log("KEY 3 AZERTY EVENT!");
+			getarchive.getContextLinkUrl("archive.org");
+		}, true);
+
+		// key 4 azerty => keycode 52
+		keyutils.parseKeyboardShortcut("'", event, function(result){
+		//if(event.keyCode == 52 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+			event.preventDefault();
+			//console.log("KEY 4 AZERTY EVENT!");
+			getarchive.getContextLinkUrl("archive.org");
+		}, true);
+
+		// key 5 azerty => keycode 53
+		keyutils.parseKeyboardShortcut("(", event, function(result){
+		//if(event.keyCode == 53 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+			event.preventDefault();
+			//console.log("KEY 5 AZERTY EVENT!");
+			getarchive.getContextLinkUrl("webcitation.org");
+		}, true);
+
+		// key 6 azerty => keycode 54
+		keyutils.parseKeyboardShortcut("§", event, function(result){
+		//if(event.keyCode == 54 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+			event.preventDefault();
+			//console.log("KEY 6 AZERTY EVENT!");
+			getarchive.getContextLinkUrl("webcache.googleusercontent.com");
+		}, true);
+
+		// key g => keycode 71
+		if(window.location.href.indexOf("feedly.com") == -1){
+			keyutils.parseKeyboardShortcut("g", event, function(result){
+			//if(event.keyCode == 71 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+				event.preventDefault();
+				//console.log("KEY G SEARCH EVENT!");
+				getarchive.goSearch();
+			}, true);
+		}
+
+		// key x => keycode 88
+		keyutils.parseKeyboardShortcut("x", event, function(result){
+		//if(event.keyCode == 88 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+			event.preventDefault();
+			//console.log("KEY X CLOSE TAB EVENT!");
+			sendMessage("closeTab");
+		}, true);
+
+		// key c => keycode 67
+		if(window.location.href.indexOf("archive.org") > -1 || window.location.href.indexOf("archive.is") > -1 || window.location.href.indexOf("archive.li") > -1){
+			keyutils.parseKeyboardShortcut("c", event, function(result){
+			//if(event.keyCode == 67 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
+				event.preventDefault();
+				//console.log("KEY C COPY URL EVENT!");
+				if(getarchive.isCopySafe()){
+					origin = "user";
+					getarchive.copyUrlToClipboard(false);
+					origin = "code";
+					sendMessage("closeTab");
+				}
+			}, true);
+		}
+
+		// key Alt+L => keycode 76
+		keyutils.parseKeyboardShortcut("Alt+L", event, function(result){
+		//if(event.keyCode == 76 && !event.shiftKey && !event.ctrlKey && event.altKey && !event.metaKey){
+			event.preventDefault();
+			//console.log("KEY L OPEN VERWIJZINGENZOEKEN");
+			window.location.href = "https://nl.wikipedia.org/w/index.php?title=Special%3ALinkSearch&target=" + window.location.href;
+		}, true);
+
+		if (event.keyCode == 67 && !event.shiftKey && event.ctrlKey && !event.altKey && !event.metaKey) {
+			if(!getarchive_enable_ctrl_c){
+				return;
+			}
+
+			if(!getarchive.isCopySafe()){
+				return;
+			}
+
+			//console.log("activeElement is " + document.activeElement.tagName.toLowerCase());
+
+			origin = "user";
+			getarchive.copyUrlToClipboard(false); // false = do not check for invalid pages, just copy the current URL
+			origin = "code";
+
+			// don't allow for double actions for a single event
+			event.preventDefault();
+			return;
+		}
+	}, true);
+}

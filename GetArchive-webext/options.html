@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
   <head>
     <meta charset="utf-8">
@@ -33,13 +32,12 @@
 		body{
 			margin:0;
 			padding:0;
-			min-height: 105%;
 		}
 		
 		/* CSS used from https://github.com/kainsavage/HistoryBlock/blob/web-extension/options/options.css */
-		body, button,label,input,select {
+		body, button {
 		  font-family: Segoe UI, sans-serif;
-		  font-size: 16px; /* Adapted */
+		  font-size: 15px;
 		  color: #333; /* From Mozilla Firefox CSS */
 		}
 
@@ -76,37 +74,53 @@
 		}
 
 		.flexbox-container > div {
-			width: 33%;
 			padding: 10px;
-			padding-left: 7px; /* Added */
 		}
 
 		.flexbox-container > div:first-child {
 			margin-right: 20px;
+			width: 33%;
 		}
+
+		.flexbox-container > div {
+			min-width: 33%;
+		}
+
+		.flexbox-container > div:last-child {
+			max-width: 33%;
+			min-width: 5%;
+		}
+
 		/* End of used CSS */
 		
-		button::-moz-focus-inner { 
-			border: 0; 
+		.flexbox-container label{
+			display: inline;
+			padding-left: 0px;
+			text-indent: 0px;
+		}
+		
+		button::-moz-focus-inner {
+			border: 0;
 		}
 		
 		/* Specific to Get Archive */
-		.checkbox{
-			margin-bottom: 10px;
-		}
 		.keyboard_shortcut{
 			max-width: 165px;
 		}
 		.keyboard_shortcut_label{
 			margin-right: 5px;
 		}
+		.beautify{
+			margin-bottom: 5px;
+		}
 	</style>
 	<div class="refreshOptions">
-		Refresh this page (F5) to see the options of Translate Now
+		Refresh this page (F5) to see the options of Get Archive
 	</div>
-    <form id="optionsform" style="display:none">
+    <!--<form id="optionsform" style="display:none">-->
+	<form id="optionsform" style="">
 		<div class="hr"></div>
-		
+	
 		<div class="flexbox-container">
 			<div>
 				<label><span data-i18n="search_engine">Search engine (untranslated)</span></label><div class="descr" data-i18n="search_engine_descr">Search engine used by the key g (untranslated)</div>
@@ -118,9 +132,9 @@
 				<!-- Empty -->
 			</div>
 		</div>
-		
+
 		<div class="hr"></div>
-		
+
 		<div class="flexbox-container">
 			<div>
 				<label><span data-i18n="default_archive_service">Default archive service (untranslated)</span></label><div class="descr" data-i18n="default_archive_service_descr">Default archive service used by the toolbar button (untranslated)</div>
@@ -132,7 +146,7 @@
 				<!-- Empty -->
 			</div>
 		</div>
-		
+
 		<div class="hr"></div>
 
 		<div class="flexbox-container">
@@ -140,109 +154,141 @@
 				<label><span data-i18n="ctrl_c">CTRL+C (untranslated)</span></label><div class="descr" data-i18n="ctrl_c_descr">CTRL+C copies the URL if no text is selected (untranslated)</div>
 			</div>
 			<div>
-				<input type="checkbox" id="getarchive_enable_ctrl_c"><label class="checkbox" for="getarchive_enable_ctrl_c"><span data-i18n="ctrl_c_enable">Enable CTRL+C (untranslated)</span></label>
-				<input type="checkbox" id="getarchive_require_focus"><label class="checkbox" for="getarchive_require_focus"><span data-i18n="ctrl_c_require_focus">CTRL+C require focus on page element (untranslated)</span></label>
+				<div class="beautify"><input type="checkbox" id="getarchive_enable_ctrl_c"><label for="getarchive_enable_ctrl_c"><span data-i18n="ctrl_c_enable">Enable CTRL+C (untranslated)</span></label></div>
+				<div class="beautify"><input type="checkbox" id="getarchive_require_focus"><label for="getarchive_require_focus"><span data-i18n="ctrl_c_require_focus">CTRL+C require focus on page element (untranslated)</span></label></div>
 			</div>
 			<div>
 				<!-- Empty -->
 			</div>
 		</div>
 						
-		<div class="hr"></div>		
-		
+		<div class="hr"></div>
+
 		<div class="flexbox-container">
 			<div>
 				<label><span data-i18n="related_tabs">Open new tabs after the current tab (untranslated)</span></label><div class="descr" data-i18n="related_tabs_descr">Open new tabs next to the current tab as related tabs (untranslated)</div>
 			</div>
 			<div>
-				<input type="checkbox" id="getarchive_related_tabs"/><label for="getarchive_related_tabs"><span data-i18n="related_tabs">Open new tabs after the current tab (untranslated)</span></label>
+				<div><input type="checkbox" id="getarchive_related_tabs"/><label for="getarchive_related_tabs"><span data-i18n="related_tabs">Open new tabs after the current tab (untranslated)</span></label></div>
 			</div>
 			<div>
 				<!-- Empty -->
 			</div>
 		</div>
-		
+
 		<div class="hr"></div>
-		
+
 		<div class="flexbox-container">
 			<div>
 				<label><span>Archive.org</span></label><div class="descr"><span data-i18n="options_for"></span> Archive.org</div>
 			</div>
 			<div>
-				<input type="checkbox" id="getarchive_show_contextmenu_item_archiveorg"><label class="checkbox" for="getarchive_show_contextmenu_item_archiveorg"><span data-i18n="show_contextmenu_item_archiveorg">Show Archive.org (untranslated)</span></label>
-				<label><span data-i18n="keyboard_shortcut" class="keyboard_shortcut_label">Keyboard shortcut: </span><input type="text" id="getarchive_archiveorg_keyboard_shortcut" class="keyboard_shortcut"></label>
+				<div><input type="checkbox" id="getarchive_show_contextmenu_item_archiveorg"><label for="getarchive_show_contextmenu_item_archiveorg"><span data-i18n="show_contextmenu_item_archiveorg">Show Archive.org (untranslated)</span></label></div>
+				<div><label><span data-i18n="keyboard_shortcut" class="keyboard_shortcut_label">Keyboard shortcut: </span><input type="text" id="getarchive_archiveorg_keyboard_shortcut" class="keyboard_shortcut"></label></div>
 			</div>
 			<div>
 				<!-- Empty -->
 			</div>
 		</div>
-		
+
 		<div class="hr"></div>
-		
+
 		<div class="flexbox-container">
 			<div>
 				<label><span>Archive.is</span></label><div class="descr"><span data-i18n="options_for"></span> Archive.is</div>
 			</div>
 			<div>
-				<input type="checkbox" id="getarchive_show_contextmenu_item_archiveis"><label class="checkbox" for="getarchive_show_contextmenu_item_archiveis"><span data-i18n="show_contextmenu_item_archiveis">Show Archive.is (untranslated)</span></label>
-				<input type="checkbox" id="getarchive_prefer_long_link"><label class="checkbox" for="getarchive_prefer_long_link"><span data-i18n="prefer_long_link">Prefer long link over the short link (untranslated)</span></label>
-				<input type="checkbox" id="getarchive_automatic_forward"/><label class="checkbox" for="getarchive_automatic_forward"><span data-i18n="automatic_forward">Pick the best link automatically (automatic forward)</span></label>
-				<label><span data-i18n="keyboard_shortcut" class="keyboard_shortcut_label">Keyboard shortcut: </span><input type="text" id="getarchive_archiveis_keyboard_shortcut" class="keyboard_shortcut"></label>
+				<div class="beautify"><input type="checkbox" id="getarchive_show_contextmenu_item_archiveis"><label for="getarchive_show_contextmenu_item_archiveis"><span data-i18n="show_contextmenu_item_archiveis">Show Archive.is (untranslated)</span></label></div>
+				<div class="beautify"><input type="checkbox" id="getarchive_prefer_long_link"><label for="getarchive_prefer_long_link"><span data-i18n="prefer_long_link">Prefer long link over the short link (untranslated)</span></label></div>
+				<div class="beautify"><input type="checkbox" id="getarchive_automatic_forward"/><label for="getarchive_automatic_forward"><span data-i18n="automatic_forward">Pick the best link automatically (automatic forward)</span></label></div>
+				<div class="beautify"><label><span data-i18n="keyboard_shortcut" class="keyboard_shortcut_label">Keyboard shortcut: </span><input type="text" id="getarchive_archiveis_keyboard_shortcut" class="keyboard_shortcut"></label></div>
 			</div>
 			<div>
 				<!-- Empty -->
 			</div>
 		</div>
-		
+
 		<div class="hr"></div>
-		
+
 		<div class="flexbox-container">
 			<div>
 				<label>WebCitation</span></label><div class="descr"><span data-i18n="options_for"></span> WebCitation</div>
 			</div>
 			<div>
-				<input type="checkbox" id="getarchive_show_contextmenu_item_webcitation"/><label class="checkbox" for="getarchive_show_contextmenu_item_webcitation"><span data-i18n="show_contextmenu_item_webcitation">Show WebCitation (untranslated)</span></label>
-				<label><span data-i18n="keyboard_shortcut" class="keyboard_shortcut_label">Keyboard shortcut: </span><input type="text" id="getarchive_webcitation_keyboard_shortcut" class="keyboard_shortcut"></label>
+				<div class="beautify"><input type="checkbox" id="getarchive_show_contextmenu_item_webcitation"/><label for="getarchive_show_contextmenu_item_webcitation"><span data-i18n="show_contextmenu_item_webcitation">Show WebCitation (untranslated)</span></label></div>
+				<div class="beautify"><label><span data-i18n="keyboard_shortcut" class="keyboard_shortcut_label">Keyboard shortcut: </span><input type="text" id="getarchive_webcitation_keyboard_shortcut" class="keyboard_shortcut"></label></div>
 			</div>
 			<div>
 				<!-- Empty -->
 			</div>
 		</div>
-		
+
 		<div class="hr"></div>
-		
+
 		<div class="flexbox-container">
 			<div>
 				<label>Google Cache</span></label><div class="descr"><span data-i18n="options_for"></span> Google Cache</div>
 			</div>
 			<div>
-				<input type="checkbox" id="getarchive_show_contextmenu_item_googlecache"/><label class="checkbox" for="getarchive_show_contextmenu_item_googlecache"><span data-i18n="show_contextmenu_item_googlecache">Show Google Cache (untranslated)</span></label>
-				<label><span data-i18n="keyboard_shortcut" class="keyboard_shortcut_label">Keyboard shortcut: </span><input type="text" id="getarchive_googlecache_keyboard_shortcut" class="keyboard_shortcut"></label>
+				<div class="beautify"><input type="checkbox" id="getarchive_show_contextmenu_item_googlecache"/><label for="getarchive_show_contextmenu_item_googlecache"><span data-i18n="show_contextmenu_item_googlecache">Show Google Cache (untranslated)</span></label></div>
+				<div class="beautify"><label><span data-i18n="keyboard_shortcut" class="keyboard_shortcut_label">Keyboard shortcut: </span><input type="text" id="getarchive_googlecache_keyboard_shortcut" class="keyboard_shortcut"></label></div>
 			</div>
 			<div>
 				<!-- Empty -->
 			</div>
 		</div>
-		
-		<div class="hr"></div>	
-		
+
+		<div class="hr"></div>
+
 		<div class="flexbox-container">
 			<div>
 				<label><span data-i18n="automatic_retrieval">Automatic retrieval for "Problem loading page" (untranslated)</span></label><div class="descr" data-i18n="automatic_retrieval_descr">Automatically retrieve pages that display the error page "Problem loading page" using the default archive service (untranslated)</div>
 			</div>
 			<div>
-				<input type="checkbox" id="getarchive_automatic_retrieval"><label class="checkbox" for="getarchive_automatic_retrieval"><span data-i18n="automatic_retrieval">Automatic retrieval for "Problem loading page" (untranslated)</span></label>
+				<div class="beautify"><input type="checkbox" id="getarchive_automatic_retrieval"><label for="getarchive_automatic_retrieval"><span data-i18n="automatic_retrieval">Automatic retrieval for "Problem loading page" (untranslated)</span></label></div>
 			</div>
 			<div>
 				<!-- Empty -->
 			</div>
 		</div>
-		
+
+		<div class="hr"></div>
+
+		<div class="flexbox-container">
+			<div>
+				<label><span data-i18n="disable_all_shortcuts">Disable all shortcuts (untranslated)</span></label><div class="descr" data-i18n="disable_all_shortcuts_descr">Disable all actions invoked by a keyboard shortcut (untranslated)</div>
+			</div>
+			<div>
+				<div class="beautify"><input type="checkbox" id="getarchive_disable_all_shortcuts"><label for="getarchive_disable_all_shortcuts"><span data-i18n="disable_all_shortcuts">Disable all shortcuts (untranslated)</span></label></div>
+			</div>
+			<div>
+				<!-- Empty -->
+			</div>
+		</div>
+
+		<div class="hr"></div>
+
+		<div class="flexbox-container">
+			<div class="labelbox">
+				<label><span data-i18n="icon_theme">Icon theme</span></label><div class="descr" data-i18n="icon_theme_descr">Dark icons are used by default. You can change this option to use light icons.</div>
+			</div>
+			<div>
+				<select id="getarchive_icon_theme">
+					<option value="dark" data-i18n="icon_theme_dark">Always use dark icons</option>
+					<option value="light" data-i18n="icon_theme_light">Always use light icons</option>
+					<option value="dark_notiflight" data-i18n="icon_theme_dark_notiflight">Use dark icons except for notifications</option>
+					<option value="light_notifdark" data-i18n="icon_theme_light_notifdark">Use light icons except for notifications</option>
+				</select>
+			</div>
+			<div>
+				<!-- Empty -->
+			</div>
+		</div>
+
         <button type="submit"><span id="save_preferences" data-i18n="save_preferences">Save preferences (untranslated)</span></button>
     </form>
 
     <script src="options.js" defer></script>
 
   </body>
-
 </html>

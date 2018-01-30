@@ -1,6 +1,6 @@
 {
   "extensionDescription": {
-    "message": "使用 archive.org 或 archive.is 获取一个网页从前的版本。",
+    "message": "使用 archive.org, archive.is 或 webcitation.org 获取一个网页从前的版本。",
     "description": ""
   },
   "search_engine": {
@@ -79,12 +79,48 @@
 	"message": "当“页面载入出错”页面显示时，自动使用默认的存档服务检索",
 	"description": ""
   },
+  "disable_all_shortcuts": {
+	"message": "Disable all shortcuts",
+	"description": ""
+  },
+  "disable_all_shortcuts_descr": {
+	"message": "Disable all actions invoked by a keyboard shortcut",
+	"description": ""
+  },
+  "icon_theme": {
+	"message": "图标主题",
+    "description": ""
+  },
+  "icon_theme_descr": {
+	"message": "默认使用暗色图标。您可以更改此选项以使用明亮图标。",
+    "description": ""
+  },
+  "icon_theme_dark": {
+	"message": "始终使用暗色图标",
+    "description": ""
+  },
+  "icon_theme_light": {
+	"message": "始终使用明亮图标",
+    "description": ""
+  },
+  "icon_theme_dark_notiflight": {
+	"message": "使用暗色图标（通知除外）",
+    "description": ""
+  },
+  "icon_theme_light_notifdark": {
+	"message": "使用明亮图标（通知除外）",
+    "description": ""
+  },
   "options_for": {
 	"message": "选项 - ",
 	"description": ""
-  }, 
+  },
   "save_preferences": {
     "message": "保存设置",
     "description": ""
+  },
+  "notify_preferences_saved": {
+	"message": "保存的偏好",
+	"description": ""
   }
 }

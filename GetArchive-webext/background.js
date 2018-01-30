@@ -1,31 +1,32 @@
 /// Global variables
-var lastUrl = "";
-var lastTabId = -1;
-var lastTabIdServerNotFound = -1;
-var lastParentTabIndex = -1;
-var globalArchiveService = "";
-var wait = false; // used in handleUpdated()
-var oldUrl = ""; // used in changeUrl()
+let lastUrl = "";
+let lastTabId = -1;
+let lastTabIdServerNotFound = -1;
+let lastParentTabIndex = -1;
+let globalArchiveService = "";
+let wait = false; // used in handleUpdated()
+let oldUrl = ""; // used in changeUrl()
 
-var ui_contextMenus = false;
+let ui_contextMenus = false;
 
 /// Preferences
-var getarchive_show_contextmenu_item_archiveorg;
-var getarchive_show_contextmenu_item_archiveis;
-var getarchive_show_contextmenu_item_webcitation;
-var getarchive_show_contextmenu_item_googlecache;
+let getarchive_show_contextmenu_item_archiveorg;
+let getarchive_show_contextmenu_item_archiveis;
+let getarchive_show_contextmenu_item_webcitation;
+let getarchive_show_contextmenu_item_googlecache;
 
-var getarchive_automatic_forward;
-var getarchive_related_tabs;
-var getarchive_default_archive_service;
-var getarchive_automatic_retrieval;
+let getarchive_automatic_forward;
+let getarchive_related_tabs;
+let getarchive_default_archive_service;
+let getarchive_automatic_retrieval;
+let getarchive_icon_theme;
 
 function init(){
-	var valueOrDefault = function(value, defaultValue){
+	let valueOrDefault = function(value, defaultValue){
 		if(value == undefined) return defaultValue;
 		return value;
 	}
-	
+
 	browser.storage.local.get([
 		"getarchive_show_contextmenu_item_archiveorg",
 		"getarchive_show_contextmenu_item_archiveis",
@@ -34,42 +35,33 @@ function init(){
 		"getarchive_automatic_forward",
 		"getarchive_related_tabs",
 		"getarchive_defauflt_archive_service",
-		"getarchive_automatic_retrieval"
+		"getarchive_automatic_retrieval",
+		"getarchive_icon_theme"
 	]).then((result) => {
-		onVerbose("background.js getarchive_show_contextmenu_item_archiveorg " + result.getarchive_show_contextmenu_item_archiveorg);
+		// Context menus
 		getarchive_show_contextmenu_item_archiveorg = valueOrDefault(result.getarchive_show_contextmenu_item_archiveorg, true);
-		
-		onVerbose("background.js getarchive_show_contextmenu_item_archiveis " + result.getarchive_show_contextmenu_item_archiveis);
 		getarchive_show_contextmenu_item_archiveis = valueOrDefault(result.getarchive_show_contextmenu_item_archiveis, true);
-		
-		onVerbose("background.js getarchive_show_contextmenu_item_webcitation " + result.getarchive_show_contextmenu_item_webcitation);
 		getarchive_show_contextmenu_item_webcitation = valueOrDefault(result.getarchive_show_contextmenu_item_webcitation, false);
-		
-		onVerbose("background.js getarchive_show_contextmenu_item_googlecache " + result.getarchive_show_contextmenu_item_googlecache);
 		getarchive_show_contextmenu_item_googlecache = valueOrDefault(result.getarchive_show_contextmenu_item_googlecache, true);
 		
-		onVerbose("background.js getarchive_automatic_forward " + result.getarchive_automatic_forward);
+		// General settings
 		getarchive_automatic_forward = valueOrDefault(result.getarchive_automatic_forward, true);
-		
-		onVerbose("background.js getarchive_related_tabs " + result.getarchive_related_tabs);
 		getarchive_related_tabs = valueOrDefault(result.getarchive_related_tabs, true);
-				
-		onVerbose("background.js getarchive_default_archive_service " + result.getarchive_default_archive_service);
 		getarchive_default_archive_service = valueOrDefault(result.getarchive_default_archive_service, "archive.org");
-		
-		onVerbose("background.js getarchive_automatic_retrieval " + result.getarchive_automatic_retrieval);
 		getarchive_automatic_retrieval = valueOrDefault(result.getarchive_automatic_retrieval, true);
-		
-		browser.browserAction.onClicked.removeListener(clickToolbarButton);
-		browser.browserAction.onClicked.addListener(clickToolbarButton);
 
-		browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
-			updateUI(tabs[0].id, "init");
+		browser.runtime.getBrowserInfo().then((info) => {
+			let v = info.version;
+			browserVersion = parseInt(v.slice(0, v.search(".") - 1));
+			initContextMenus(valueOrDefault(browserVersion, "58"));
 		});
-		
-		initContextMenus();
+
+		// Icon theme
+		getarchive_icon_theme = valueOrDefault(result.getarchive_icon_theme, "dark");
+
+		// Toolbar button
+		initBrowserAction();
 	}).catch(console.error);
-	
 }
 init();
 
@@ -148,57 +140,82 @@ function sendMessageToTab(action, data, tabId){
 	});
 }
 
-function removeContextMenus(){
-	try{
-		browser.contextMenus.onClicked.removeListener(listener);
-		//browser.contextMenus.removeAll();
-		browser.contextMenus.remove("getarchive-archiveorg");
-		browser.contextMenus.remove("getarchive-archiveis");
-		browser.contextMenus.remove("getarchive-webcitationorg");
-		browser.contextMenus.remove("getarchive-googlecache");
-		/*browser.contextMenus.remove("getarchive-tb-archiveorg");
-		browser.contextMenus.remove("getarchive-tb-archiveis");
-		browser.contextMenus.remove("getarchive-tb-webcitationorg");
-		browser.contextMenus.remove("getarchive-tb-googlecache");
-		browser.contextMenus.remove("getarchive-tb-preferences");*/
-	}catch(ex){
-		onError("contextMenu remove failed: " + ex);
-	}
+function initBrowserAction(){
+	browser.browserAction.setIcon({path: resolveIconURL("getarchive-64.png")});
+
+	browser.browserAction.onClicked.removeListener(clickToolbarButton);
+	browser.browserAction.onClicked.addListener(clickToolbarButton);
+
+	browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+		for (tab of tabs) {
+			updateUI(tab.id, "force-refresh");
+		}
+	}, onError);
 }
 
-function addContextMenus(){
+function removeContextMenus(){
+	browser.contextMenus.onClicked.removeListener(listener);
+	browser.contextMenus.remove("getarchive-archiveorg").catch(null);
+	browser.contextMenus.remove("getarchive-archiveis").catch(null)
+	browser.contextMenus.remove("getarchive-webcitationorg").catch(null);
+	browser.contextMenus.remove("getarchive-googlecache").catch(null);
+}
+
+function buildObject(obj){
+	if(browserVersion <= 55){
+		delete obj.icons;
+	}
+	return obj;
+}
+
+function addContextMenus(browserVersion){
 	ui_contextMenus = true;
+
 	// See also https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/contextMenus/ContextType
+	let contexts = ["audio", "editable", "frame", "image", "link", "page", "selection", "tab", "video"];
+
 	if(getarchive_show_contextmenu_item_archiveorg){
-		browser.contextMenus.create({
+		browser.contextMenus.create(buildObject({
 			id: "getarchive-archiveorg",
 			title: "Get Archive.org",
-			contexts: ["audio", "editable", "frame", "image", "link", "page", "selection", "tab", "video"]
-		}, onCreated);
+			icons: {
+			  "32": "icons/icon32.png"
+			},
+			contexts: contexts
+		}), onCreated);
 	}
 
 	if(getarchive_show_contextmenu_item_archiveis){
-		browser.contextMenus.create({
+		browser.contextMenus.create(buildObject({
 			id: "getarchive-archiveis",
 			title: "Get Archive.is",
-			contexts: ["audio", "editable", "frame", "image", "link", "page", "selection", "tab", "video"]
-		}, onCreated);
+			icons: {
+			  "32": "icons/archiveis32.png"
+			},
+			contexts: contexts
+		}), onCreated);
 	}
 	
 	if(getarchive_show_contextmenu_item_webcitation){
-		browser.contextMenus.create({
+		browser.contextMenus.create(buildObject({
 			id: "getarchive-webcitationorg",
 			title: "Get WebCitation.org",
-			contexts: ["audio", "editable", "frame", "image", "link", "page", "selection", "tab", "video"]
-		}, onCreated);
+			icons: {
+			  "16": "icons/webcite16.png"
+			},
+			contexts: contexts
+		}), onCreated);
 	}
 
 	if(getarchive_show_contextmenu_item_googlecache){
-		browser.contextMenus.create({
+		browser.contextMenus.create(buildObject({
 			id: "getarchive-googlecache",
 			title: "Get Google Cache",
-			contexts: ["audio", "editable", "frame", "image", "link", "page", "selection", "tab", "video"]
-		}, onCreated);
+			icons: {
+			  "32": "icons/googlecache32.png"
+			},
+			contexts: contexts
+		}), onCreated);
 	}
 
 	function onCreated(n) {
@@ -208,38 +225,51 @@ function addContextMenus(){
 	}
 	
 	browser.contextMenus.onClicked.addListener(listener);
-	
 }
 
 function addContextMenusToolbarButton(){
-	browser.contextMenus.create({
+	browser.contextMenus.create(buildObject({
 		id: "getarchive-tb-archiveorg",
 		title: "Get Archive.org",
+		icons: {
+			 "32": "icons/icon32.png"
+		},
 		contexts: ["browser_action"]
-	}, onCreated);
+	}), onCreated);
 
-	browser.contextMenus.create({
+	browser.contextMenus.create(buildObject({
 		id: "getarchive-tb-archiveis",
 		title: "Get Archive.is",
+		icons: {
+			"32": "icons/archiveis32.png"
+		},
 		contexts: ["browser_action"]
-	}, onCreated);
-
+	}), onCreated);
 	
-	browser.contextMenus.create({
+	browser.contextMenus.create(buildObject({
 		id: "getarchive-tb-webcitationorg",
 		title: "Get WebCitation.org",
+		icons: {
+			"16": "icons/webcite16.png"
+		},
 		contexts: ["browser_action"]
-	}, onCreated);
+	}), onCreated);
 
-	browser.contextMenus.create({
+	browser.contextMenus.create(buildObject({
 		id: "getarchive-tb-googlecache",
 		title: "Get Google Cache",
+		icons: {
+			"32": "icons/googlecache32.png"
+		},
 		contexts: ["browser_action"]
-	}, onCreated);
+	}), onCreated);
 	
 	browser.contextMenus.create({
 		id: "getarchive-tb-preferences",
 		title: "Preferences",
+		icons: {
+			"32": "icons/settings32.png"
+		},
 		contexts: ["browser_action"]
 	}, onCreated);
 	
@@ -251,11 +281,11 @@ function addContextMenusToolbarButton(){
 }
 
 /// Context menus
-function initContextMenus(){
-	
+function initContextMenus(browserVersion){
 	removeContextMenus();
+
 	setTimeout(function(){
-		addContextMenus();
+		addContextMenus(browserVersion);
 	}, 50);
 	addContextMenusToolbarButton();
 }
@@ -321,29 +351,22 @@ function updateUI(tabId, reason){
 			onVerbose("updateUI disabled tab with url " + tab.url);
 			browser.browserAction.disable(tab.id);
 			browser.browserAction.setIcon({
-				path: "icons/getarchive-disabled-64.png",
+				path: resolveIconURL("getarchive-disabled-64.png"),
 				tabId: tab.id
 			});
-			//browser.browserAction.setBadgeText({text: "D"});
-			//browser.browserAction.setBadgeBackgroundColor({color: "red"});
-			
+
 			removeContextMenus();
 			ui_contextMenus = false;
 		}else{
-			
-			//browser.browserAction.setBadgeText({text: "A"});
-			//browser.browserAction.setBadgeBackgroundColor({color: "green"});
-			
 			if(!ui_contextMenus){
 				addContextMenus();
 				browser.browserAction.enable(tab.id);
 				browser.browserAction.setIcon({
-					path: "icons/getarchive-64.png",
+					path: resolveIconURL("getarchive-64.png"),
 					tabId: tab.id
 				});
 				ui_contextMenus = true;
 			}
-			
 		}
 	}
 	//console.log("tabId is " + tabId);
@@ -401,11 +424,11 @@ function shimGetGenericLink(archiveService,contextLinkUrl,tab){
 function shimGetGenericLinkHelper(archiveService, contextLinkUrl){
 	//console.log("archiveService is " + archiveService);
 	//console.log("contextLinkUrl is " + contextLinkUrl);
-		
+
 	globalArchiveService = archiveService;
-		
-	var baseUrl = "";
-		
+
+	let baseUrl = "";
+
 	switch(archiveService){
 		case "archive.org":
 			baseUrl = "https://web.archive.org/web/2005/";
@@ -446,7 +469,7 @@ function setContextLinkUrl(data){
 
 /// Tab functions
 function closeTab(){
-	function logTabs(tabs) {
+	browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
 		for (tab of tabs) {
 			function onRemoved() {
 				//console.log(`Get Archive: Removed ` + tab.url);
@@ -454,9 +477,7 @@ function closeTab(){
 
 			browser.tabs.remove(tab.id).then(onRemoved, onError);
 		}
-	}
-
-	browser.tabs.query({currentWindow: true, active: true}).then(logTabs, onError);
+	}, onError);
 }
 
 function openTab(url){
@@ -762,7 +783,7 @@ function onVerbose(info) {
 }
 
 function notify(message){
-	var title = "Get Archive";
+	let title = "Get Archive";
 	if(typeof message === "object"){
 		title = message.title;
 		message = message.message;
@@ -773,7 +794,7 @@ function notify(message){
 	browser.notifications.create(message.substring(0, 20).replace(" ", ""),
 	{
 		type: "basic",
-		iconUrl: browser.extension.getURL("icons/getarchive-64.png"),
+		iconUrl: browser.extension.getURL(resolveIconUrlNotif("getarchive-64.png")),
 		title: title,
 		message: message
 	});
@@ -781,11 +802,7 @@ function notify(message){
 
 // Webrequest: remove :80 from URLs on archive.org
 function cleanURL(details) {
-	//console.log("cleaning URL: url is: " + details.url);
-    var url = details.url.replace(":80", "");
-    //console.log("cleaning after replace URL: url is: " + url);
-
-    return { redirectUrl: url };
+    return { redirectUrl: details.url.replace(":80", "") };
 }
 
 // Prevent archive.org from adding :80 to URLs
@@ -794,4 +811,3 @@ browser.webRequest.onBeforeRequest.addListener(
     {urls: ["https://web.archive.org/*:80*"]},
     ["blocking"]
 );
-

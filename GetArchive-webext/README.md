@@ -27,7 +27,7 @@ Gets a previous version from a webpage using archive.org, archive.is, webcitatio
 * Toolbar button with context menu items
 * Context menu items for supported archive services (optional)
 * Search with Google/DuckDuckGo/Bing function
-* LinkSearch
+* Integration with Special:LinkSearch page (MediaWiki)
 
 ## Notes
 * Shortcuts do not work on Firefox error pages
@@ -36,7 +36,7 @@ Gets a previous version from a webpage using archive.org, archive.is, webcitatio
 ## Shortcuts
 
 | Feature | Keyboard shortcut | Comments
-|---------------|----------
+|---------------|----------|----------
 | Search current URL with search engine | Alt+G | Google is the default search engine. The search engine can be changed in the preferences.
 | Copy current URL to clipboard | CTRL+C | Copies the current URL.
 | Copy current URL to clipboard and close tab | c | Only works when the focus is on the page element.
@@ -45,14 +45,14 @@ Gets a previous version from a webpage using archive.org, archive.is, webcitatio
 
 ## Options
 
-![Get Archive 3.0 options](images/options-v3.png)
+![Get Archive 3.0 options](images/options.png)
 
 If you change preferences, don't forget to click "Save preferences". The options page can be accessed at about:addons -> Extensions -> Get Archive -> Preferences.
 
 Explanations:
 
 | Setting | Values | Explanation
-|-------------|-------------------
+|-------------|-------------------|-------------------
 | Search engine | Bing, DuckDuckGo or Google | Search engine used when pressing g on the keyboard.
 | Default archive service |	Archive.org Wayback Machine, archive.is, webcitation.org or Google Cache | Search engine used when pressing g on the keyboard. It will use the current URL as the search term. This is useful for, among other things, finding PDFs and news articles.
 | Enable CTRL+C | Checked or unchecked | Copy the current URL to the clipboard if no text is selected. Disable this option if you suddenly can't copy text anymore.
@@ -79,13 +79,15 @@ Explanations:
 
 ## Context menu items
 
-![Get Archive 3.0 context menu items](images/context-menu-items.png)
+![Get Archive 3.0 context menu items](images/context-menu-items-icons.png)
 
 ## Toolbar icon
 
 ![Get Archive 3.0 toolbar icon](images/toolbar-icon.png)
 
 If you don't want a toolbar icon, customize the Firefox toolbar so the icon is gone. See [Customize Firefox controls, buttons and toolbars](https://support.mozilla.org/t5/Customize-controls-options-and/Customize-Firefox-controls-buttons-and-toolbars/ta-p/2715) at mozilla.org.
+
+You can also change the toolbar icon color to white to have more contrast when using a dark theme.
 
 ## Toolbar icon (right click)
 

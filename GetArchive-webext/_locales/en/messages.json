@@ -1,6 +1,6 @@
 {
   "extensionDescription": {
-    "message": "Gets a previous version from a webpage using archive.org or archive.is.",
+    "message": "Gets a previous version from a webpage using archive.org, archive.is or webcitation.org.",
     "description": ""
   },
   "search_engine": {
@@ -79,12 +79,48 @@
 	"message": "Automatically retrieve pages that display the error page \"Problem loading page\" using the default archive service",
 	"description": ""
   },
+  "disable_all_shortcuts": {
+	"message": "Disable all shortcuts",
+	"description": ""
+  },
+  "disable_all_shortcuts_descr": {
+	"message": "Disable all actions invoked by a keyboard shortcut",
+	"description": ""
+  },
+  "icon_theme": {
+	"message": "Icon theme",
+    "description": ""
+  },
+  "icon_theme_descr": {
+	"message": "Dark icons are used by default. You can change this option to use light icons.",
+    "description": ""
+  },
+  "icon_theme_dark": {
+	"message": "Always use dark icons",
+    "description": ""
+  },
+  "icon_theme_light": {
+	"message": "Always use light icons",
+    "description": ""
+  },
+  "icon_theme_dark_notiflight": {
+	"message": "Use dark icons except for notifications",
+    "description": ""
+  },
+  "icon_theme_light_notifdark": {
+	"message": "Use light icons except for notifications",
+    "description": ""
+  },
   "options_for": {
 	"message": "Options for ",
 	"description": ""
-  }, 
+  },
   "save_preferences": {
     "message": "Save preferences",
     "description": ""
+  },
+  "notify_preferences_saved": {
+	"message": "Saved preferences",
+	"description": ""
   }
 }
