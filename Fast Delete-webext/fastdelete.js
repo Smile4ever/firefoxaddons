@@ -361,6 +361,11 @@ function deletepage(){
 			e10sDeleteReason(delete_reason_doorverwijzing, this.getActionURL("delete", str));
 			return;
 		}else{
+			if(fastdelete_onlybotnotifications){
+				this.closetab("fastdelete_onlybotnotifications is true. Deleting redirects now is not something we support");
+				return;
+			}
+
 			// isWeesRedirect
 			try{
 				var new_count = document.getElementsByClassName("redirectText")[0].getElementsByClassName("new").length;
@@ -445,6 +450,8 @@ function deletepage(){
 			if(!safemode){
 				e10sDeleteReason("Privacyschending", this.getActionURL("delete", str));
 				return;
+			}else{
+				this.closeTab("Privacyschending detected, but safe mode");
 			}
 		}
 

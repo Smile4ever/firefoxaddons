@@ -1,3 +1,8 @@
+5.0.1
+=====
+- Attempt to fix some closing bugs
+- Do not delete redirects when in safe mode, when only bot notifications is turned on
+
 5.0.0
 =====
 - WebExtensions port of Fast Delete
