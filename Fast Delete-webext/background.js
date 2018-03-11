@@ -13,6 +13,9 @@ function onMessage(message) {
 		case "closeTab":
 			closeTab();
 			break;
+		case "closeTabNow":
+			closeTabNow();
+			break;
 		case "closeTabAfter500":
 			closeTabAfter500();
 			break;
@@ -153,17 +156,29 @@ function isCompleted(title){
 	return title.indexOf("Action complete") > -1 ||	title.indexOf("Cannot delete") > -1 || title.indexOf("Handeling voltooid") > -1 || title.indexOf("kan niet verwijderd worden") > -1;
 }
 
+function closeTabNow(){
+	browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+		browser.tabs.remove(tabs[0].id);
+	}, onError);
+}
+
 function closeTabAfter500(){
 	setTimeout(function(){
-		browser.tabs.query({currentWindow: true, active: true}).then(onSuccess, onError);
-
-		function onSuccess(tabs){
+		browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
 			let tab = tabs[0];
-			if(isCompleted(tab.title)){
+
+			// Putting isCompleted out of comments sometimes makes the bot go stuck. Better we close too many tabs instead of keeping a tab open in stucked state.
+			// An alternative is probably reloading the tab, but I'm not sure we want to do that
+			if(isCompleted(tab.title)){ // test.
 				//console.log("closing after 500ms");
 				browser.tabs.remove(tab.id);
+			}else{
+				// TODO before releasing
+				setTimeout(function(){
+					// If the active tab is still the same after 20s, close this tab.
+				}, 20000);
 			}
-		}
+		}, onError);
 	}, 500);
 }
 

@@ -16,3 +16,5 @@ Press F8 delete a MediaWiki (talk) page.
 | Feature | Keyboard shortcut
 |---------------|----------
 | Delete (talk) page | F8
+| Close tab | x (TODO: check if this works)
+| Close window | shift+x (TODO: check if this works)

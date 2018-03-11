@@ -82,9 +82,18 @@ function confirm() {
 	if(str.indexOf("nl.wikipedia.org") > -1){
 		supported = true;
 
-		if((wpReason.value.toLowerCase().indexOf("afgehandeld") > -1 || wpReason.value.toLowerCase().indexOf("externe links aangepast") > -1) && delete_reason == ""){
+		if(
+			(wpReason.value.toLowerCase().indexOf("afgehandeld") > -1
+			|| wpReason.value.toLowerCase().indexOf("externe links aangepast") > -1
+			|| wpReason.value.toLowerCase().indexOf("afbeeldingsuggestie") > -1
+		) && delete_reason == ""){
 			this.showMessage("Made a guess based on the nuweg reason.");
 			delete_reason = "Afgehandelde botmelding";
+			
+			// Dare to delete - 5.0.2
+			wpReason.value = delete_reason; // Added in 5.0.2
+			submitDeleteForm(deleteForm); // Added in 5.0.2
+			
 			sendMessage("closeTabAfter500");
 			//console.log("Delete reason is " + delete_reason);
 		}
@@ -143,7 +152,7 @@ function confirm() {
 		return;
 	}
 
-	if(wpReason.value.toLowerCase().indexOf("afgehandeld") > -1){
+	if(wpReason.value.toLowerCase().indexOf("afgehandeld") > -1 || wpReason.value.toLowerCase().indexOf("afbeeldingsuggestie") > -1){
 		// check history.
 		this.checkHistory(linksToHere);
 		return;
@@ -282,7 +291,7 @@ function deletepage(){
 		}
 
 		// works on wiki.lxde.org (at least)
-		if(document.title.indexOf("Broken redirects") > -1){
+		if(document.title.indexOf("Broken redirects") > -1 || document.title.indexOf("Defecte doorverwijzingen") > -1){
 			if(this.actionRemoveBrokenRedirects() != 0) return;
 		}
 	}
@@ -338,7 +347,17 @@ function deletepage(){
 	}
 
 	// Afbeeldingsuggestie (manual & bot)
-	if(bodyContent.indexOf("Notificatie van CommonsTicker") > -1 || bodyContent.indexOf("Verzoek om afbeelding") > -1 || bodyContent.indexOf("Foto's van interwiki") > -1 || bodyContent.indexOf("Verwijderingsnominatie") > -1 || bodyContent.indexOf("Afbeeldingsuggestie") > -1 || bodyContent.indexOf("Suggestie voor afbeelding") > -1 || bodyContent.indexOf("Notificatie onbereikbare link weghaald") > -1 || bodyContent.indexOf("Externe links aangepast") > -1){
+	if(
+	     bodyContent.indexOf("Notificatie van CommonsTicker") > -1
+	  || bodyContent.indexOf("Verzoek om afbeelding") > -1
+	  || bodyContent.indexOf("Foto's van interwiki") > -1
+	  || bodyContent.indexOf("Verwijderingsnominatie") > -1
+	  || bodyContent.indexOf("Afbeeldingsuggestie") > -1
+	  || bodyContent.indexOf("Suggestie voor afbeelding") > -1
+	  || bodyContent.indexOf("Notificatie onbereikbare link weghaald") > -1
+	  || bodyContent.indexOf("Externe links aangepast") > -1
+	  || bodyContent.indexOf("externe link(s) gewijzigd") > -1
+	){
 		if(!safemode || (bodyInnerContent.indexOf("Categorie:Wikipedia:Nuweg") > -1 && str.indexOf("Overleg:") > -1)){
 			e10sDeleteReason("Afgehandelde botmelding", this.getActionURL("delete", str));
 			return;
@@ -522,8 +541,8 @@ function deletepage(){
 				return;
 			}
 		}
-		// Genomineerd wegens reclame
 
+		// Genomineerd wegens reclame
 		var startSearch = mwContentTextLower.indexOf("<p>Toelichting:");
 		var endSearch = mwContentTextLower.indexOf(startSearch, "<br />");
 
@@ -652,7 +671,6 @@ function openTalkPageIfNeeded(talkPage, str){
 			str = firstpart + "Overleg:" + lastpart;
 		}
 
-		//console.log("openTalkPage to " + str);
 		sendMessage("openTalkPage", {url: str});
 		//sendMessage("autoDeletePage", { url: str, reason: reason });
 	}
@@ -715,8 +733,6 @@ function showMessage(message){
 }
 
 function actionOpenTalkRedirects(){
-	//console.log("actionOpenTalkRedirects");
-
 	var mwWhatlinkshereList = document.getElementById("mw-whatlinkshere-list");
 
 	if(mwWhatlinkshereList == null){
@@ -907,7 +923,7 @@ function checkHistory(linksToHere){
 				trustedCount++;
 			}
 
-			if((otherUsernames.length == 1 || (otherUsernames.length - trustedCount - globalReplaceCount - renamedCount == 0) || (otherUsernames.length - globalReplaceCount - renamedCount == 1)) && nuweg == true ){
+			if((otherUsernames.length <= 1 || (otherUsernames.length - trustedCount - globalReplaceCount - renamedCount == 0) || (otherUsernames.length - globalReplaceCount - renamedCount == 1)) && nuweg == true ){
 				that.showMessage("History checked: everything ok (" + (users.length - otherUsernames.length) + " bot(s), " + otherUsernames.length + " normal user(s), " + trustedCount + " trusted, " + globalReplaceCount + " GlobalReplace, " + renamedCount + " renamed)");
 				that.submitDeleteFormExternal();
 
@@ -1002,28 +1018,23 @@ window.addEventListener("keydown", function(event){
 		return;
 	}
 
-	var myspaceLoc = window.location.href.indexOf("myspace.com");
-	if((myspaceLoc < 10 && myspaceLoc > -1) && event.keyCode == 88){
-		closetab("bye myspace");
-		event.preventDefault();
-		return;
-	}
-
 	if (event.keyCode == 88 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
-		if(window.document.hasFocus() && document.activeElement.tagName.toLowerCase() != "textarea" && document.activeElement.tagName.toLowerCase() != "input"){
-			closetab("pressed x");
+		if(document.activeElement.tagName.toLowerCase() != "textarea" && document.activeElement.tagName.toLowerCase() != "input"){
+			sendMessage("closeTabNow");
 			event.preventDefault();
 			return;
 		}
+		// window.document.hasFocus() && 
 	}
 
 	if (event.keyCode == 88 && event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
-		if(window.document.hasFocus() && document.activeElement.tagName.toLowerCase() != "textarea" && document.activeElement.tagName.toLowerCase() != "input"){
+		if(document.activeElement.tagName.toLowerCase() != "textarea" && document.activeElement.tagName.toLowerCase() != "input"){
 			//console.log("shift+x");
 			sendMessage("closeWindow");
 			event.preventDefault();
 			return;
 		}
+		// window.document.hasFocus() && 
 	}
 });
 

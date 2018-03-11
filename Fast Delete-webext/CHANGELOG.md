@@ -1,3 +1,13 @@
+5.0.2
+=====
+- Fix another closing bug
+- Improve detection for Afbeeldingsuggestie
+- Fix 0 other (untrusted) users displaying a warning instead of going ahead
+- Delete based on nuweg reason
+- Also check history when afbeeldingsuggestie is found in delete reason
+- Support actionRemoveBrokenRedirects for nl.wikipedia.org as well (title Defecte doorverwijzingen)
+- Improve detection for InternetArchiveBot
+
 5.0.1
 =====
 - Attempt to fix some closing bugs
