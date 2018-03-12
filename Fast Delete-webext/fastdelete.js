@@ -1,16 +1,16 @@
-var notificationsOk = false;
-var delete_reason = "";
+let notificationsOk = false;
+let delete_reason = "";
 /*
  * TODO: "Weesoverleg of overleg bij verwijderde pagina"
  */
 
-var fastdelete_safemode;
-var fastdelete_onlybotnotifications;
-var fastdelete_debug_dosubmit;
-var fastdelete_autoconfirm_wikipedia;
+let fastdelete_safemode;
+let fastdelete_onlybotnotifications;
+let fastdelete_debug_dosubmit;
+let fastdelete_autoconfirm_wikipedia;
 
 function init(){
-	var valueOrDefault = function(value, defaultValue){
+	let valueOrDefault = function(value, defaultValue){
 		if(value == undefined)
 			return defaultValue;
 		return value;
@@ -49,7 +49,7 @@ function confirm() {
 	var safemode = fastdelete_safemode;
 
 	if(!this.isThereText(true) && document.readyState == "complete"){
-		this.closetab("notext");
+		this.closeTabNow("notext");
 		return;
 	}
 
@@ -109,7 +109,7 @@ function confirm() {
 		if(delete_reason.length > 0){
 			if(delete_reason != "Afgehandelde botmelding" && fastdelete_onlybotnotifications){
 				this.showMessage("De pagina mag niet verwijderd worden volgens de instellingen van Fast Delete.");
-				this.closetab("notallowed");
+				this.closeTabNow("notallowed");
 				return;
 			}
 			wpReason.value = delete_reason;
@@ -166,7 +166,7 @@ function confirm() {
 
 	if(safemode){
 		this.showMessage("This page is not safe to delete.");
-		this.closetab("notsafe");
+		this.closeTabNow("notsafe");
 	}else{
 		if(submitDeleteForm(deleteForm)){
 			this.openTab(linksToHere);
@@ -304,7 +304,7 @@ function deletepage(){
 			e10sDeleteReason("Spam", "https://wiki.lxde.org/en/index.php?action=delete&title=" + titleOfPage);
 			return;
 		}else{
-			this.closetab("mwContentText == null");
+			this.closeTabNow("mwContentText == null");
 			return;
 		}
 	}
@@ -318,7 +318,7 @@ function deletepage(){
 	if(!safemode){
 		if(str.indexOf("Special:") > -1){
 			if(bodyInnerContent.indexOf("There are no results for this report") > -1){
-				this.closetab("no results");
+				this.closeTabNow("no results");
 				return;
 			}
 		}
@@ -336,7 +336,7 @@ function deletepage(){
 
 	//	|| bodyContent.indexOf("Geen enkele pagina, die aan de gekozen filters voldoet, verwijst naar") > -1
 	if(!this.isThereText(false)){
-		this.closetab("thereisnotext");
+		this.closeTabNow("thereisnotext");
 		return;
 	}
 
@@ -367,7 +367,7 @@ function deletepage(){
 				return;
 			}else{
 				this.showMessage("Not safe enough to delete " + document.title.replace(" - Wikipedia", "") + " automatically.");
-				this.closetab("notsafeenough-safemode");
+				this.closeTabNow("notsafeenough-safemode");
 				return;
 			}
 		}
@@ -381,7 +381,7 @@ function deletepage(){
 			return;
 		}else{
 			if(fastdelete_onlybotnotifications){
-				this.closetab("fastdelete_onlybotnotifications is true. Deleting redirects now is not something we support");
+				this.closeTabNow("fastdelete_onlybotnotifications is true. Deleting redirects now is not something we support");
 				return;
 			}
 
@@ -396,7 +396,7 @@ function deletepage(){
 				e10sDeleteReason(delete_reason_doorverwijzing, this.getActionURL("delete", str));
 				return;
 			}else{
-				this.closetab("this is not something we support"); // close if we're in safe mode, this is not something we support (requires validation of a human / nuweg requirement)
+				this.closeTabNow("this is not something we support"); // close if we're in safe mode, this is not something we support (requires validation of a human / nuweg requirement)
 				return;
 			}
 		}
@@ -409,7 +409,7 @@ function deletepage(){
 				e10sDeleteReason("Verzoek in eigen naamruimte aanvrager", this.getActionURL("delete", str));
 				return;
 			}else{
-				this.closetab("safe mode - verzoek in eigen naamruimte aanvrager");
+				this.closeTabNow("safe mode - verzoek in eigen naamruimte aanvrager");
 				return;
 			}
 		}
@@ -419,7 +419,7 @@ function deletepage(){
 				e10sDeleteReason("Geen zinvolle inhoud", this.getActionURL("delete", str));
 				return;
 			}else{
-				this.closetab("safe mode - geen zinvolle inhoud");
+				this.closeTabNow("safe mode - geen zinvolle inhoud");
 				return;
 			}
 		}
@@ -429,7 +429,7 @@ function deletepage(){
 				e10sDeleteReason("Experimenteerpagina", this.getActionURL("delete", str));
 				return;
 			}else{
-				this.closetab("safe mode - experimenteerpagina");
+				this.closeTabNow("safe mode - experimenteerpagina");
 				return;
 			}
 		}
@@ -440,7 +440,7 @@ function deletepage(){
 				e10sDeleteReason("Geklieder of ander [[Wikipedia:Vandalisme|vandalisme]]", this.getActionURL("delete", str));
 				return;
 			}else{
-				this.closetab("safe mode - geklieder");
+				this.closeTabNow("safe mode - geklieder");
 				return;
 			}
 		}
@@ -450,7 +450,7 @@ function deletepage(){
 				e10sDeleteReason("Machinevertaling", this.getActionURL("delete", str));
 				return;
 			}else{
-				this.closeTab("Machinevertaling detected, but only bot notifications");
+				this.closeTabNow("Machinevertaling detected, but only bot notifications");
 				return;
 			}
 		}
@@ -460,7 +460,7 @@ function deletepage(){
 				e10sDeleteReason("Tekstdump", this.getActionURL("delete", str));
 				return;
 			}else{
-				this.closeTab("tekstdump detected, but only bot notifications");
+				this.closeTabNow("tekstdump detected, but only bot notifications");
 				return;
 			}
 		}
@@ -470,7 +470,7 @@ function deletepage(){
 				e10sDeleteReason("Privacyschending", this.getActionURL("delete", str));
 				return;
 			}else{
-				this.closeTab("Privacyschending detected, but safe mode");
+				this.closeTabNow("Privacyschending detected, but safe mode");
 			}
 		}
 
@@ -487,7 +487,7 @@ function deletepage(){
 				e10sDeleteReason("Privacyschending", this.getActionURL("delete", str));
 				return;
 			}else{
-				this.closetab("privacyschending - safe mode");
+				this.closeTabNow("privacyschending - safe mode");
 				return;
 			}
 		}
@@ -497,7 +497,7 @@ function deletepage(){
 				e10sDeleteReason("Niet-Nederlandstalig of resultaat van een computervertaling", this.getActionURL("delete", str));
 				return;
 			}else{
-				this.closetab("niet-nederlandstalig / computervertaling detected, but only bot notifications");
+				this.closeTabNow("niet-nederlandstalig / computervertaling detected, but only bot notifications");
 				return;
 			}
 		}
@@ -515,7 +515,7 @@ function deletepage(){
 				}
 				return;
 			}else{
-				this.closetab("safe mode - onjuist gebruik");
+				this.closeTabNow("safe mode - onjuist gebruik");
 				return;
 			}
 		}
@@ -537,7 +537,7 @@ function deletepage(){
 
 				return;
 			}else{
-				this.closetab("safe mode - auteursrechtenschending");
+				this.closeTabNow("safe mode - auteursrechtenschending");
 				return;
 			}
 		}
@@ -555,7 +555,7 @@ function deletepage(){
 				e10sDeleteReason("Expliciete reclame", this.getActionURL("delete", str));
 				return;
 			}else{
-				this.closetab("safe mode - reclame");
+				this.closeTabNow("safe mode - reclame");
 				return;
 			}
 		}
@@ -575,14 +575,14 @@ function deletepage(){
 
 	if(str.indexOf("wiki.lxde.org") > -1) {
 		if(mwContentText == null){
-			this.closetab("mwContentText is null");
+			this.closeTabNow("mwContentText is null");
 			return;
 		}
 		var russian = /[а-яА-ЯЁё]/.test(mwContentTextLower);
 
 		var loc = location.href;
 		if(loc.indexOf("Special:Contributions") > -1 || loc.indexOf("Special:Block") > -1 || loc.indexOf("redlink=1") > -1){
-			this.closetab("wiki.lxde.org special");
+			this.closeTabNow("wiki.lxde.org special");
 			return;
 		}
 
@@ -614,11 +614,11 @@ function deletepage(){
 			){
 				e10sDeleteReason("Spam", this.getActionURL("delete", str));
 			}else{
-				this.closetab("could not find a thing to delete this page");
+				this.closeTabNow("could not find a thing to delete this page");
 			}
 			return;
 		}else{
-			this.closetab("category present");
+			this.closeTabNow("category present");
 			return;
 		}
 	}
@@ -630,7 +630,7 @@ function deletepage(){
 		return;
 	}
 
-	this.closetab("unrecognised page, why do you press F8? closing tab.");
+	this.closeTabNow("unrecognised page, why do you press F8? closing tab.");
 }
 
 function actionRemoveBrokenRedirects(){
@@ -644,13 +644,13 @@ function actionRemoveBrokenRedirects(){
 			openFocusedTab(ahref);
 		}
 	}
-	/*this.closetab("brokenredirects finished");*/
+	/*this.closeTabNow("brokenredirects finished");*/
 	return lis.length;
 }
 
 function openTalkPageIfNeeded(talkPage, str){
 	if(fastdelete_safemode){
-		this.closetab("openTalkPageIfNeeded safemode");
+		this.closeTabNow("openTalkPageIfNeeded safemode");
 		return;
 	}
 
@@ -658,7 +658,7 @@ function openTalkPageIfNeeded(talkPage, str){
 		var talkPageLinkIsRed = talkPage.innerHTML.indexOf("redlink") > -1;
 
 		if(talkPageLinkIsRed){
-			this.closetab("new > -1");
+			this.closeTabNow("new > -1");
 			return;
 		}
 
@@ -689,9 +689,9 @@ function isWeesRedirect(){
 	return false;
 }
 
-function closetab(reason){
+function closeTabNow(reason){
 	//console.log("Close reason: " + reason);
-	sendMessage("closeTab");
+	sendMessage("closeTabNow");
 }
 
 function isMediaWiki(){
@@ -736,7 +736,7 @@ function actionOpenTalkRedirects(){
 	var mwWhatlinkshereList = document.getElementById("mw-whatlinkshere-list");
 
 	if(mwWhatlinkshereList == null){
-		this.closetab("mwWhatlinkshereList == null");
+		this.closeTabNow("mwWhatlinkshereList == null");
 	}
 
 	lis = mwWhatlinkshereList.getElementsByTagName("li");
@@ -764,7 +764,7 @@ function actionOpenTalkRedirects(){
 		for(i = 0; i < redirects.length; i++){
 			openTab("https://nl.wikipedia.org/wiki/" + redirects[i]);
 		}
-		this.closetab("opened page to redirects");
+		this.closeTabNow("opened page to redirects");
 	}
 }
 
@@ -816,7 +816,7 @@ function checkRedirect(linksToHere){
 			if(nomatch){
 				that.showMessage("Could not check the page.");
 				if(fastdelete_safemode){
-					that.closetab("could not check page, safe mode");
+					that.closeTabNow("could not check page, safe mode");
 				}
 			}else{
 				if(ok){
@@ -826,7 +826,7 @@ function checkRedirect(linksToHere){
 				}else{
 					that.showMessage("Warning: not secure to delete. Page contains a history entry > 200 bytes.");
 					if(fastdelete_safemode){
-						that.closetab("not secure to delete, safe mode");
+						that.closeTabNow("not secure to delete, safe mode");
 					}
 				}
 			}
@@ -864,8 +864,8 @@ function checkHistory(linksToHere){
 			}
 
 			var i = 0;
-			var globalReplaceCount = 0;
-			var renamedCount = 0;
+			let globalReplaceCount = 0;
+			let renamedCount = 0;
 
 			for(i = 0; i < users.length; i++){
 				// For GlobalReplace, two formats are detected.
@@ -878,17 +878,18 @@ function checkHistory(linksToHere){
 				if(users[i].indexOf("heeft de pagina") > -1 && users[i].indexOf("hernoemd") > -1){
 					renamedCount++;
 				}
-				var locationQuote = users[i].indexOf("\"");
+				let locationQuote = users[i].indexOf("\"");
 				users[i] = users[i].substring(1, locationQuote);
 			}
+			users = that.uniq(users); // don't count InternetArchiveBot twice
 
-			var j = 0;
-			var otherUsernames = [];
-			var userNames = ["Lsjbot", "RomaineBot", "CommonsDelinker", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot", "Jeroenbot", "RobotJcb", "GrashoofdBot", "RobotMichiel1972", "InternetArchiveBot"];
+			let j = 0;
+			let otherUsernames = [];
+			let userNames = ["Lsjbot", "RomaineBot", "CommonsDelinker", "CommonsTicker", "E85Bot", "Erwin85TBot", "Pompidombot", "MeerderBot", "Jeroenbot", "RobotJcb", "GrashoofdBot", "RobotMichiel1972", "InternetArchiveBot"];
 
 			for(i = 0; i < users.length; i++){
-				var match = false;
-				var historyEntry = users[i];
+				let match = false;
+				let historyEntry = users[i];
 				for(j = 0; j < userNames.length; j++){
 					if(historyEntry.indexOf(userNames[j]) > -1){
 						match = true;
@@ -901,8 +902,8 @@ function checkHistory(linksToHere){
 
 			otherUsernames = that.uniq(otherUsernames);
 
-			var trustedCount = 0;
-			var trustedUsers = ["Linkin", "Machaerus", "MartinD", "Hobbema"]; // , "Smile4ever", "Cycn"
+			let trustedCount = 0;
+			let trustedUsers = ["Linkin", "Machaerus", "MartinD", "Hobbema"]; // , "Smile4ever", "Cycn"
 			// TODO: it should check the last history entry
 
 			for(i = 0; i < otherUsernames.length; i++){
@@ -913,8 +914,8 @@ function checkHistory(linksToHere){
 				}
 			}
 
-			var nuweg = false;
-			var bodyText = document.getElementsByTagName("body")[0].innerHTML;
+			let nuweg = false;
+			let bodyText = document.getElementsByTagName("body")[0].innerHTML;
 			if(otherUsernames.length == 1){
 				nuweg = bodyText.indexOf("{{Nuweg") > -1 || bodyText.indexOf("{{nuweg") > -1;
 			}
@@ -923,7 +924,7 @@ function checkHistory(linksToHere){
 				trustedCount++;
 			}
 
-			if((otherUsernames.length <= 1 || (otherUsernames.length - trustedCount - globalReplaceCount - renamedCount == 0) || (otherUsernames.length - globalReplaceCount - renamedCount == 1)) && nuweg == true ){
+			if((otherUsernames.length <= 1 || (otherUsernames.length - trustedCount - globalReplaceCount - renamedCount == 0) || (otherUsernames.length - globalReplaceCount - renamedCount == 1)) && (nuweg == true || !fastdelete_safemode)){
 				that.showMessage("History checked: everything ok (" + (users.length - otherUsernames.length) + " bot(s), " + otherUsernames.length + " normal user(s), " + trustedCount + " trusted, " + globalReplaceCount + " GlobalReplace, " + renamedCount + " renamed)");
 				that.submitDeleteFormExternal();
 
@@ -932,7 +933,7 @@ function checkHistory(linksToHere){
 			}else{
 				that.showMessage("Warning: " + that.users((otherUsernames.length - trustedCount - globalReplaceCount - renamedCount), "non-trusted") + " Summary: " + that.users(otherUsernames.length, "non-bot") + ", " + that.users(trustedCount, "trusted") + ", " + that.users(globalReplaceCount, "GlobalReplace") + " and " + that.users(renamedCount, "rename"));
 				if(fastdelete_safemode){
-					that.closetab("non-trusted users have edited the page, safe mode");
+					that.closeTabNow("non-trusted users have edited the page, safe mode");
 				}else{
 					// go to edit page.
 					window.location.href = window.location.href.replace("delete", "edit");
@@ -944,7 +945,7 @@ function checkHistory(linksToHere){
 }
 
 function users(count, label){
-	var suffix = "users";
+	let suffix = "users";
 	if(count == 1)
 		suffix = "user";
 
@@ -966,7 +967,7 @@ function uniq(a){
 }
 
 function actionRollback(){
-	var rollbackLinks = document.getElementsByClassName("mw-rollback-link");
+	let rollbackLinks = document.getElementsByClassName("mw-rollback-link");
 	if(rollbackLinks == null) return;
 	if(rollbackLinks.length == 0) return;
 

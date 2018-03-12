@@ -1,3 +1,10 @@
+5.0.3
+=====
+- Use closeTabNow instead of closeTab which is not defined
+- Fix capitalisation issues
+- More usage of "let"
+- Don't count InternetArchiveBot twice
+
 5.0.2
 =====
 - Fix another closing bug

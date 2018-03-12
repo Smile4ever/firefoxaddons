@@ -10,9 +10,6 @@ browser.runtime.onMessage.addListener(onMessage);
 function onMessage(message) {
 	switch(message.action){
 		// Closing tabs and windows
-		case "closeTab":
-			closeTab();
-			break;
 		case "closeTabNow":
 			closeTabNow();
 			break;
