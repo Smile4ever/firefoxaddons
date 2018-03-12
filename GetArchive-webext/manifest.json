@@ -4,7 +4,7 @@
 	"homepage_url": "http://hugsmile.eu",
 	"default_locale": "en",
 	"manifest_version": 2,
-	"version": "3.1.0",
+	"version": "3.1.1",
 	"background": {
 		"scripts": ["background.js", "shared.js", "toolbaricon.js"]
 	},

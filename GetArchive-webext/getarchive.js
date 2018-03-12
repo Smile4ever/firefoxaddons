@@ -211,7 +211,11 @@ var getarchive = {
 				
 				var urlArchiveIsSplit = urlToCopy.lastIndexOf("/", urlToCopy.indexOf("://", 15));
 				var basePart = "https://archive.is/";
-				var datePart = urlToCopy.substring(0, urlArchiveIsSplit).replace("https://archive.is/", "").replace("http://archive.is/", "");
+				var datePart = urlToCopy
+					.substring(0, urlArchiveIsSplit)
+					.replace("https://archive.is/", "")
+					.replace("http://archive.is/", "")
+					.replace("http://archive.today/", "");
 				var urlPart = urlToCopy.substring(urlArchiveIsSplit);
 
 				datePart = datePart.replace(".", "").replace(".", "").replace("-", "");

@@ -1,3 +1,7 @@
+3.1.1
+=============
+* Fix archive.is LONG link not correct
+
 3.1.0
 =============
 * Add a way to disable all shortcuts at once, fixes #100
