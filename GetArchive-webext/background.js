@@ -159,6 +159,10 @@ function removeContextMenus(){
 	browser.contextMenus.remove("getarchive-googlecache").catch(null);
 	browser.contextMenus.remove("getarchive-separator").catch(null);
 	browser.contextMenus.remove("getarchive-search").catch(null);
+	browser.contextMenus.remove("getarchive-saveinto-archiveorg").catch(null);
+	browser.contextMenus.remove("getarchive-saveinto-archiveis").catch(null);
+	browser.contextMenus.remove("getarchive-saveinto-webcitation").catch(null);
+
 }
 
 function buildObject(obj){
