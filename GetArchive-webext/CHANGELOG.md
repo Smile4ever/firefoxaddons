@@ -1,3 +1,16 @@
+3.2.0
+=============
+* Cannot make out the difference between "Document expired" and "Server not found".
+* Use webRequest for reading HTTP status code from the headers (see bug above about "Document expired"), requires new <all_urls> permission
+* Make the search function available in tabs where there is no content script, and cleanup the code responsible for this
+* Create a context menu item for search
+* If there is a selection when doing a search, use that
+* Remove the use of "this" which might be a source of errors
+* Rename variable i to j (i already declared)
+* Fix typo in variable name
+* Save URL into archive.org (Wayback Machine), archive.is and webcitation.org
+* Fix possible incompatibility with Firefox <= 55
+
 3.1.1
 =============
 * Fix archive.is LONG link not correct

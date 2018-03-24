@@ -6,10 +6,12 @@ let lastParentTabIndex = -1;
 let globalArchiveService = "";
 let wait = false; // used in handleUpdated()
 let oldUrl = ""; // used in changeUrl()
-
+let browserVersion;
 let ui_contextMenus = false;
 
 /// Preferences
+let getarchive_search_engine;
+
 let getarchive_show_contextmenu_item_archiveorg;
 let getarchive_show_contextmenu_item_archiveis;
 let getarchive_show_contextmenu_item_webcitation;
@@ -28,6 +30,7 @@ function init(){
 	}
 
 	browser.storage.local.get([
+		"getarchive_search_engine",
 		"getarchive_show_contextmenu_item_archiveorg",
 		"getarchive_show_contextmenu_item_archiveis",
 		"getarchive_show_contextmenu_item_webcitation",
@@ -38,6 +41,8 @@ function init(){
 		"getarchive_automatic_retrieval",
 		"getarchive_icon_theme"
 	]).then((result) => {
+		getarchive_search_engine = valueOrDefault(result.getarchive_search_engine, "google");
+		
 		// Context menus
 		getarchive_show_contextmenu_item_archiveorg = valueOrDefault(result.getarchive_show_contextmenu_item_archiveorg, true);
 		getarchive_show_contextmenu_item_archiveis = valueOrDefault(result.getarchive_show_contextmenu_item_archiveis, true);
@@ -53,7 +58,8 @@ function init(){
 		browser.runtime.getBrowserInfo().then((info) => {
 			let v = info.version;
 			browserVersion = parseInt(v.slice(0, v.search(".") - 1));
-			initContextMenus(valueOrDefault(browserVersion, "58"));
+			browserVersion = valueOrDefault(browserVersion, "58");
+			initContextMenus();
 		});
 
 		// Icon theme
@@ -108,6 +114,9 @@ browser.runtime.onMessage.addListener(function(message) {
 		case "addUrlToHistory":
 			addUrlToHistory(message.data);
 			break;
+		case "goSearch":
+			goSearch(null, false);
+			break;
 		default:
 			break;
 	}
@@ -115,26 +124,15 @@ browser.runtime.onMessage.addListener(function(message) {
 
 // See also https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/Tabs/sendMessage
 function sendMessage(action, data){
-	function logTabs(tabs) {
-		//console.log("tabs length is " + tabs.length);
-		for (tab of tabs) {
-			//console.log("tab with title " + tab.title);
-			browser.tabs.sendMessage(tab.id, {"action": action, "data": data}).then(
-				function(){
-					if(isProblemLoadingPage(tab)) noContentScript({action: action, data: data, tab: tab}); // Make the browser action work on "Problem loading page" pages on second try
-				}
-			).catch(function(){
-				//console.log("noContentScript");
-				noContentScript({action: action, data: data, tab: tab});
-			});
-		}
-	}
-
-	browser.tabs.query({currentWindow: true, active: true}).then(logTabs, onError);
+	browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+		let tab = tabs[0];
+		browser.tabs.sendMessage(tab.id, {"action": action, "data": data}).catch(function(){
+			noContentScript({action: action, data: data, tab: tab});
+		});
+	}, onError);
 }
 
 function sendMessageToTab(action, data, tabId){
-	//console.log("tabId is " + tabId);
 	browser.tabs.sendMessage(tabId, {"action": action, "data": data}).catch(function(){
 		noContentScript({action: action, data: data});
 	});
@@ -159,6 +157,8 @@ function removeContextMenus(){
 	browser.contextMenus.remove("getarchive-archiveis").catch(null)
 	browser.contextMenus.remove("getarchive-webcitationorg").catch(null);
 	browser.contextMenus.remove("getarchive-googlecache").catch(null);
+	browser.contextMenus.remove("getarchive-separator").catch(null);
+	browser.contextMenus.remove("getarchive-search").catch(null);
 }
 
 function buildObject(obj){
@@ -168,7 +168,7 @@ function buildObject(obj){
 	return obj;
 }
 
-function addContextMenus(browserVersion){
+function addContextMenus(){
 	ui_contextMenus = true;
 
 	// See also https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/contextMenus/ContextType
@@ -217,6 +217,63 @@ function addContextMenus(browserVersion){
 			contexts: contexts
 		}), onCreated);
 	}
+
+	let searchEngineName = "";
+	switch(getarchive_search_engine){
+		case "duckduckgo":
+			searchEngineName = "DuckDuckGo";
+			break;
+		case "google":
+			searchEngineName = "Google";
+			break;
+		case "bing":
+			searchEngineName = "Bing";
+			break;
+		default:
+			break;
+	}
+
+	browser.contextMenus.create(buildObject({
+		id: "getarchive-separator",
+		type: "separator",
+		contexts: contexts
+	}), onCreated);
+
+	browser.contextMenus.create(buildObject({
+		id: "getarchive-search",
+		title: "Search with " + searchEngineName,
+		icons: {
+		  "32": "icons/search/" + getarchive_search_engine + "32.png"
+		},
+		contexts: contexts
+	}), onCreated);
+
+	browser.contextMenus.create(buildObject({
+		id: "getarchive-saveinto-archiveorg",
+		title: "Save into Archive.org",
+		icons: {
+		  "32": "icons/icon32.png"
+		},
+		contexts: contexts
+	}), onCreated);
+
+	browser.contextMenus.create(buildObject({
+		id: "getarchive-saveinto-archiveis",
+		title: "Save into Archive.is",
+		icons: {
+		  "32": "icons/archiveis32.png"
+		},
+		contexts: contexts
+	}), onCreated);
+
+	browser.contextMenus.create(buildObject({
+		id: "getarchive-saveinto-webcitation",
+		title: "Save into Webcitation.org",
+		icons: {
+		  "16": "icons/webcite16.png"
+		},
+		contexts: contexts
+	}), onCreated);
 
 	function onCreated(n) {
 		/*if (browser.runtime.lastError) {
@@ -281,11 +338,11 @@ function addContextMenusToolbarButton(){
 }
 
 /// Context menus
-function initContextMenus(browserVersion){
+function initContextMenus(){
 	removeContextMenus();
 
 	setTimeout(function(){
-		addContextMenus(browserVersion);
+		addContextMenus();
 	}, 50);
 	addContextMenusToolbarButton();
 }
@@ -308,8 +365,22 @@ function listener(info,tab){
 		case "getarchive-tb-googlecache":
 			doClick(info, "webcache.googleusercontent.com");
 			break;
+		case "getarchive-search":
+			goSearch(info, true);
+			break;
 		case "getarchive-tb-preferences":
 			openPreferences();
+			break;
+		case "getarchive-saveinto-archiveorg":
+			saveIntoGetArchive(info);
+			break;
+		case "getarchive-saveinto-archiveis":
+			saveIntoGetArchiveIs(info);
+			break;
+		case "getarchive-saveinto-webcitation":
+			saveIntoWebcitation(info);
+			break;
+		default:
 			break;
 	}
 }
@@ -324,21 +395,7 @@ function handleActivatedUI(activeInfo) {
 
 browser.tabs.onUpdated.addListener(handleUpdatedUI);
 
-function handleUpdatedUI(tabId, changeInfo, tabInfo) {
-	if(isProblemLoadingPage(tabInfo) && getarchive_automatic_retrieval == true){
-		if((lastTabIdServerNotFound == tabId && lastTabIdServerNotFound != -1) || tabInfo.url.indexOf("gfk") > -1 || (tabInfo.url.indexOf("http://") == -1 && tabInfo.url.indexOf("https://") == -1)){
-			//console.log("Doing nothing for problem loading page");
-			return;
-		}else{
-			lastTabIdServerNotFound = tabId;
-			//console.log("handleUpdatedUI: PROBLEM LOADING PAGE (OK)" + tabInfo.title);
-			if(tabInfo.url.indexOf("https://web.archive.org/web/2005/") > -1) return; // archive.org might be down
-			var goToUrl = shimGetGenericLinkHelper(getarchive_default_archive_service, tabInfo.url);
-			notify("Detected \"problem loading page\", automatically getting the archived version..");
-			changeUrlWithTabId(goToUrl, lastTabIdServerNotFound);
-		}
-	}
-	
+function handleUpdatedUI(tabId, changeInfo, tabInfo) {	
 	if(tabInfo.status == "complete")
 		updateUI(tabId, "handleUpdatedUI");
 }
@@ -374,19 +431,7 @@ function updateUI(tabId, reason){
 }
 
 function clickToolbarButton(){
-	//console.log("sending message getContextLinkUrl");
 	sendMessage("getContextLinkUrl");
-}
-
-function isProblemLoadingPage(tab){
-	if(tab == null) return false;
-	
-	 // Content Encoding Error
-	if(tab.url.indexOf("facebook.com") == -1 && tab.url.indexOf("google.com") == -1 && tab.url.indexOf("youtube.com") == -1){
-		if(tab.title == "Problem loading page") return true;
-		if(tab.favIconUrl == "chrome://global/skin/icons/warning-16.png") return true;
-	}
-	return false;
 }
 
 /// Shim functions
@@ -414,8 +459,8 @@ function shimGetGenericLink(archiveService,contextLinkUrl,tab){
 		isToolbar = true;
 	}
 	
-	if(isProblemLoadingPage(tab) || isToolbar){
-		changeUrl(shimGetGenericLinkHelper(archiveService,contextLinkUrl));
+	if(isToolbar){
+		changeUrl(shimGetGenericLinkHelper(archiveService, contextLinkUrl));
 	}else{
 		openFocusedTab(shimGetGenericLinkHelper(archiveService,contextLinkUrl));
 	}
@@ -767,6 +812,188 @@ function setSelectionHtml(urls){
 	}
 }
 
+/// Search-related functions
+function goSearch(info, safe){
+	browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+		let tab = tabs[0];
+		let tabUrl = tab.url;
+		let currentLocation = tab.url;
+			
+		currentLocation = currentLocation.replace("http://archive.today/", "");
+		currentLocation = currentLocation.replace("https://archive.today/", "");
+		currentLocation = currentLocation.replace("http://archive.is/", "");
+		currentLocation = currentLocation.replace("https://archive.is/", "");
+		currentLocation = currentLocation.replace("http://archive.li/", "");
+		currentLocation = currentLocation.replace("https://archive.li/", "");
+		currentLocation = currentLocation.replace("http://webcitation.org/query?url=", "");
+		
+		let indexHttp = currentLocation.indexOf("http", 20);
+		if(indexHttp > -1){
+			currentLocation = currentLocation.substring(indexHttp);
+		}
+		
+		/* from one search engine to another */
+		let q = new URL(tabUrl).searchParams.get("q");
+		
+		if(q != null){
+			currentLocation = q;
+		}else{
+			if(tab.title.indexOf(" -") > -1){
+				currentLocation = tab.title.split(" -")[0];
+			}
+		}
+		
+		if(tabUrl.indexOf(".pdf") == -1){
+			currentLocation = tabUrl.replace(/\_/g, ' ');
+			currentLocation = currentLocation.replace(/\-/g, ' ');
+		}else if(q == null){
+			// PDF
+			let lastSlash = tabUrl.lastIndexOf("/");
+			let hn = getHostName(tabUrl);
+			let siteSpecific = "site:" + hn + " ";
+			if(hn == "archive.wikiwix.com" || hn == "archive.org" || hn == "archive.is"){
+				siteSpecific = "";
+			}
+			currentLocation = siteSpecific + tabUrl.substring(lastSlash + 1);
+		}
+		
+		if(tabUrl.indexOf("nu.nl") > -1){
+			let lastSlash = tabUrl.lastIndexOf("/");
+			let html = tabUrl.indexOf(".html");
+			currentLocation = tabUrl.substring(lastSlash + 1, html);
+			currentLocation = urldecode(currentLocation);
+		}
+		
+		if(tabUrl.indexOf("wiki") > -1 && tabUrl.indexOf("target=") > -1){
+			let indexOfTarget = tabUrl.indexOf("target=");
+			currentLocation = tabUrl.substring(indexOfTarget + 7);
+			currentLocation = decodeURIComponent(currentLocation);
+			safe = false;
+		}
+		
+		if(tabUrl.indexOf("&oq=cache:") > -1){
+			currentLocation = tabUrl.substring(0, tabUrl.indexOf("&oq=cache:"));
+		}
+				
+		if(info && info.selectionText){
+			currentLocation = info.selectionText;
+		}
+		
+		switch(getarchive_search_engine){
+			case "duckduckgo":
+				currentLocation = "https://duckduckgo.com/?q=" + currentLocation;
+				break;
+			case "google":
+				currentLocation = "https://google.com/search?q=" + currentLocation;
+				break;
+			case "bing":
+				currentLocation = "https://bing.com/search?q=" + currentLocation;
+				break;
+			default:
+				break;
+		}	
+		
+		if(tabUrl.indexOf("wiki") > -1 && !safe){
+			browser.tabs.create({url: currentLocation}); // for LinkSearch only
+		}else{
+			// We do not use changeUrl here because we don't need to copy the search results URL
+			browser.tabs.update({url: currentLocation});
+		}
+	});
+}
+
+function urldecode(encoded){
+	// http://stackoverflow.com/questions/4292914/javascript-url-decode-function
+	encoded=encoded.replace(/\+/g, '%20');
+	let str=encoded.split("%");
+	let cval=str[0];
+	for (let i=1;i<str.length;i++)
+	{
+		cval+=String.fromCharCode(parseInt(str[i].substring(0,2),16))+str[i].substring(2);
+	}
+
+	return cval;
+}
+
+function getHostName(currentLocation){
+	var getLocation = function(href) {
+		var l = document.createElement("a");
+		l.href = href;
+		return l;
+	};
+	var l = getLocation(currentLocation);
+	var hostname = l.hostname;
+	
+	if(hostname.indexOf(".") < hostname.lastIndexOf(".")){
+		// two or more dots
+		if(hostname.indexOf(".") < 6){ /* (hostname.length / 2) */
+			hostname = hostname.substring(hostname.indexOf(".") + 1);
+		}
+	}
+
+	return hostname;
+}
+
+/// ============================================================================
+// This code has been integrated from https://addons.mozilla.org/en-US/firefox/addon/error-404-wayback-machine/ which is under the AGPL-3
+browser.webRequest.onCompleted.addListener(function(details) {
+    let httpFailCodes = [404, 408, 410, 451, 500, 502, 503, 504, 509, 520, 521, 523, 524, 525, 526];
+    if (httpFailCodes.includes(details.statusCode) && isGoodToArchive(details.url)) {
+		// Forward to default archive service if desired
+		forwardToDefaultArchiveService(details.tabId, details.url, details.statusCode);
+    }
+}, {urls: ["<all_urls>"], types: ["main_frame"]});
+
+function isGoodToArchive(url) {
+	let excluded_urls = [
+	  "web.archive.org/web/",
+	  "localhost",
+	  "0.",
+	  "10.",
+	  "127.",
+	  "archive.is",
+	  "archive.li",
+	  "webcitation.org"
+	];
+
+	let excluded_urls_contain = [
+		"wiki"
+	]
+
+	// Unwanted (contains)
+	for(let i = 0; i < excluded_urls_contain.length; i++){
+		if (url.indexOf(excluded_urls_contain[i]) > -1) {
+			return false;
+		}
+	}
+
+	// Already archived, or unwanted
+	for(let i = 0; i < excluded_urls.length; i++){
+		if(url.startsWith("http://" + excluded_urls[i]) || url.startsWith("https://" + excluded_urls[i])){
+			return false;
+		}
+	}
+	
+	// Already archived
+	if(url.indexOf("://") > 20){
+		return false;
+	}
+	
+	return true;
+}
+
+/// ============================================================================
+
+function forwardToDefaultArchiveService(tabId, url, code){
+	if(getarchive_automatic_retrieval){ // TODO: maybe change this setting into a new one
+		notify("Detected a problem loading this page (code " + code + "), automatically getting the archived version..");
+		//changeUrlWithTabId(shimGetGenericLinkHelper(getarchive_default_archive_service, url), tabId);
+		clickToolbarButton();
+	}else{
+		notify("Detected a problem loading this page (code " + code + "), click the toolbar button to retrieve an archived version.");
+	}
+}
+
 /// Helper functions
 function onError(error) {
 	console.error(`${error}`);
@@ -791,13 +1018,19 @@ function notify(message){
 	
 	message = message.replace(new RegExp("&", 'g'), "&amp;");
 	
-	browser.notifications.create(message.substring(0, 20).replace(" ", ""),
+	let messageId = message.substring(0, 20);
+	browser.notifications.create(messageId,
 	{
 		type: "basic",
 		iconUrl: browser.extension.getURL(resolveIconUrlNotif("getarchive-64.png")),
 		title: title,
 		message: message
 	});
+	
+	// Automatically close after 5 seconds
+	setTimeout(function(){
+		browser.notifications.clear(messageId);
+	}, 5000);
 }
 
 // Webrequest: remove :80 from URLs on archive.org
@@ -811,3 +1044,48 @@ browser.webRequest.onBeforeRequest.addListener(
     {urls: ["https://web.archive.org/*:80*"]},
     ["blocking"]
 );
+
+/// Saving into archive.org
+function getUrlFromInfo(info){
+	let url = "";
+	
+	// From non-specific to specific
+	if(info.pageUrl != null){
+		url = info.pageUrl;
+	}
+	
+	if(info.selectionText != null){
+		url = info.selectionText;
+	}
+	
+	if(info.srcUrl != null){
+		url = info.srcUrl;
+	}
+	
+	if(info.linkUrl != null){
+		url = info.linkUrl;
+	}
+	
+	return url;
+}
+
+function saveIntoGetArchive(info){
+	let url = getUrlFromInfo(info);
+	browser.tabs.create({url: "https://web.archive.org/save/" + url});
+}
+
+function saveIntoGetArchiveIs(info){
+	let url = getUrlFromInfo(info);
+	browser.tabs.create({url: "https://archive.is/?run=1&url=" + url});
+}
+
+function saveIntoWebcitation(info){
+	let url = getUrlFromInfo(info);
+	browser.tabs.create({url: "https://www.webcitation.org/archive"});
+	
+	setTimeout(function(){
+		sendMessage("saveIntoWebcitation", {url: url});
+	}, 2000);
+	
+	notify("Please fill in the required fields and submit the form.");
+}

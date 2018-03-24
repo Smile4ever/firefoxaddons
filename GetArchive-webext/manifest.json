@@ -4,7 +4,7 @@
 	"homepage_url": "http://hugsmile.eu",
 	"default_locale": "en",
 	"manifest_version": 2,
-	"version": "3.1.1",
+	"version": "3.2.0",
 	"background": {
 		"scripts": ["background.js", "shared.js", "toolbaricon.js"]
 	},
@@ -24,7 +24,7 @@
 			"strict_min_version": "53.0"
 		}
 	},
-	"permissions": ["storage", "tabs", "contextMenus", "notifications", "clipboardRead", "clipboardWrite", "history", "activeTab", "webRequest", "webRequestBlocking", "https://web.archive.org/*:80*"],
+	"permissions": ["storage", "tabs", "contextMenus", "notifications", "clipboardRead", "clipboardWrite", "history", "activeTab", "webRequest", "webRequestBlocking", "https://web.archive.org/*:80*", "<all_urls>"],
 	"options_ui": {
 		"page": "options.html",
 		"browser_style": true

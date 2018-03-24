@@ -4,7 +4,6 @@ let origin = "code";
 let insertOrPauseLocked = false;
 
 /// Preferences
-let getarchive_search_engine = "google";
 let getarchive_enable_ctrl_c = true;
 let getarchive_require_focus = true;
 let getarchive_prefer_long_link = true;
@@ -42,6 +41,9 @@ function onMessage(message) {
 		case "getGenericLink":
 			getarchive.getGenericLink(message.data.archiveService, message.data.contextLinkUrl, message.data.isContextMenu);
 			break;
+		case "saveIntoWebcitation":
+			saveIntoWebcitation(message.data);
+			break;
 		default:
 			break;
 	}
@@ -52,13 +54,12 @@ function sendMessage(action, data){
 }
 
 function init(){
-	var valueOrDefault = function(value, defaultValue){
+	let valueOrDefault = function(value, defaultValue){
 		if(value == undefined) return defaultValue;
 		return value;
 	}
 	
 	browser.storage.local.get([
-		"getarchive_search_engine",
 		"getarchive_enable_ctrl_c",
 		"getarchive_require_focus",
 		"getarchive_prefer_long_link",
@@ -69,7 +70,6 @@ function init(){
 		"getarchive_googlecache_keyboard_shortcut",
 		"getarchive_disable_all_shortcuts"
 	]).then((result) => {
-		getarchive_search_engine = valueOrDefault(result.getarchive_search_engine, "google");
 		getarchive_enable_ctrl_c = valueOrDefault(result.getarchive_enable_ctrl_c, true);
 		getarchive_require_focus = valueOrDefault(result.getarchive_require_focus, true);
 		getarchive_prefer_long_link = valueOrDefault(result.getarchive_prefer_long_link, true);
@@ -97,11 +97,15 @@ function onVerbose(info){
 	sendMessage("onVerbose", info);
 }
 
-var getarchive = {
+function saveIntoWebcitation(data){
+	document.getElementsByName("url")[0].value = data.url;
+}
+
+let getarchive = {
 	getPageLocation: function(){
 		// this should only work on talk pages -> ca-talk with class selected indicates this is a talk page
-		var talkPageObject=document.getElementById("ca-talk");
-		var pageLocation = "NONE";
+		let talkPageObject=document.getElementById("ca-talk");
+		let pageLocation = "NONE";
 		
 		if(talkPageObject != null && talkPageObject != undefined){
 			if(talkPageObject.getAttribute("class") == "selected"){
@@ -111,33 +115,36 @@ var getarchive = {
 
 		contentText = document.getElementById("mw-content-text").innerHTML;
 		if(contentText != undefined){
-			var count = contentText.match(/mw-headline/g).length;
+			let countDodeLink = 0;
+			let countLinks = 0;
+			
+			let count = contentText.match(/mw-headline/g).length;
 			try {
-				var countDodeLink = contentText.match(/id=\"Dode_/g).length;
+				countDodeLink = contentText.match(/id=\"Dode_/g).length;
 			}
 			catch(err){
-				var countDodeLink = 0;
+				countDodeLink = 0;
 			}
 			try {
-				var countLinks = contentText.match(/external/g).length;
+				countLinks = contentText.match(/external/g).length;
 			}catch(err){
-				var countLinks = 0;
+				countLinks = 0;
 			}
 
 			if (countDodeLink == 1 && (count == 1 || count == undefined || countLinks == 1)){
-				var startExternalLink = contentText.indexOf("external free");
-				var endExternalLink = contentText.indexOf(">",startExternalLink);
+				let startExternalLink = contentText.indexOf("external free");
+				let endExternalLink = contentText.indexOf(">",startExternalLink);
 				pageLocation = contentText.substring(startExternalLink + 21, endExternalLink - 1);
 			}else{
 				if(countDodeLink == 1 && countLinks > 1){
-					var startHeadline = contentText.indexOf("\"Dode_");
-					var startExternalLink = contentText.indexOf("external free", startHeadline)
-					var endExternalLink = contentText.indexOf(">",startExternalLink);
+					let startHeadline = contentText.indexOf("\"Dode_");
+					let startExternalLink = contentText.indexOf("external free", startHeadline)
+					let endExternalLink = contentText.indexOf(">",startExternalLink);
 					pageLocation = contentText.substring(startExternalLink + 21, endExternalLink - 1);
 				}
 			}
 		}else{
-			return pageLoccopyation;
+			return pageLocation;
 		}
 		
 		return pageLocation.split('amp;').join('');
@@ -153,13 +160,11 @@ var getarchive = {
 		// Checks if page is valid. Used to stop the counter on invalid pages.
 		
 		try{
-			var documentTitleLower = document.title.toLowerCase();
-			var contentText = this.getContentText();
-			var contentTextLower = contentText.toLowerCase();
+			let documentTitleLower = document.title.toLowerCase();
+			let contentText = getarchive.getContentText();
+			let contentTextLower = contentText.toLowerCase();	
 			
-			//console.log("isUrlValid documentTitle is " + documentTitleLower);
-			
-			var invalidTitles = ["404 Not Found", "page not found", "cannot be found", "object not found", "error", "403 Forbidden", "seite nicht gefunden", "500 Internal Server Error", "IIS 8.5 Detailed Error", "404 - File or directory not found.", "Fehler 404", "Impossibile trovare la pagina", "Erreur 404", "Internet Archive Wayback Machine", "Wayback Machine", "Pagina non trovata", "Connection timed out", "Domain Default page", "Object niet gevonden!", "Pagina não econtrada", "File not found", "Pagina niet gevonden", "Seite wurde nicht gefunden", "Nothing found", "can't be found", "502 Bad Gateway", "Side ikke fundet", "Seite nicht Verfügbar", "Fant ikke siden", "403 - Forbidden: Access is denied.", "410 Gone", "Bad Request"];
+			let invalidTitles = ["404 Not Found", "page not found", "cannot be found", "object not found", "error", "403 Forbidden", "seite nicht gefunden", "500 Internal Server Error", "IIS 8.5 Detailed Error", "404 - File or directory not found.", "Fehler 404", "Impossibile trovare la pagina", "Erreur 404", "Internet Archive Wayback Machine", "Wayback Machine", "Pagina non trovata", "Connection timed out", "Domain Default page", "Object niet gevonden!", "Pagina não econtrada", "File not found", "Pagina niet gevonden", "Seite wurde nicht gefunden", "Nothing found", "can't be found", "502 Bad Gateway", "Side ikke fundet", "Seite nicht Verfügbar", "Fant ikke siden", "403 - Forbidden: Access is denied.", "410 Gone", "Bad Request"];
 			
 			for(let i in invalidTitles){
 				if(documentTitleLower.indexOf(invalidTitles[i].toLowerCase()) > -1){
@@ -179,7 +184,7 @@ var getarchive = {
 			}
 			
 			// errorBorder = unknown archive.org error
-			var invalidContent = ["Wayback Machine doesn't have that page archived.", "The machine that serves this file is down. We're working on it.", "errorBorder", "404 - File or directory not found.", "404 Not Found", "An error occurred", "cannot be found", "page not found", "buy this domain", "Artikel niet gevonden", "503 Service Unavailable", "504 Gateway Time-out", "Error 522", "DB Connection failed", "koop dit domein", "page can’t be found", "Page Unavailable"];
+			let invalidContent = ["Wayback Machine doesn't have that page archived.", "The machine that serves this file is down. We're working on it.", "errorBorder", "404 - File or directory not found.", "404 Not Found", "An error occurred", "cannot be found", "page not found", "buy this domain", "Artikel niet gevonden", "503 Service Unavailable", "504 Gateway Time-out", "Error 522", "DB Connection failed", "koop dit domein", "page can’t be found", "Page Unavailable"];
 			
 			for(let i in invalidContent){
 				if(contentTextLower.indexOf(invalidContent[i].toLowerCase()) > -1){
@@ -189,7 +194,7 @@ var getarchive = {
 			}
 			
 			// fix https://www.w3.org/TR/uievents/ opens in the current tab, not in a new tab
-			var invalidContentCase = ["Not Found", "NOT FOUND", "Not found"]
+			let invalidContentCase = ["Not Found", "NOT FOUND", "Not found"]
 			for(let i in invalidContentCase){
 				if(contentText.indexOf(invalidContentCase[i]) > -1){
 					//console.log("Invalid content case " + invalidContentCase[i]);
@@ -203,7 +208,7 @@ var getarchive = {
 		return true;
 	},
 	getUrlToCopy: function(){
-		var urlToCopy = window.location.href;
+		let urlToCopy = window.location.href;
 		if((window.location.href.indexOf("archive.is") > -1 || window.location.href.indexOf("archive.li") > -1) && getarchive_prefer_long_link == true && window.location.href.indexOf("/image") == -1 && window.location.href.length < 35){
 			try{
 				urlToCopy = window.document.getElementById("SHARE_LONGLINK").getAttribute("value");
@@ -237,11 +242,11 @@ var getarchive = {
 				sendMessage("addUrlToHistory", text);
 			}
 			
-			var el = document.querySelector("head");
+			let el = document.querySelector("head");
 			if(document.activeElement != null){
 				el = document.activeElement;
 			}
-			var input = document.createElement("input");
+			let input = document.createElement("input");
 			input.setAttribute("type", "text");
 			
 			// Most Firefox versions do not support copying from display:none input fields
@@ -270,17 +275,24 @@ var getarchive = {
 	},
 	getLocationFromPage: function(){
 		// get URL from HTML
-		var pageLocation = "";
+		let pageLocation = "";
 		
 		if(window.location.href.indexOf("archive.today") > -1 || window.location.href.indexOf("archive.is") > -1 || window.location.href.indexOf("archive.li") > -1){
-			var inputElements = document.body.getElementsByTagName("input");
+			let inputElements = document.body.getElementsByTagName("input");
 			for (i = 0; i < inputElements.length; i++) {
-				var contentText = this.getInnerBody();
-				var redirectedFromPos = contentText.indexOf("Redirected from");
-				
+				let contentText = getarchive.getInnerBody();
+
+				let redirectedFromPos = contentText.indexOf("Redirected from");
 				if(redirectedFromPos > -1){ // prefer "Redirected from"
-					var httpPos = contentText.indexOf("http", redirectedFromPos);
-					var httpPosEnd = contentText.indexOf("\"", httpPos);
+					let httpPos = contentText.indexOf("http", redirectedFromPos);
+					let httpPosEnd = contentText.indexOf("\"", httpPos);
+					pageLocation = contentText.substring(httpPos, httpPosEnd);
+				}
+				
+				let originalPos = contentText.indexOf("Original");
+				if(originalPos > -1){
+					let httpPos = contentText.indexOf("http", originalPos);
+					let httpPosEnd = contentText.indexOf("\"", httpPos);
 					pageLocation = contentText.substring(httpPos, httpPosEnd);
 				}
 				
@@ -292,9 +304,9 @@ var getarchive = {
 		return pageLocation;
 	},
 	getGenericLink: function(website, contextLinkUrl, isContextMenu){
-		var currentLocation=window.location.href;
-		var pageLocation = "";
-		var baseUrl = "";
+		let currentLocation=window.location.href;
+		let pageLocation = "";
+		let baseUrl = "";
 		
 		switch(website){
 			case "archive.org":
@@ -331,7 +343,7 @@ var getarchive = {
 					return; // no need for this
 				}
 				
-				/*if(this.isUrlValid() == false){
+				/*if(getarchive.isUrlValid() == false){
 					//console.log("getGenericLink taking early exit 3");
 					return; // no need for this
 				}*/
@@ -356,13 +368,13 @@ var getarchive = {
 		if(isMatch(contextLinkUrl)){
 			if(contextLinkUrl.indexOf("http", 20) > -1 || contextLinkUrl.indexOf("www", 20) > -1 || contextLinkUrl.indexOf("ftp", 20) > -1){
 				//console.log("getGenericLink we have some kind of filled in link");
-				//console.log("getGenericLink after cleaning: " + this.cleanurl(shared.getPartialUrl(contextLinkUrl)));
+				//console.log("getGenericLink after cleaning: " + getarchive.cleanurl(shared.getPartialUrl(contextLinkUrl)));
 				
 				var currentAction = "openFocusedTab";
 				if(!isContextMenu && isMatch(currentLocation)){
 					currentAction = "changeUrl";
 				}
-				sendMessage(currentAction, baseUrl + this.cleanurl(shared.getPartialUrl(contextLinkUrl)));
+				sendMessage(currentAction, baseUrl + getarchive.cleanurl(shared.getPartialUrl(contextLinkUrl)));
 				return;
 			}else{
 				//console.log("oei das ni het geval");
@@ -381,15 +393,14 @@ var getarchive = {
 		}
 		
 		if(!isContextMenu){
-			var linkToPage = this.getLocationFromPage(); // returns non-empty string on archive.is
+			var linkToPage = getarchive.getLocationFromPage(); // returns non-empty string on archive.is
 			if(linkToPage != ""){
-				//console.log("getGenericLink non-empty string " + linkToPage + " assigned to pageLocation");
 				pageLocation = linkToPage;
 			}
 		}
 		
 		if(currentLocation.indexOf("Overleg:") > -1){
-			temp = this.getPageLocation();
+			temp = getarchive.getPageLocation();
 			if (temp != "" && temp != "NONE"){ //TODO: check this
 				pageLocation = temp;
 			}
@@ -397,8 +408,8 @@ var getarchive = {
 		if(pageLocation.indexOf("http://web.archive.org/") == 0 || pageLocation.indexOf("https://web.archive.org/") == 0){
 			pageLocation = pageLocation.replace("http://web.archive.org/", "https://web.archive.org/"); // make HTTPS
 			//console.log("getGenericLink archive.org hit");
-			//sendMessage("changeUrl", baseUrl + this.cleanurl(shared.getPartialUrl(pageLocation)));
-			sendMessage("changeUrl", this.cleanurl(pageLocation));
+			//sendMessage("changeUrl", baseUrl + getarchive.cleanurl(shared.getPartialUrl(pageLocation)));
+			sendMessage("changeUrl", getarchive.cleanurl(pageLocation));
 			return;
 		}
 		
@@ -412,21 +423,21 @@ var getarchive = {
 			// right click / action-submit / action-edit
 			var currentAction = "openFocusedTab";
 			
-			if(this.isUrlValid() == false){
+			if(getarchive.isUrlValid() == false){
 				currentAction = "changeUrl";
 			}
 						
 			try{
-				sendMessage(currentAction, baseUrl+decodeURIComponent(this.cleanurl(pageLocation)));
+				sendMessage(currentAction, baseUrl+decodeURIComponent(getarchive.cleanurl(pageLocation)));
 			}catch(err){
-				sendMessage(currentAction, baseUrl+this.cleanurl(pageLocation));
+				sendMessage(currentAction, baseUrl+getarchive.cleanurl(pageLocation));
 			}
 		}else{
 			if(currentLocation.indexOf("Overleg:") == -1){
-			    if(pageLocation == "") // seems to work
+				if(pageLocation == "") // seems to work
 					pageLocation = window.location.href;
 				pageLocation = shared.getPartialUrl(pageLocation);
-				sendMessage("changeUrl", baseUrl+this.cleanurl(pageLocation));
+				sendMessage("changeUrl", baseUrl+getarchive.cleanurl(pageLocation));
 			}
 		}
 	},
@@ -441,123 +452,6 @@ var getarchive = {
 		}
 
 		return cval;
-	},
-	goSearch: function(){
-		var currentLocation=window.location.href;
-		
-		currentLocation = currentLocation.replace("http://archive.today/", "");
-		currentLocation = currentLocation.replace("https://archive.today/", "");
-		currentLocation = currentLocation.replace("http://archive.is/", "");
-		currentLocation = currentLocation.replace("https://archive.is/", "");
-		currentLocation = currentLocation.replace("http://archive.li/", "");
-		currentLocation = currentLocation.replace("https://archive.li/", "");
-		currentLocation = currentLocation.replace("http://webcitation.org/query?url=", "");
-		if(currentLocation.indexOf("&oq=cache:") > -1){
-			currentLocation = currentLocation.substring(0, currentLocation.indexOf("&oq=cache:"));
-		}
-		
-		var helplink = document.getElementById("mw-indicator-mw-helplink");
-		if(helplink != null && helplink.innerHTML.indexOf("Help:Linksearch") > -1){
-			var indexOfTarget = currentLocation.indexOf("&target=");
-			currentLocation = currentLocation.substring(indexOfTarget + 8);
-			currentLocation = decodeURIComponent(currentLocation);
-			getarchive.doSearch(currentLocation, false);
-			return;
-		}
-				
-		var indexHttp = currentLocation.indexOf("http", 20);
-		if(indexHttp > -1){
-			currentLocation = currentLocation.substring(indexHttp);
-		}
-
-		var linkToPage = this.getLocationFromPage(); //archive.is
-		if(linkToPage != ""){
-			currentLocation = linkToPage;
-		}
-		
-		if(currentLocation.indexOf(".pdf") == -1){
-			currentLocation = currentLocation.replace(/\_/g, ' ');
-			currentLocation = currentLocation.replace(/\-/g, ' ');
-		}else{
-			// PDF
-			var lastSlash = currentLocation.lastIndexOf("/");
-			currentLocation = "site:" + getarchive.getHostName(currentLocation) + " " + currentLocation.substring(lastSlash + 1);
-		}
-		
-		if(currentLocation.indexOf("nu.nl") > -1){
-			var lastSlash = currentLocation.lastIndexOf("/");
-			var html = currentLocation.indexOf(".html");
-			currentLocation = currentLocation.substring(lastSlash + 1, html);
-			currentLocation = this.urldecode(currentLocation);
-		}
-		
-		/* from one search engine to another */
-		var hostname = getarchive.getHostName(currentLocation);
-		hostname = hostname.substring(0, hostname.indexOf("."));
-
-		onVerbose("hostname is " + hostname);
-		switch(hostname){
-			case "google":
-				currentLocation = document.getElementById("lst-ib").value;
-				break;
-			case "duckduckgo":
-				currentLocation = document.getElementById("search_form_input").value;
-				 break;
-			case "ecosia":
-				currentLocation = document.getElementById("searchInput").value;
-				break;
-			default:
-				var startOfSearchEngineName = document.title.lastIndexOf(" -");
-				var matchObject = document.body.innerHTML.match(/search/g);
-				if(matchObject != null && matchObject.length > 20){ //isSearchPage
-				var currentTitleLower = document.title.toLowerCase();
-					if(startOfSearchEngineName > -1){
-						if(currentTitleLower.indexOf(hostname) > -1){
-							currentLocation = document.title.substring(0, currentTitleLower.indexOf(hostname) - 2);
-						}
-					}
-				}
-				break;
-		}
-		getarchive.doSearch(currentLocation, true);
-	},
-	doSearch: function(currentLocation,safe){
-		onDebug("doing search for " + currentLocation);
-		switch(getarchive_search_engine){
-			case "duckduckgo":
-				currentLocation = "https://duckduckgo.com/?q=" + currentLocation; break;
-			case "google":
-				currentLocation = "https://google.com/search?q=" + currentLocation; break;
-			case "bing":
-				currentLocation = "https://bing.com/search?q=" + currentLocation; break;
-			default:
-				break;
-		}
-		
-		if(window.location.href.indexOf("wiki") == -1){
-			// We do not use changeUrl here because we don't need to copy the search results URL
-			window.location.href = currentLocation;
-		}else if(!safe){
-			sendMessage("openFocusedTab", currentLocation); // for LinkSearch only
-		}
-	},
-	getHostName: function(currentLocation){
-		var getLocation = function(href) {
-			var l = document.createElement("a");
-			l.href = href;
-			return l;
-		};
-		var l = getLocation(currentLocation);
-		var hostname = l.hostname;
-		
-		if(hostname.indexOf(".") < hostname.lastIndexOf(".")){
-			// two or more dots
-			if(hostname.indexOf(".") < 6){ /* (hostname.length / 2) */
-				hostname = hostname.substring(hostname.indexOf(".") + 1);
-			}
-		}
-
-		return hostname;
 	},
 	insertAtCursor: function(myField, myValue) {
 		if(myField == undefined)
@@ -578,7 +472,7 @@ var getarchive = {
 		// document.execCommand("paste") is not used because we're not in an event listener
 		// even if we were in an event listener, paste only works for textareas (state 2017-02-15) and not for other input elements
 		// since we've removed the dummy element to read from the clipboard (see event handler at the bottom of this file) we must pass the element which was previously selected (document.activeElement is null)
-		var returnValue = clipboardText;
+		let returnValue = clipboardText;
 		
 		if(clipboardText != ""){
 			//var cursorPosition = getCursorPos(previouslyActiveElement);
@@ -588,15 +482,15 @@ var getarchive = {
 				if(clipboardText.indexOf("http", 20) > -1){
 					//console.log("pastecomment - <!-- Archieflink -->");
 					returnValue = "<!-- Archieflink: " + clipboardText + " -->";
-					this.insertAtCursor(previouslyActiveElement, returnValue);
+					getarchive.insertAtCursor(previouslyActiveElement, returnValue);
 				}else{
 					//console.log("pastecomment - <!-- Actuele link -->");
 					returnValue = "<!-- Actuele link: " + clipboardText + " -->";
-					this.insertAtCursor(previouslyActiveElement, returnValue);
+					getarchive.insertAtCursor(previouslyActiveElement, returnValue);
 				}
 			}else{
 				//console.log("pastecomment branch2 - <!-- Archieflink -->");
-				this.insertAtCursor(previouslyActiveElement, clipboardText);
+				getarchive.insertAtCursor(previouslyActiveElement, clipboardText);
 			}
 			
 			//setCursorPos(previouslyActiveElement, cursorPosition, cursorPosition);
@@ -651,15 +545,15 @@ var getarchive = {
 			return;
 		}
 		
-		this.getarchive_lastcopy = urlToCopy;
+		getarchive_lastcopy = urlToCopy;
 		
 		if(url == null || window.location.href == url){
-			if(onlyValidPages == true && this.isUrlValid() == false){
+			if(onlyValidPages == true && getarchive.isUrlValid() == false){
 				return;
 			}
 		}
 		
-		if(this.copyToClipboard(urlToCopy) == true && documentTitle.indexOf("+") != 0){
+		if(getarchive.copyToClipboard(urlToCopy) == true && documentTitle.indexOf("+") != 0){
 			if(url == null){
 				var titleX = document.title;
 				if(titleX == "")
@@ -757,24 +651,22 @@ var getarchive = {
 		})
 	},
 	insertText: function(previouslyActiveElement, clipboardText){
-		this.insertAtCursor(previouslyActiveElement, clipboardText);
+		getarchive.insertAtCursor(previouslyActiveElement, clipboardText);
 	},
 	isCopySafe: function(){
-		var frameIdentifiers = ["iframe", "frame"];
-		var i = 0;
+		let frameIdentifiers = ["iframe", "frame"];
 		
 		// Test URL: http://web.archive.org/web/20060504004551/http://www.beastiemuseum.com/
 		if(getarchive.getInnerBody().indexOf("<frame") > -1){
-			for(i = 0; i < frameIdentifiers.length; i++){
-				var frames = document.getElementsByTagName(frameIdentifiers[i]);
-				var i = 0;
+			for(let i = 0; i < frameIdentifiers.length; i++){
+				let frames = document.getElementsByTagName(frameIdentifiers[i]);
 				//console.log("number of frames: " + frames.length);
 				if(frames.length > 0){
-					for(i = 0; i < frames.length; i++){
+					for(let j = 0; j < frames.length; j++){
 						try{
-							var frame = frames[i];
-							var idoc = frame.contentDocument || frame.contentWindow.document;
-							var frameselection = idoc.getSelection();
+							let frame = frames[j];
+							let idoc = frame.contentDocument || frame.contentWindow.document;
+							let frameselection = idoc.getSelection();
 							if(frameselection == null){
 								continue;
 							}
@@ -963,7 +855,7 @@ function addKeydown(){
 			//if(event.keyCode == 71 && !event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey){
 				event.preventDefault();
 				//console.log("KEY G SEARCH EVENT!");
-				getarchive.goSearch();
+				sendMessage("goSearch");
 			}, true);
 		}
 
