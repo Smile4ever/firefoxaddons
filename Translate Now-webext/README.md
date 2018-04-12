@@ -5,7 +5,7 @@ Right click a selection, page or link to translate words in Firefox.
 
 ## Features
 
-* Supports both Google Translate and Bing Translator.
+* Supports Google Translate, Deepl Translator and Bing Translator.
 * Broad support for source and destination languages.
 * Speak source text or destination text (translation) aloud using Google Translate Voice or Bing Translator Voice.
 * Make a selection, translate the current page or translate linked page.

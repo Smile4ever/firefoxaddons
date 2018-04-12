@@ -119,21 +119,23 @@ function getInputSelection(doc){
 }
 
 function bingTranslate(translate_now_source_language, translate_now_destination_language, selectedText){
-	setBingLanguage("sourceText", translate_now_source_language);
-	setBingLanguage("destinationText", translate_now_destination_language);
+	setBingLanguage("t_sl", translate_now_source_language.replace("auto", "auto-detect"));
+	setBingLanguage("t_tl", translate_now_destination_language);
 
-	document.getElementById("srcText").value = selectedText;
-	document.getElementById("TranslateButton").click();
+	document.getElementById("t_sv").value = selectedText;
 }
 
 function setBingLanguage(className, value){
-	let tds = document.getElementsByClassName(className)[0].getElementsByTagName("td");
+	let select = document.getElementById(className);
+	let options = select.getElementsByTagName("option");
 	let i = 0;
-	for(i = 0; i < tds.length; i++){
-		if(tds[i].getAttribute("value") == value){
-			tds[i].click();
+
+    for(let item of options){
+		if(item.value == value){
+			select.selectedIndex = i;
 			break;
 		}
+		i++;
 	}
 }
 
@@ -150,11 +152,11 @@ function bingSpeak(translate_now_source_language, translate_now_destination_lang
 				break;
 			case "both":
 				bingSpeakSource();
-				let length = 75 * selectedText.length;
+				let length = 85 * selectedText.length;
 				//console.log("bingSpeak - length is " + length);
 
 				setTimeout(function(){
-					if(document.getElementById("srcText").value != document.getElementById("destText").innerText)
+					if(document.getElementById("t_sv").value != document.getElementById("t_tv").value)
 						bingSpeakDestination();
 				}, length);
 				
@@ -166,12 +168,12 @@ function bingSpeak(translate_now_source_language, translate_now_destination_lang
 }
 
 function bingSpeakSource(){
-	let speakButton = document.getElementsByClassName("sourceText")[0].getElementsByClassName("speakButton")[0];
+	let speakButton = document.getElementById("t_srcplaycIcon");
 	speakButton.click();
 }
 
 function bingSpeakDestination(){
-	let speakButton = document.getElementsByClassName("destinationText")[0].getElementsByClassName("speakButton")[0];
+	let speakButton = document.getElementById("t_tarplaycIcon");
 	speakButton.click();
 }
 

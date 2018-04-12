@@ -1,3 +1,9 @@
+3.1.6
+=====
+- Fix Bing Translator Voice not working
+- Fix Bring Translator not working
+- Use magic number 85 instead of 75 for Bing Translator Voice audio length
+
 3.1.5
 =====
 - Fix iframe selection not working when using toolbar button
