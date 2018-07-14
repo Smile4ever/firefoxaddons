@@ -5,9 +5,9 @@ Add-ons:
 
 | Description page (addons.mozilla.org) | Source code | Browsers | (Ported to) WebExtensions?
 | ---------------- | ----------- | -------- | --------------------------
-| [Delete Tab XUL](https://addons.mozilla.org/firefox/addon/delete-tab-xul/) | [Source code](https://github.com/Smile4ever/Delete-Tab-XUL) | Firefox | Yes, this is the XUL version
-| [Delete Tab](https://addons.mozilla.org/firefox/addon/delete-tab/) | [Source code](https://github.com/Smile4ever/Delete-Tab) | Firefox | Yes (XUL => webext)
-| [Double Click On Page Closes Tab](https://addons.mozilla.org/nl/firefox/addon/double-click-on-page-close-tab/) | [Source code](https://github.com/Smile4ever/Double%20Click%20On%20Page%20Closes%20Tab-webext) | Firefox | Yes 
+| [Delete Tab XUL](https://addons.mozilla.org/firefox/addon/delete-tab-xul/) | [Smile4ever/Delete-Tab-XUL](https://github.com/Smile4ever/Delete-Tab-XUL) | Firefox | Yes, this is the XUL version
+| [Delete Tab](https://addons.mozilla.org/firefox/addon/delete-tab/) | [Smile4ever/Delete-Tab](https://github.com/Smile4ever/Delete-Tab) | Firefox | Yes (XUL => webext)
+| [Double Click On Page Closes Tab](https://addons.mozilla.org/nl/firefox/addon/double-click-on-page-close-tab/) | [Source code](https://github.com/Smile4ever/tree/master/Double%20Click%20On%20Page%20Closes%20Tab-webext) | Firefox | Yes 
 | [Fast Delete](https://addons.mozilla.org/firefox/addon/fast-delete/) | [Source code](https://github.com/Smile4ever/firefoxaddons/tree/master/Fast%20Delete-webext) | Firefox | Yes (XUL => webext)
 | [FastNav](https://addons.mozilla.org/firefox/addon/fastnav/) | [Source code](https://github.com/Smile4ever/firefoxaddons/tree/master/FastNav-webext) | Firefox | Yes (SDK => webext)
 | [Get Archive](https://addons.mozilla.org/firefox/addon/get-archive/) | [Source code](https://github.com/Smile4ever/firefoxaddons/tree/master/GetArchive-webext) | Firefox | Yes (XUL => webext)
