@@ -1,3 +1,26 @@
+4.0.0
+=============
+Technical
+* Cleanup code to make it more maintainable
+* Use Clipboard Web API instead of execCommand workarounds
+** This increases the Firefox requirement to (minimum) version 63
+** This should be more reliable then in the past
+* Remove workaround to open as related tab, this is now supported natively
+
+Features
+* For the message "Page could not be loaded", include the URL
+* Add date from archive URL to notification when known
+* nl.wikipedia.org: BREAK/PAUSE now pastes the partial template for an archived URL
+* Re-introduce the "auto" option for search, using the search API (requires the search permission)
+
+Changes
+* Set getarchive_disable_all_shortcuts to true by default
+* Drop the Preferences contextmenu item on the toolbar icon, this does the same as "Manage extension" added by Firefox
+
+Bugs
+* Fix some bugs
+** Paste by BREAK/PAUSE or INSERT would put the cursor in the wrong place. This is no longer the case.
+
 3.2.0
 =============
 * Cannot make out the difference between "Document expired" and "Server not found".

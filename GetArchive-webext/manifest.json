@@ -1,10 +1,10 @@
 {
 	"name": "Get Archive",
-	"description": "Gets a previous version from a webpage using archive.org, archive.is or webcitation.org.",
+	"description": "Gets a previous version from a webpage using archive.org, archive.is, webcitation.org or Google Cache.",
 	"homepage_url": "http://hugsmile.eu",
 	"default_locale": "en",
 	"manifest_version": 2,
-	"version": "3.2.0",
+	"version": "4.0.0",
 	"background": {
 		"scripts": ["background.js", "shared.js", "toolbaricon.js"]
 	},
@@ -21,10 +21,10 @@
 	"applications": {
 		"gecko": {
 			"id": "getarchive@hugsmile.eu",
-			"strict_min_version": "53.0"
+			"strict_min_version": "63.0"
 		}
 	},
-	"permissions": ["storage", "tabs", "contextMenus", "notifications", "clipboardRead", "clipboardWrite", "history", "activeTab", "webRequest", "webRequestBlocking", "https://web.archive.org/*:80*", "<all_urls>"],
+	"permissions": ["storage", "tabs", "contextMenus", "notifications", "clipboardRead", "clipboardWrite", "history", "activeTab", "search", "webRequest", "webRequestBlocking", "https://web.archive.org/*:80*", "<all_urls>"],
 	"options_ui": {
 		"page": "options.html",
 		"browser_style": true

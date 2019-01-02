@@ -65,7 +65,7 @@ const PREFS = {
 	},
 	"getarchive_disable_all_shortcuts": {
 		"type": "checked",
-		"default": false
+		"default": true
 	},
 	"getarchive_icon_theme": {
 		"type": "value",
@@ -74,6 +74,10 @@ const PREFS = {
 };
 
 const searchEngines = {
+	"auto": {
+		"value": "auto",
+		"label": "default search engine"
+	},
 	"bing": {
 		"value": "bing",
 		"label": "Bing"
@@ -169,11 +173,11 @@ function i18n() {
 }
 
 function fillLists(){
-	var search_engine_list = document.getElementById("getarchive_search_engine");
+	let search_engine_list = document.getElementById("getarchive_search_engine");
 	for(let e in searchEngines)
 		search_engine_list.add(new Option(searchEngines[e].label, searchEngines[e].value));
 	
-	var archive_service_list = document.getElementById("getarchive_default_archive_service");
+	let archive_service_list = document.getElementById("getarchive_default_archive_service");
 	for(let s in archiveServices)
 		archive_service_list.add(new Option(archiveServices[s].label, archiveServices[s].value));
 	
