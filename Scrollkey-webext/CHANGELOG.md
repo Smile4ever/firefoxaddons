@@ -1,3 +1,8 @@
+3.0.1
+=====
+- Fix: if scrolling doesn't work because we are at the end of a page or something, don't cancel the default event
+- Fix: don't show notification more than once per tab, unless the scrolling direction changes or the page is reloaded
+
 3.0.0
 =====
 - Implement optional smooth scrolling (off by default)

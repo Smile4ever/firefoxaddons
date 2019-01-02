@@ -1,7 +1,8 @@
 /// Static variables
-var scrollValue;
-var horizontalScroll;
-var scrollPageDownPageUp;
+let scrollValue;
+let horizontalScroll;
+let scrollPageDownPageUp;
+let alreadyNotifiedStatus = "";
 
 /// Constants
 const UP = -1;
@@ -32,14 +33,14 @@ let scrollkey_scroll_pagedown_pageup;
 let scrollkey_smooth_scrolling;
 
 function init(){
-	var valueOrDefault = function(value, defaultValue){
+	let valueOrDefault = function(value, defaultValue){
 		if(value == undefined)
 			return defaultValue;
 		return value;
 	}
 
-	var valueOrDefaultArray = function(value, defaultValue){
-		var calcValue = valueOrDefault(value, defaultValue);
+	let valueOrDefaultArray = function(value, defaultValue){
+		let calcValue = valueOrDefault(value, defaultValue);
 		return calcValue.split(" ").join("").split(",");
 	}
 
@@ -56,11 +57,6 @@ function init(){
 		"scrollkey_blacklist",
 		"scrollkey_smooth_scrolling"
 	]).then((result) => {
-		//console.log("background.js scrollkey_horizontal_scroll " + result.scrollkey_horizontal_scroll);
-		//console.log("background.js scrollkey_horizontal_scroll_shift " + result.scrollkey_blacklist);
-		//console.log("background.js scrollkey_horizontal_scroll_alt " + result.scrollkey_horizontal_scroll_alt);
-		//console.log("background.js scrollkey_blacklist " + result.scrollkey_blacklist);
-
 		scrollkey_horizontal_scroll = valueOrDefault(result.scrollkey_horizontal_scroll, false);
 		scrollkey_horizontal_scroll_shift = valueOrDefault(result.scrollkey_horizontal_scroll_shift, false);
 		scrollkey_horizontal_scroll_alt = valueOrDefault(result.scrollkey_horizontal_scroll_alt, false);
@@ -79,8 +75,10 @@ function init(){
 		scrollkey_smooth_scrolling = valueOrDefault(result.scrollkey_smooth_scrolling, false);
 
 		let preventRegistering = false;
+		let rootDomain = getRootDomain(window.location.href);
+
 		for(let site of scrollkey_blacklist){
-			if(site == getRootDomain(window.location.href)){
+			if(site == rootDomain){
 				preventRegistering = true;
 			}
 		}
@@ -116,7 +114,7 @@ function registerScrollkey(){
 function getDomain(url) {
 	if(url == undefined || url == null) return null;
 
-    var hostname = url.replace("www.", ""); // leave www out of this discussion. I don't consider this a subdomain
+    let hostname = url.replace("www.", ""); // leave www out of this discussion. I don't consider this a subdomain
     //find & remove protocol (http, ftp, etc.) and get hostname
 
     if (url.indexOf("://") > -1) {
@@ -139,7 +137,7 @@ function getDomain(url) {
 function getRootDomain(url) {
 	if(url == undefined || url == null) return null;
 
-    var domain = getDomain(url),
+    let domain = getDomain(url),
         splitArr = domain.split('.'),
         arrLen = splitArr.length;
 
@@ -157,7 +155,7 @@ function getRootDomain(url) {
     return domain;
 }
 
-var scrollDownOrUp = function(id, factor, win){
+let scrollDownOrUp = function(id, factor, win){
 	let scrollValue = getScrollValue(id);
 	let horizontalScroll = getHorizontalScroll(id+100);
 
@@ -170,10 +168,16 @@ var scrollDownOrUp = function(id, factor, win){
 			behavior: scrollBehaviour,
 		});
 
-		var limit = Math.max( win.document.body.scrollWidth, win.document.body.offsetWidth, win.document.documentElement.clientWidth, win.document.documentElement.scrollWidth, win.document.documentElement.offsetWidth) - win.innerWidth;
+		let limit = Math.max(win.document.body.scrollWidth, win.document.body.offsetWidth, win.document.documentElement.clientWidth, win.document.documentElement.scrollWidth, win.document.documentElement.offsetWidth) - win.innerWidth;
 		
-		if(limit <= 0)
-			sendMessage("notify", browser.i18n.getMessage("notify_tip_horizontal")); // "This page cannot be scrolled horizontally. Change the preferences to scroll vertically or try another shortcut."
+		if(limit <= 0){
+			if(alreadyNotifiedStatus === "" || alreadyNotifiedStatus === "notify_tip_vertical"){
+				sendMessage("notify", browser.i18n.getMessage("notify_tip_horizontal")); // "This page cannot be scrolled horizontally. Change the preferences to scroll vertically or try another shortcut."
+			}
+
+			alreadyNotifiedStatus = "notify_tip_horizontal";
+			return false;
+		}
 	}else{
 		win.scrollBy({
 			top: scrollValue * factor,
@@ -181,11 +185,19 @@ var scrollDownOrUp = function(id, factor, win){
 		});
 
 		// https://stackoverflow.com/questions/17688595/finding-the-maximum-scroll-position-of-a-page
-		var limit = Math.max( win.document.body.scrollHeight, win.document.body.offsetHeight, win.document.documentElement.clientHeight, win.document.documentElement.scrollHeight, win.document.documentElement.offsetHeight) - win.innerHeight;
+		let limit = Math.max(win.document.body.scrollHeight, win.document.body.offsetHeight, win.document.documentElement.clientHeight, win.document.documentElement.scrollHeight, win.document.documentElement.offsetHeight) - win.innerHeight;
 
-		if(limit <= 0)
-			sendMessage("notify", browser.i18n.getMessage("notify_tip_vertical")); // "This page cannot be scrolled vertically. Change the preferences to scroll horizontally or try another shortcut."
+		if(limit <= 0){
+			if(alreadyNotifiedStatus === "" || alreadyNotifiedStatus === "notify_tip_horizontal"){
+				sendMessage("notify", browser.i18n.getMessage("notify_tip_vertical")); // "This page cannot be scrolled vertically. Change the preferences to scroll horizontally or try another shortcut."
+			}
+
+			alreadyNotifiedStatus = "notify_tip_vertical";
+			return false;
+		}
 	}
+	
+	return true;
 }
 
 function getScrollValue(id){
@@ -204,29 +216,23 @@ function getScrollPageDownPageUp(){
 	return scrollkey_scroll_pagedown_pageup;
 }
 
-// Generic onError handler
-function onError(error){
-	console.error(`${error}`);
-}
-
 /// Iframe handling
 function addKeydownToIframes(){
 	/// Code from Get Archive, adapted for Scrollkey
 	// Test URL: https://www.w3schools.com/html/html_iframe.asp
-	var frameIdentifiers = ["iframe", "frame"];
+	let frameIdentifiers = ["iframe", "frame"];
 	try{
-		var i = 0;
+		let i = 0;
 		for(i = 0; i < frameIdentifiers.length; i++){
-			var frames = document.getElementsByTagName(frameIdentifiers[i]);
-			//var iframes = document.getElementsByTagName("iframe");
+			let frames = document.getElementsByTagName(frameIdentifiers[i]);
 
 			if(frames.length == 0){
 				continue;
 			}
 
-			var j = 0;
+			let j = 0;
 			for(j = 0; j < frames.length; j++){
-				var frame = frames[j];
+				let frame = frames[j];
 				if(frame.getAttribute("src") == null){
 					continue;
 				}
@@ -234,8 +240,7 @@ function addKeydownToIframes(){
 					continue;
 				}
 				try{
-					var frame = frames[j];
-					var idoc = frame.contentWindow;
+					let idoc = frame.contentWindow;
 					addKeydown(idoc);
 				}catch(innerex){
 					//console.log(innerex);
@@ -271,7 +276,7 @@ function addKeydown(w){
 			return;
 		}
 
-		var win = event.target.ownerDocument.defaultView;
+		let win = event.target.ownerDocument.defaultView;
 
 		// j = 74
 		// k = 75
@@ -283,43 +288,37 @@ function addKeydown(w){
 		// normal = 0
 		// shift = 1
 		// alt = 2
-		var ok = false;
+		let ok = false;
 
 		if (!event.ctrlKey && !event.metaKey) {
 			if(!event.shiftKey && !event.altKey && event.keyCode == scrollkey_scrollvaluedown){
 				// j
-				ok = true;
-				scrollDownOrUp(0, DOWN, win);
+				ok = scrollDownOrUp(0, DOWN, win);
 			}
 
 			if(!event.shiftKey && !event.altKey && event.keyCode == scrollkey_scrollvalueup){
 				// k
-				ok = true;
-				scrollDownOrUp(0, UP, win);
+				ok = scrollDownOrUp(0, UP, win);
 			}
 
 			if(event.shiftKey && !event.altKey && event.keyCode == scrollkey_scrollvaluedown){
 				// shift+j
-				ok = true;
-				scrollDownOrUp(1, DOWN, win);
+				ok = scrollDownOrUp(1, DOWN, win);
 			}
 
 			if(event.shiftKey && !event.altKey && event.keyCode == scrollkey_scrollvalueup){
 				// shift+k
-				ok = true;
-				scrollDownOrUp(1, UP, win);
+				ok = scrollDownOrUp(1, UP, win);
 			}
 
 			if(event.altKey && !event.shiftKey && event.keyCode == scrollkey_scrollvaluedown){
 				// alt+j
-				ok = true;
-				scrollDownOrUp(2, DOWN, win);
+				ok = scrollDownOrUp(2, DOWN, win);
 			}
 
 			if(event.altKey && !event.shiftKey && event.keyCode == scrollkey_scrollvalueup){
 				// alt+k
-				ok = true;
-				scrollDownOrUp(2, UP, win);
+				ok = scrollDownOrUp(2, UP, win);
 			}
 
 			if (!event.shiftKey && !event.altKey && event.keyCode == 71) {
@@ -337,16 +336,14 @@ function addKeydown(w){
 			if(!event.altKey && !event.shiftKey && event.keyCode == 34){
 				//PageDown
 				if(scrollkey_scroll_pagedown_pageup){
-					ok = true;
-					scrollDownOrUp(0, DOWN, win);
+					ok = scrollDownOrUp(0, DOWN, win);
 				}
 			}
 
 			if(!event.altKey && !event.shiftKey && event.keyCode == 33){
 				//PageUp
 				if(scrollkey_scroll_pagedown_pageup){
-					ok = true;
-					scrollDownOrUp(0, UP, win);
+					ok = scrollDownOrUp(0, UP, win);
 				}
 			}
 		}
