@@ -12,9 +12,6 @@ function onMessage(message) {
 		case "bingSpeak":
 			bingSpeak(message.data.translate_now_source_language, message.data.translate_now_destination_language, message.data.selectedText, message.data.translate_now_to_speak);
 			break;
-		case "deeplTranslate":
-			deeplTranslate(message.data.translate_now_source_language, message.data.translate_now_destination_language, message.data.selectedText);
-			break;
 		case "googleSpeak":
 			googleSpeak(message.data);
 			break;
@@ -175,56 +172,6 @@ function bingSpeakSource(){
 function bingSpeakDestination(){
 	let speakButton = document.getElementById("t_tarplaycIcon");
 	speakButton.click();
-}
-
-// DeepL only supports Dutch, English, German, French, Spanish, Italian and Polish
-function deeplTranslate(translate_now_source_language, translate_now_destination_language, selectedText){
-	// First try
-	deeplTranslateInternal(translate_now_source_language, translate_now_destination_language, selectedText);
-
-	let e = document.createEvent('HTMLEvents');
-	e.initEvent("keyup", false, true);
-	document.getElementsByClassName("lmt__target_textarea")[0].dispatchEvent(e);
-
-	let e2 = document.createEvent('HTMLEvents');
-	e2.initEvent("keyup", false, true);
-	document.getElementsByClassName("lmt__source_textarea")[0].dispatchEvent(e);
-
-	// Check if there is text in the target box
-	let targetText = document.getElementsByClassName("lmt__target_textarea")[0].value;
-	document.getElementsByClassName("lmt__target_textarea")[0].click();
-
-	// Retry
-	if(targetText == null || targetText == ""){
-		deeplTranslateInternal(translate_now_source_language, translate_now_destination_language, selectedText);
-	}
-
-	// Inform the user of failure and how to resolve the failure into success
-	setTimeout(function(){
-		let targetText2 = document.getElementsByClassName("lmt__target_textarea")[0].value;
-
-		if(targetText2 == null || targetText2 == ""){
-			document.getElementsByClassName("lmt__target_textarea")[0].value = "Loading translation. Press ENTER if your translation does not appear within 4 seconds.";
-		}
-	}, 2000);
-}
-
-function deeplTranslateInternal(translate_now_source_language, translate_now_destination_language, selectedText){
-	document.getElementsByClassName("lmt__source_textarea")[0].value = selectedText;
-
-	setDeeplLanguage("dl_select_source_language", translate_now_source_language.toUpperCase());
-	setDeeplLanguage("dl_select_target_language", translate_now_destination_language.toUpperCase());
-}
-
-function setDeeplLanguage(id, value){
-	let lis = document.getElementById(id).getElementsByTagName("li");
-	let i = 0;
-	for(i = 0; i < lis.length; i++){
-		if(lis[i].getAttribute("dl-value") == value){
-			lis[i].click();
-			break;
-		}
-	}
 }
 
 function googleSpeak(translate_now_to_speak){

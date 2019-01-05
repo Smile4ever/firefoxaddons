@@ -11,21 +11,37 @@ const PREFS = {
 		"type": "checked",
 		"default": true
 	},
+	"translate_now_reuse_tab_all": {
+		"type": "checked",
+		"default": false
+	},
 	"translate_now_related_tabs": {
 		"type": "checked",
 		"default": true
-	},
-	"translate_now_enable_speak": {
-		"type": "checked",
-		"default": false
 	},
 	"translate_now_translate_engine": {
 		"type": "value",
 		"default": "google"
 	},
-	"translate_now_speak_engine": {
-		"type": "value",
-		"default": "google"
+	"translate_now_show_deepl_translator": {
+		"type": "checked",
+		"default": false
+	},
+	"translate_now_show_bing_translator": {
+		"type": "checked",
+		"default": false,
+	},
+	"translate_now_show_google_translate": {
+		"type": "checked",
+		"default": true
+	},
+	"translate_now_show_google_translate_voice": {
+		"type": "checked",
+		"default": false
+	},
+	"translate_now_show_bing_translator_voice": {
+		"type": "checked",
+		"default": false
 	},
 	"translate_now_google_speak_audio_only": {
 		"type": "checked",
@@ -54,7 +70,8 @@ function saveOptions() {
 	
 	const values = {};
 	for(let p in PREFS) {
-		values[p] = document.getElementById(p)[PREFS[p].type];
+		let element = document.getElementById(p);
+		values[p] = element[PREFS[p].type];
 	}
 
 	browser.storage.local.set(values).then(() => browser.runtime.sendMessage({action: "refresh-options"}));

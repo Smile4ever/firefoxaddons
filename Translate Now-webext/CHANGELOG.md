@@ -1,3 +1,24 @@
+4.0.0
+=====
+
+Features
+- Multiple speech engines can now be used next to each other
+- Introduce the "reuse tab for all engines" option
+- Show icons in the context menu (visible when more than one engine is selected)
+
+Fixes
+- DeepL now uses a different mechanism to set the text, which means it works more reliable
+- For very long selections (more than 16384 characters), use the content script to retrieve the selection
+
+Changes
+- Options page: update the layout for newer Firefox releases
+- Options page: include subheadings to easily find options back
+- Remove Preferences item from the browser action, since a "Manage extension" entry is already available
+- "var" usage replaced with "let"
+- Make more use of querySelector
+- Use native way of opening related tabs
+- Cleanup code
+
 3.1.6
 =====
 - Fix Bing Translator Voice not working

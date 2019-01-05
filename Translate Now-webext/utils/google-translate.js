@@ -1,7 +1,7 @@
 /* Methods in the googletranslate object can be used anywhere */
-var googletranslate = {
+let googletranslate = {
 	getNewText: function(text){
-		var newText = text;
+		let newText = text;
 		newText = encodeURIComponent(newText);
 		newText = newText.replace("%25", "");
 		newText = newText.replace("%C2%A0", " ");
@@ -15,19 +15,19 @@ var googletranslate = {
 }
 
 /* Methods in the gt object are for content scripts */
-var gt = {
+let gt = {
 	playSound: function (speakLanguage, text){
-		var speakUrl = googletranslate.getSpeakUrlSource(speakLanguage, text);
+		let speakUrl = googletranslate.getSpeakUrlSource(speakLanguage, text);
 		//console.log("speakUrl is " + speakUrl);
-		var audioObj = new Audio(speakUrl);
+		let audioObj = new Audio(speakUrl);
 		//console.log("playing audio");
 		audioObj.play();
 		return audioObj;
 	},
 	getSpeakLanguage: function(id){
-		var speakLanguageElement = document.getElementById(id).getElementsByClassName("jfk-button-checked")[0];
-		var speakLanguageLabel = speakLanguageElement.innerHTML;
-		var speakLanguage = speakLanguageElement.getAttribute("value");
+		let speakLanguageElement = document.getElementById(id).getElementsByClassName("jfk-button-checked")[0];
+		let speakLanguageLabel = speakLanguageElement.innerHTML;
+		let speakLanguage = speakLanguageElement.getAttribute("value");
 		
 		//console.log("speakLanguage is " + speakLanguage);
 		if(speakLanguage == "auto"){
@@ -39,8 +39,8 @@ var gt = {
 				speakLanguageLabel = speakLanguageLabel.substring(0, speakLanguageLabelDetectedIndex);
 				//console.log("speakLanguageLabel is now " + speakLanguageLabel);
 				
-				var languages = document.getElementsByClassName("jfk-button");
-				var i = 0;
+				let languages = document.getElementsByClassName("jfk-button");
+				let i = 0;
 				for(i = 0; i < languages.length; i++){
 					if(languages[i].innerHTML == speakLanguageLabel){
 						speakLanguage = languages[i].getAttribute("value");
@@ -59,27 +59,15 @@ var gt = {
 		return this.getSpeakLanguage("gt-sl-sugg");
 	},
 	getSourceText: function (){
-		var sourceText = "";
-		try{
-			sourceText = document.getElementById("source").value; // If this fails, we should try to get it from the URL
-		}catch(e){
-			//console.log("Error while getting source text: " + e);
-		}
-		//console.log("sourceText is " + sourceText);
-		return sourceText;
+		let source = document.querySelector("#source");
+		return source != null ? source.value : "";
 	},
 	getDestinationSpeakLanguage: function(){
 		return this.getSpeakLanguage("gt-tl-sugg");
 	},
 	getDestinationText: function(){
-		var destinationText = "";
-		try{
-			destinationText = document.getElementById("result_box").innerText;
-		}catch(e){
-			//console.log("Error while getting destination text: " + e);
-		}
-		//console.log("destinationText is " + destinationText);
-		return destinationText;
+		let resultBox = document.querySelector("#result_box");
+		return resultBox != null ? resultBox.innerText : "";
 	},
 	isSourceSpeakAvailable: function(){
 		return this.isSpeakAvailable("gt-src-listen");
@@ -88,7 +76,7 @@ var gt = {
 		return this.isSpeakAvailable("gt-res-listen");
 	},
 	isSpeakAvailable: function(id){
-		var btnListenStyle = document.getElementById(id).getAttribute("style");
+		let btnListenStyle = document.getElementById(id).getAttribute("style");
 		if(btnListenStyle.indexOf("display: none") > -1 || btnListenStyle.indexOf("display:none") > -1) return false;
 		return true;
 	}

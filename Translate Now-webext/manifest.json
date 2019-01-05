@@ -1,9 +1,9 @@
 {
 	"name": "Translate Now",
-	"description": "Right click a selection, page or link to translate words in Firefox.",
+	"description": "Right click a selection, page or link to translate words.",
 	"homepage_url": "http://hugsmile.eu",
 	"manifest_version": 2,
-	"version": "3.1.6",
+	"version": "4.0.0",
 	"background": {
 		"scripts": ["background.js", "utils/google-translate.js"]
 	},

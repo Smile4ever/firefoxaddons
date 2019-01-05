@@ -1,89 +1,81 @@
 /// Static variables
-var selectedText = "";
-var lastTabId = -1;
-var globalAction = "";
+let selectedText = "";
+let globalAction = "";
+let lastTabs = [];
 
 //the addons icon is a modified version of http://www.flaticon.com/free-icon/translator-tool_69101
 //see their website for licensing information
 
-var translate_now_destination_language;
-var translate_now_source_language;
-var translate_now_reuse_tab;
-var translate_now_related_tabs;
-var translate_now_enable_speak;
-var translate_now_translate_engine;
-var translate_now_speak_engine;
-var translate_now_google_speak_audio_only;
-var translate_now_to_speak;
-var translate_now_context_selection;
-var translate_now_context_page;
-var translate_now_context_link;
+let translate_now_destination_language;
+let translate_now_source_language;
+let translate_now_reuse_tab;
+let translate_now_reuse_tab_all;
+let translate_now_related_tabs;
+let translate_now_translate_engine;
+let translate_now_google_speak_audio_only;
+let translate_now_to_speak;
+let translate_now_context_selection;
+let translate_now_context_page;
+let translate_now_context_link;
+
+let translate_now_show_deepl_translator;
+let translate_now_show_bing_translator;
+let translate_now_show_google_translate;
+
+let translate_now_show_google_translate_voice;
+let translate_now_show_bing_translator_voice;
 
 function init(){
-	var valueOrDefault = function(value, defaultValue){
-		if(value == undefined)
-			return defaultValue;
-		return value;
+	let valueOrDefault = function(value, defaultValue){
+		return value == undefined ? defaultValue : value;
 	}
-	
+
 	browser.storage.local.get([
 		"translate_now_destination_language",
 		"translate_now_source_language",
 		"translate_now_reuse_tab",
+		"translate_now_reuse_tab_all",
 		"translate_now_related_tabs",
-		"translate_now_enable_speak",
 		"translate_now_translate_engine",
-		"translate_now_speak_engine",
 		"translate_now_google_speak_audio_only",
 		"translate_now_to_speak",
 		"translate_now_context_selection",
 		"translate_now_context_page",
-		"translate_now_context_link"
+		"translate_now_context_link",
+		"translate_now_show_deepl_translator",
+		"translate_now_show_bing_translator",
+		"translate_now_show_google_translate",
+		"translate_now_show_google_translate_voice",
+		"translate_now_show_bing_translator_voice"
 	]).then((result) => {
-		//console.log("background.js translate_now_destination_language " + result.translate_now_destination_language);
 		translate_now_destination_language = valueOrDefault(result.translate_now_destination_language, "en");
-	
-		//console.log("background.js translate_now_source_language " + result.translate_now_source_language);
 		translate_now_source_language = valueOrDefault(result.translate_now_source_language, "auto");
-	
-		//console.log("background.js translate_now_reuse_tab " + result.translate_now_reuse_tab);
 		translate_now_reuse_tab = valueOrDefault(result.translate_now_reuse_tab, true);
-				
-		//console.log("background.js translate_now_related_tabs " + result.translate_now_related_tabs);
+		translate_now_reuse_tab_all = valueOrDefault(result.translate_now_reuse_tab_all, false);
 		translate_now_related_tabs = valueOrDefault(result.translate_now_related_tabs, true);
-	
-		//console.log("background.js translate_now_enable_speak " + result.translate_now_enable_speak);
 		translate_now_enable_speak = valueOrDefault(result.translate_now_enable_speak, false);
-		
-		//console.log("background.js translate_now_translate_engine " + result.translate_now_translate_engine);
 		translate_now_translate_engine = valueOrDefault(result.translate_now_translate_engine, "google");
-		
-		//console.log("background.js translate_now_speak_engine " + result.translate_now_speak_engine);
-		translate_now_speak_engine = valueOrDefault(result.translate_now_speak_engine, "google");
-		
-		//console.log("background.js translate_now_google_speak_audio_only " + result.translate_now_google_speak_audio_only);
 		translate_now_google_speak_audio_only = valueOrDefault(result.translate_now_google_speak_audio_only, false);
-		
-		//console.log("background.js translate_now_to_speak " + result.translate_now_to_speak);
 		translate_now_to_speak = valueOrDefault(result.translate_now_to_speak, "both");
-		
-		//console.log("background.js translate_now_context_selection " + result.translate_now_context_selection);
 		translate_now_context_selection = valueOrDefault(result.translate_now_context_selection, true);
-		
-		//console.log("background.js translate_now_context_page " + result.translate_now_context_page);
 		translate_now_context_page = valueOrDefault(result.translate_now_context_page, true);
-		
-		//console.log("background.js translate_now_context_link " + result.translate_now_context_link);
 		translate_now_context_link = valueOrDefault(result.translate_now_context_link, true);
-		
+
+		translate_now_show_deepl_translator = valueOrDefault(result.translate_now_show_deepl_translator, false);
+		translate_now_show_bing_translator = valueOrDefault(result.translate_now_show_bing_translator, false);
+		translate_now_show_google_translate = valueOrDefault(result.translate_now_show_google_translate, true);
+
+		translate_now_show_google_translate_voice = valueOrDefault(result.translate_now_show_google_translate_voice, false);
+		translate_now_show_bing_translator_voice = valueOrDefault(result.translate_now_show_bing_translator_voice, false);
+
 		initContextMenus();
-		
+
 		function format(translate_engine){
 			if(translate_engine == "google") return "Google Translate";
 			if(translate_engine == "bing") return "Bing Translator";
 			if(translate_engine == "deepl") return "DeepL Translator";
 		}
-		
+
 		browser.browserAction.setTitle({title: "Translate Now - " + format(translate_now_translate_engine)});
 	}).catch(console.error);
 }
@@ -112,95 +104,75 @@ function sendMessage(action, data, errorCallback){
 	function logTabs(tabs) {
 		for (tab of tabs) {
 			browser.tabs.sendMessage(tab.id, {"action": action, "data": data}).catch(function(){
-				onError("failed to execute " + action + "with data " + data);
+				console.error("failed to execute " + action + "with data " + data);
 				if(errorCallback) errorCallback(data, tab.url);
 			});
 		}
 	}
 
-	browser.tabs.query({currentWindow: true, active: true}).then(logTabs, onError);
+	browser.tabs.query({currentWindow: true, active: true}).then(logTabs, console.error);
 }
-
-// From Get Archive
-/*function sendMessageToTab(action, data, tabId, errorCallback){
-	browser.tabs.sendMessage(tabId, {"action": action, "data": data}).catch(function(){
-		onError("failed to execute " + action + "with data " + data + " for " + tabId);
-		if(errorCallback) errorCallback(data);
-	});
-}*/
 
 /// Context menus
 function initContextMenus(){
-	
-	try{
-		browser.contextMenus.onClicked.removeListener(listener);
-		browser.contextMenus.removeAll();
-	}catch(ex){
-		//console.log("contextMenu remove failed: " + ex);
-	}
-	
-	var selectionPageContext = [];
-	var selectionContext = [];
-	
+	browser.contextMenus.onClicked.removeListener(listener);
+	browser.contextMenus.removeAll();
+
+	let selectionPageContext = [];
+	let selectionContext = [];
+
 	if(translate_now_context_selection)	selectionPageContext.push("selection");
 	if(translate_now_context_selection)	selectionContext.push("selection");
 	if(translate_now_context_page) selectionPageContext.push("page");
 	if(translate_now_context_link) selectionPageContext.push("link");
-	
-	if(translate_now_translate_engine == "google")
-		createContextMenu("translatenow-google-translate", "Translate with Google", selectionPageContext);
-	if(translate_now_translate_engine == "bing")
-		createContextMenu("translatenow-bing-translate", "Translate with Bing", selectionContext);
-	if(translate_now_translate_engine == "deepl")
-		createContextMenu("translatenow-deepl-translate", "Translate with DeepL", selectionContext);
 
-	if(translate_now_enable_speak){
-		if(translate_now_speak_engine == "google")
-			createContextMenu("translatenow-google-speak", "Speak with Google Translate Voice", selectionContext);
-		if(translate_now_speak_engine == "bing")
-			createContextMenu("translatenow-bing-speak", "Speak with Bing Translator Voice", selectionContext);
-	}
-	
-	createContextMenu("translatenow-tb-preferences", "Preferences", ["browser_action"]);
-	browser.contextMenus.onClicked.addListener(listener);
+	browser.runtime.getBrowserInfo().then((info) => {
+		let v = info.version;
+		let browserVersion = parseInt(v.slice(0, v.search(".") - 1));
+
+		if(translate_now_show_bing_translator)
+			createContextMenu("translatenow-bing-translate", "Translate with Bing", selectionContext, browserVersion, "icons/engines/bing.png");
+		if(translate_now_show_deepl_translator)
+			createContextMenu("translatenow-deepl-translate", "Translate with DeepL", selectionContext, browserVersion, "icons/engines/deepl.png");
+		if(translate_now_show_google_translate)
+			createContextMenu("translatenow-google-translate", "Translate with Google", selectionPageContext, browserVersion, "icons/engines/google.png");
+
+		if(translate_now_show_bing_translator_voice)
+			createContextMenu("translatenow-bing-speak", "Speak with Bing Translator Voice", selectionContext, browserVersion, "icons/engines/bing.png");
+		if(translate_now_show_google_translate_voice)
+			createContextMenu("translatenow-google-speak", "Speak with Google Translate Voice", selectionContext, browserVersion, "icons/engines/google.png");
+
+		browser.contextMenus.onClicked.addListener(listener);
+	});
 }
 
-function createContextMenu(id, title, contexts){
-	browser.contextMenus.create({
-		id: id,
-		title: title,
-		contexts: contexts
-	}, onCreated);
-
-	function onCreated(n) {
-		if (browser.runtime.lastError) {
-			//console.log(`Error: ${browser.runtime.lastError}`);
-		}
+function createContextMenu(id, title, contexts, browserVersion, icon64){
+	if(browserVersion > 55 && icon64 != null){
+		browser.contextMenus.create({
+			id: id,
+			title: title,
+			contexts: contexts,
+			icons: {
+				"64": browser.extension.getURL(icon64)
+			}
+		});
+	}else{
+		browser.contextMenus.create({
+			id: id,
+			title: title,
+			contexts: contexts
+		});
 	}
-}
-
-/// Get Archive code
-function openPreferences(){
-	function onOpened() {
-		//console.log(`Options page opened`);
-	}
-
-	browser.runtime.openOptionsPage().then(onOpened, onError);	
 }
 
 function listener(info,tab){
 	if(info.menuItemId == "translatenow-tb-preferences"){
-		// Open Preferences
-		openPreferences();
+		browser.runtime.openOptionsPage();
 		return;
 	}
-	
-	var selectionText = "";
-	var pageUrl = "";
 
-	//console.log("info.selectionText " + info.selectionText);
-	//console.log("info.pageUrl " + info.pageUrl);
-	//console.log("info.linkUrl " + info.linkUrl);
+	let selectionText = "";
+	let pageUrl = "";
 
 	// Don't fill pageUrl when we won't be using it.
 	if(info.selectionText != "" && info.selectionText != null){
@@ -213,85 +185,90 @@ function listener(info,tab){
 			pageUrl = info.linkUrl;
 	}
 	
-	//console.log("selectionText " + selectionText);
-	//console.log("pageUrl " + pageUrl);
-	
 	doClick(selectionText, pageUrl, info.menuItemId.replace("translatenow-", ""));
 }
 
 function clickToolbarButton(){
-	if(translate_now_translate_engine == "google" || translate_now_translate_engine == "bing" || translate_now_translate_engine == "deepl")
+	if(translate_now_translate_engine != null){
 		globalAction = translate_now_translate_engine + "-translate";
 
-	// selectionText is unknown at this point, so pass an empty string
-	sendMessage("getSelection", "", priviledgedSiteNoContentScript);
+		// selectionText is unknown at this point, so pass an empty string
+		sendMessage("getSelection", "", priviledgedSiteNoContentScript);
+	}
 }
 
 browser.browserAction.onClicked.addListener(clickToolbarButton);
 
-/// Translate Now Code
 function openTab(url){
-	//console.log("openTab for url " + url);
-	//console.log("lastTabId is " + lastTabId);
+	if(lastTabs.length > 0 && translate_now_reuse_tab){
+		let toBeOpenedHostname = new URL(url).hostname;
 
-	if(lastTabId != -1 && translate_now_reuse_tab){
-		browser.tabs.get(lastTabId).then(onGot, onError);
-		
-		function onGot(tabInfo) {
-			browser.tabs.update(lastTabId, {
-				active: true,
-				url: url
+		// Look for tabs in lastTabs where hostname is equal to the to-be-opened one
+		// when translate_now_reuse_tab_all is set to true, it will overwrite this again
+		let lastTabPromises = lastTabs.map(lastTab => browser.tabs.get(lastTab.id));
+
+		Promise.all(lastTabPromises).then((tabs) => {
+			let equalTabs = tabs.filter(function currentHostnameMatchesToBeOpened(tab) {
+				return new URL(tab.url).hostname == toBeOpenedHostname;
 			});
-		}
 
-		function onError(error) {
-			openTabInner(url);
-		}
+			if(translate_now_reuse_tab_all){
+				equalTabs = tabs;
+			}
+
+			if(equalTabs.length > 0){
+				let lastEqualTab = equalTabs.pop();
+				browser.tabs.get(lastEqualTab.id).then((tabInfo) => {
+					browser.tabs.update(lastEqualTab.id, {
+						active: true,
+						url: url
+					});
+				}, function(error){
+					openFocusedTab(url);
+				});
+			}else{
+				openFocusedTab(url);
+			}
+		}, function(error){
+			openFocusedTab(url);
+		});
 	}else{
-		openTabInner(url);
+		openFocusedTab(url);
 	}
 }
 
-function openTabInner(url){
-	var parentTabIndex = -1;
-	
-	function ready(tabs) {
-		parentTabIndex = tabs[0].index;
-		
-		browser.tabs.create({
+function openFocusedTab(url){
+	browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+		let createProperties = {
 			url: url,
 			active: true
-		}).then(onCreated, onError);
-		
-		function onCreated(tab){
-			lastTabId = tab.id;
-			
-			if(translate_now_related_tabs){
-				moveTabToCurrent(tab.id, parentTabIndex);
-			}
+		};
+
+		if(translate_now_related_tabs){
+			createProperties.openerTabId = tabs[0].id;
 		}
-	}
 
-	browser.tabs.query({currentWindow: true, active: true}).then(ready, onError);
+		browser.tabs.create(createProperties).then((tab) => {
+			// tab.url is about:blank at the creation time, use "url" variable instead
+			lastTabs.push({id: tab.id, url: url});
+		}, console.error);
+	}, console.error);
 }
 
-/// Code from Get Archive
-function moveTabToCurrent(tabId, parentTabIndex) {
-	browser.tabs.move(tabId, {index: parentTabIndex + 1}).then(onMoved, onError);
-	
-	function onMoved(tab) {
-		//onDebug("Moved:" + JSON.stringify(tab));
-	}
+function handleRemoved(tabId, removeInfo) {
+	// Remove closed tabs from the lastTabs array
+	lastTabs = lastTabs.filter(lastTab => lastTab.id != tabId);
 }
-/// End of code from Get Archive
+
+browser.tabs.onRemoved.addListener(handleRemoved);
 
 function doClick(selectionText, pageUrl, action){
 	globalAction = action;
 
 	// Ideally, we want to use selectionText this which also works for cross-domain iframes (nice!!)
 	// But we now use a content script if the selection is too long to circumvent https://bugzilla.mozilla.org/show_bug.cgi?id=1338898
-	
-	if(selectionText.length < 150 || pageUrl != "" || selectionText.length > 150)
+
+	if(selectionText.length < 150 || pageUrl != "" || (selectionText.length > 150 && selectionText.length != 16384))
 		doAction(selectionText, pageUrl, action);
 	else
 		sendMessage("getSelection", selectionText, priviledgedSiteNoContentScript);
@@ -308,14 +285,13 @@ function priviledgedSiteNoContentScript(selectionText, pageUrl){
 function doAction(selectionText, pageUrl, action){
 	if(selectionText != "" && selectionText != null){
 		selectedText = selectionText;
-		//console.log("selectionText length is " + selectionText.length);
 	}else{
 		if(pageUrl != "" && pageUrl != null){
-			if((pageUrl.indexOf("http://") == -1 && pageUrl.indexOf("https://") == -1) || pageUrl.indexOf("://translate.google.") > -1){
+			if((!pageUrl.includes("http://") && pageUrl.includes("https://")) || pageUrl.includes("://translate.google.")){
 				notify("This page cannot be translated, please try another page.");
 				return;
 			}
-			if(action == "bing-translate"){
+			if(action == "bing-translate" || action == "deepl-translate"){
 				notify("Bing cannot translate whole pages, using Google Translate instead.");
 				globalAction = "google-translate";
 				action = "google-translate";
@@ -327,19 +303,16 @@ function doAction(selectionText, pageUrl, action){
 		}
 	}
 	
-	//console.log("doAction - pageUrl is " + pageUrl);
-	//console.log("doAction - selectedText is " + selectedText);
-	
 	if(selectedText.length > 5000 && action.indexOf("translate") > -1){
 		notify("Selected text is too long. Only the first 5000 selected characters will be translated.");
 	}
 	
+	let newText = googletranslate.getNewText(selectedText);
+
 	if(action.indexOf("google") > -1){
 		if(selectedText.length > 195 && action == "google-speak"){
 			notify("Selected text is too long. Only the first 195 characters will be spoken.");
 		}		
-		
-		var newText = googletranslate.getNewText(selectedText);
 
 		if(action == "google-speak"){
 			if(translate_now_google_speak_audio_only){
@@ -354,7 +327,7 @@ function doAction(selectionText, pageUrl, action){
 				}, 5000);
 			}
 		}else{
-			if(newText.indexOf("%3A%2F%2F") > -1){ // ://
+			if(newText.includes("%3A%2F%2F")){ // ://
 				openTab("https://translate.google.com/translate?sl=" + translate_now_source_language + "&tl=" + translate_now_destination_language + "&js=y&prev=_t&ie=UTF-8&u=" + newText);
 			}else{
 				// Using HTTP instead of HTTPS, to trigger Firefox HTTP -> HTTPS redirect. Otherwise, the old text is retained. See bug 18. https://github.com/Smile4ever/firefoxaddons/issues/18
@@ -373,12 +346,8 @@ function doAction(selectionText, pageUrl, action){
 	}
 
 	if(action.indexOf("deepl") > -1){
-		openTab("https://www.deepl.com/translator");
-		browser.tabs.onUpdated.addListener(pageLoaded);
-		setTimeout(function(){
-			// Remove the listener when the page fails to load within 5 seconds
-			browser.tabs.onUpdated.removeListener(pageLoaded);
-		}, 5000);
+		let sourceLanguage = translate_now_source_language == "auto" ? "en" : translate_now_source_language;
+		openTab("https://www.deepl.com/translator#" + sourceLanguage + "/" + translate_now_destination_language + "/" + newText);
 	}
 }
 
@@ -390,12 +359,6 @@ function pageLoaded(tabId, changeInfo, tabInfo){
 			sendMessage("bingTranslate", {translate_now_source_language: translate_now_source_language, translate_now_destination_language: translate_now_destination_language, selectedText: selectedText});
 		if(globalAction == "bing-speak")
 			sendMessage("bingSpeak", {translate_now_source_language: translate_now_source_language, translate_now_destination_language: translate_now_destination_language, selectedText: selectedText, translate_now_to_speak: translate_now_to_speak});
-		browser.tabs.onUpdated.removeListener(pageLoaded);
-	}
-	
-	if(tabInfo.url.indexOf("https://www.deepl.com/translator") > -1){
-		if(globalAction == "deepl-translate")
-			sendMessage("deeplTranslate", {translate_now_source_language: translate_now_source_language, translate_now_destination_language: translate_now_destination_language, selectedText: selectedText});
 		browser.tabs.onUpdated.removeListener(pageLoaded);
 	}
 
@@ -413,10 +376,6 @@ function setSelection(selectionText, pageUrl){
 }
 
 /// Helper functions
-function onError(error) {
-	//console.log(`Error: ${error}`);
-}
-
 function notify(message){
 	browser.notifications.create(message.substring(0, 20).replace(" ", ""),
 	{
