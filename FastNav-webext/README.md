@@ -3,18 +3,14 @@ FastNav
 
 Quickly navigate to the next page with your keyboard. Press n to go to the next page, press p to go to the previous page.
 
-Supported on pages which use the following:
-- /page/1	<!-- http://failblog.cheezburger.com/failbook/page/6 -->
-- &num=1 / &page=1 / =1	<!-- http://www.phoronix.com/scan.php?page=article&item=clear-linux-2016&num=1 -->
-- /page1
-- /page-1
-- page1.html / photo1.jpg
-- 1.html / 1.jpg
+Supported on the following pages:
+- URLs of pages ending or containing a number. The last number is preferred.
+- Pages that make use of "next" and "previous" buttons
 
-Also supported are websites that use:
-- links with "Next" or "Previous" <!-- https://www.youtube.com/results?q=scorpions+believe+in+love&sp=SADqAwA%253D -->
+Examples:
+- https://failblog.cheezburger.com/failbook/page/7
+- https://www.phoronix.com/scan.php?page=article&item=clear-linux-2016&num=1
 
-Supported websites:
-* Any website which follows the above
-* Reddit
-* YouTube
+Other functionality
+- To bypass the Reddit interstitial page upon "o"
+- Open the forums of Phoronix upon "o"

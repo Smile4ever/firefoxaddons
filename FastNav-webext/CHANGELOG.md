@@ -1,3 +1,12 @@
+1.3.0
+=====
+* Support for many more websites and photo galleries
+* Remove support for MoneyGram photo galleries (don't exist anymore)
+* Remove support for waarmaarraar.nl
+* Make the code easier (bugs are possible, please report)
+* Change homepage to itsafeature.org
+* Rewrite the README to be easier to understand
+
 1.2.0
 =====
 * Support for /page34

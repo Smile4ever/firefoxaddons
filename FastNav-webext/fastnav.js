@@ -14,7 +14,6 @@ function onMessage(message) {
 			//console.log("calculated max is " + max + " and absolute max is " + message.data.maxValue);
 
 			if(message.data.domain == getDomain(window.location.href) && message.data.scrollTop < max){
-				//console.log("what are we doing?");
 				document.documentElement.scrollTop = message.data.scrollTop;
 			}
 			break;
@@ -103,7 +102,7 @@ function generic(mode){
 	let i = 0;
 
 	// phoronix.com, http://punbb.informer.com, FluxBB
-	// http://www.phoronix.com/forums/forum/phoronix/latest-phoronix-articles/823939-the-best-most-efficient-graphics-cards-for-1080p-linux-gamers/page2
+	// https://www.phoronix.com/forums/forum/phoronix/latest-phoronix-articles/823939-the-best-most-efficient-graphics-cards-for-1080p-linux-gamers/page2
 	let linkTags = window.document.getElementsByTagName("link");
 	for(i = 0; i < linkTags.length; i++){
 		if(linkTags[i].getAttribute("rel") == mode){
@@ -132,30 +131,6 @@ function generic(mode){
 		}
 	}
 	
-	if(location.indexOf("techradar.com") > -1){
-		if (mode == "next" && location.lastIndexOf("/") < location.length - 3){ // there is no page filled in, add it
-			this.replacelocationbyurl(window.location.href + "/2", "techradar.com");
-			return;
-		}
-
-		if(location.lastIndexOf("/") > -1 && location.lastIndexOf("/") > location.length - 3){
-			// increment or decrement
-			lastIndex = location.lastIndexOf("/");
-			pageNumber = location.substring(lastIndex+1);
-				
-			if(mode == "next"){
-				window.location.href = window.location.href.substring(0, lastIndex) + "/" + (parseInt(pageNumber) + 1)
-			}else{
-				if(parseInt(pageNumber) == 2){
-					window.location.href = window.location.href.substring(0, lastIndex) // there is a page filled in, remove it
-				}else{
-					window.location.href = window.location.href.substring(0, lastIndex) + "/" + (parseInt(pageNumber) - 1)
-				}
-			}
-			return;
-		}
-	}
-	
 	// webwereld.nl, computerworld.nl etc.
 	let paginatorNext = window.document.getElementsByClassName("paginator-next")[0];
 	let paginatorPrevious = window.document.getElementsByClassName("paginator-previous")[0];
@@ -178,37 +153,6 @@ function generic(mode){
 			return;
 		}else{
 			window.history.back();
-			return;
-		}
-	}
-	
-	// waarmaarraar.nl (prev/next article)
-	if(location.indexOf("waarmaarraar.nl") > -1){
-		let container = document.getElementsByClassName("span7")[0];
-		let ahrefs = container.getElementsByTagName("a");
-		let newahrefs = [];
-		
-		for(counter = 0; counter < ahrefs.length; counter++){
-			let hrefattribute = ahrefs[counter].href;
-			if(hrefattribute == null){
-				continue;
-			}
-			if(hrefattribute.indexOf("/pages/re") > -1){
-				newahrefs.push(ahrefs[counter]);
-			}
-		}
-
-		if(newahrefs.length == 2){
-			if(mode == "next" ){
-				this.replacelocation(newahrefs[1], "waarmaarraar.nl next");
-			}else{
-				this.replacelocation(newahrefs[0], "waarmaarraar.nl prev");
-			}
-			return;
-		}
-		if(newahrefs.length == 1){
-			// there is no previous/next page?
-			this.replacelocation(newahrefs[0], "waarmaarraar.nl next/prev");
 			return;
 		}
 	}
@@ -243,109 +187,6 @@ function generic(mode){
 		}
 	}catch(e){
 		//
-	}
-	
-	if(location.indexOf("moneygram-live.com") > -1){
-		for(let index = 1; index < 10; index++){
-			if(moneyGramPhoto(index, mode)) return;
-		}
-	}
-	
-	// https://moneygram-live.com/wp-content/uploads/2017/12/2326.jpg
-	if(!foundMatch){
-		lastIndex = location.lastIndexOf(".");
-		if(lastIndex >= (location.length - 5)){
-			// Dealing with an extension, let's take the substring and assign the rest to extension (taking into account the slash)
-			let temp = location.substring(0, lastIndex);
-			extension = location.substring(lastIndex);
-
-			// Copy-paste from below
-			if(!foundMatch){
-				lastIndex = temp.lastIndexOf("page-");
-				if(lastIndex != -1){
-					prefix     = temp.substring(0, lastIndex + 5);
-					pageNumber = temp.substring(lastIndex + 5);
-					foundMatch = true;
-				}
-			}
-
-			// /page1
-			// https://www.febelfin.be/sites/default/files/pocket/files/assets/basic-html/page34.html
-			if(!foundMatch){
-				lastIndex = temp.lastIndexOf("/page");
-				if(lastIndex != -1){
-					prefix     = temp.substring(0, lastIndex + 5)
-					pageNumber = temp.substring(lastIndex + 5);
-					foundMatch = true;
-				}
-			}
-
-			// WordPress, i.e. https://frostwire.wordpress.com/page/2/
-			if(!foundMatch){
-				lastIndex = temp.lastIndexOf("/page/");
-				if(lastIndex != -1){
-					prefix     = temp.substring(0, lastIndex + 6);
-					pageNumber = temp.substring(lastIndex + 6);
-					foundMatch = true;
-				}
-			}
-			
-			// generic with extension
-			if(!foundMatch){
-				lastIndex = temp.lastIndexOf("/");
-				if(lastIndex != -1){
-					prefix     = temp.substring(0, lastIndex + 1);
-					pageNumber = temp.substring(lastIndex + 1);
-					foundMatch = true;
-				}
-			}
-		}
-	}
-	
-	if(!foundMatch){
-		extension = "";
-	}
-	
-	//page-1
-	if(!foundMatch){
-		lastIndex = location.lastIndexOf("page-");
-		if(lastIndex != -1){
-			prefix     = location.substring(0, lastIndex + 5);
-			pageNumber = location.substring(lastIndex + 5);
-			foundMatch = true;
-		}
-	}
-
-	// /page1
-	if(!foundMatch){
-		lastIndex = location.lastIndexOf("/page");
-		if(lastIndex != -1){
-			prefix     = location.substring(0, lastIndex + 5)
-			pageNumber = location.substring(lastIndex + 5);
-			foundMatch = true;
-		}
-	}
-
-	// WordPress, i.e. https://frostwire.wordpress.com/page/2/
-	if(!foundMatch){
-		lastIndex = location.lastIndexOf("/page/");
-		if(lastIndex != -1){
-			prefix     = location.substring(0, lastIndex + 6);
-			pageNumber = location.substring(lastIndex + 6);
-			foundMatch = true;
-		}
-	}
-	
-	// https://site.org/user/5989765/
-	if(!foundMatch){
-		lastIndex = location.lastIndexOf("/");
-		lastIndex = location.lastIndexOf("/", lastIndex - 1);
-
-		if(lastIndex != -1){
-			prefix     = location.substring(0, lastIndex + 1);
-			pageNumber = location.substring(lastIndex + 1);
-			foundMatch = true;
-		}
 	}
 
 	// Test URL: http://mspaintadventures.com/?s=6&p=009999 => going over the limit, strip a zero if there is one present!
@@ -399,7 +240,26 @@ function generic(mode){
 		if(prefix == "") prefix = location.substring(0,lastIndex + stringlength);
 		
 		this.replacelocationbyurl(prefix + leadingZeros + pagenum + addendum, "generic");
+	}else{
+		if(mode == "next"){
+			window.location.href = increment_last(location);
+		}else{
+			window.location.href = decrement_last(location);
+		}
 	}
+}
+
+// https://stackoverflow.com/questions/11059054/get-and-replace-the-last-number-on-a-string-with-javascript-or-jquery
+function increment_last(v) {
+    return v.replace(/[0-9]+(?!.*[0-9])/, function(match) {
+        return parseInt(match, 10)+1;
+    });
+}
+
+function decrement_last(v) {
+    return v.replace(/[0-9]+(?!.*[0-9])/, function(match) {
+        return parseInt(match, 10)-1;
+    });
 }
 
 function isNumber(n){
@@ -414,41 +274,8 @@ function a(tag, term){
 }
 
 function genericOpen(){
-	let i = 0;
 	let location= window.location.href;
 
-	// waarmaarraar.nl
-	if(location.indexOf("waarmaarraar.nl") > -1){
-		// Read more
-		let nextPageWMR = window.document.getElementsByClassName("readmore")[0];
-		if(nextPageWMR != null){
-			let alink = nextPageWMR.getElementsByTagName("a")[0];
-			if(mode == "next"){
-				window.location.href = alink.href;
-				return;
-			}
-		}
-		// Bronsite
-		let alinks = document.getElementsByTagName("a");
-		for(i = 0; i < alinks.length; i++){
-			// ©
-			let onclick = "";
-			try{
-				onclick = alinks[i].getAttribute("onclick");
-			}catch(e){
-				continue;
-			}
-			if(onclick == null){
-				continue;
-			}
-			
-			if(onclick.indexOf("/bronsite/") > -1){
-				window.location.href = alinks[i].href;
-				return;
-			}
-		}
-	}
-	
 	if(location.indexOf("reddit.com") > -1){
 		// reddit interstitial page
 		let interstitial = document.getElementsByClassName("interstitial")[0];
@@ -476,44 +303,4 @@ function genericOpen(){
 		if(commentsLabels != null)
 			window.location.href = "https://www.phoronix.com" + commentsLabels[0].getElementsByTagName("a")[0].href;
 	}
-
-	if(location.indexOf("twoo.com") > -1){
-		let profielBezoeken = document.getElementById("profielbezoeken");
-		if(profielBezoeken != null)
-			profielBezoeken.click();
-	}
-	
-	if(location.indexOf("moneygram-live.com") > -1){
-		// There is no dash of significance present
-		if(document.title.indexOf("Seite nicht gefunden") > -1){
-			if(window.location.href.replace("wp-content", "").replace("moneygram-live.com", "").indexOf("-") == -1){
-				if(mode == "next"){
-					window.location.href = window.location.href.replace(".jpg", "-1.jpg");
-					return true;
-				}
-			}
-		}
-	}
-}
-
-function moneyGramPhoto(index, mode){
-	let newPageIndex = index + 1;
-	let newPageIndexString = "";
-	
-	if(mode == "prev"){
-		newPageIndex = index - 1;
-	}
-	
-	// Index 0 does not exist
-	if(newPageIndex != 0){
-		newPageIndexString = "-" + newPageIndex;
-	}
-
-	// Does current index exist? If so, increment or decrement it
-	if (window.location.href.indexOf("-" + index) > -1){
-		window.location.href = window.location.href.replace("-" + index + ".jpg", newPageIndexString + ".jpg");
-		return true;
-	}
-	
-	return false;
 }
