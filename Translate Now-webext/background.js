@@ -223,6 +223,9 @@ function openTab(url){
 						active: true,
 						url: url
 					});
+					browser.windows.update(lastEqualTab.windowId, {
+						focused: true
+					});
 				}, function(error){
 					openFocusedTab(url);
 				});
@@ -287,12 +290,19 @@ function doAction(selectionText, pageUrl, action){
 		selectedText = selectionText;
 	}else{
 		if(pageUrl != "" && pageUrl != null){
-			if((!pageUrl.includes("http://") && pageUrl.includes("https://")) || pageUrl.includes("://translate.google.")){
+			if(pageUrl.includes("://translate.google.") || pageUrl.includes("://deepl.com") || pageUrl.includes("://www.bing.com/translator")){
 				notify("This page cannot be translated, please try another page.");
 				return;
 			}
-			if(action == "bing-translate" || action == "deepl-translate"){
+
+			if(action == "bing-translate"){
 				notify("Bing cannot translate whole pages, using Google Translate instead.");
+			}
+			if(action == "deepl-translate"){
+				notify("DeepL cannot translate whole pages, using Google Translate instead.");
+			}
+			
+			if(action == "bing-translate" || action == "deepl-translate"){
 				globalAction = "google-translate";
 				action = "google-translate";
 			}
@@ -319,7 +329,10 @@ function doAction(selectionText, pageUrl, action){
 				openTab(googletranslate.getSpeakUrlSource(translate_now_destination_language, newText));
 			}else{
 				// Using HTTP instead of HTTPS, to trigger Firefox HTTP -> HTTPS redirect. Otherwise, the old text is retained. See bug 18. https://github.com/Smile4ever/firefoxaddons/issues/18
-				openTab("http://translate.google.com/#" + translate_now_source_language + "/" + translate_now_destination_language + "/" + newText);
+				//openTab("http://translate.google.com/#" + translate_now_source_language + "/" + translate_now_destination_language + "/" + newText);
+				// Use new URL structure, see bug 156. https://github.com/Smile4ever/firefoxaddons/issues/156
+				openTab("http://translate.google.com/#view=home&op=translate&sl=" + translate_now_source_language + "&tl=" + translate_now_destination_language + "&text=" + newText);
+				
 				browser.tabs.onUpdated.addListener(pageLoaded);
 				setTimeout(function(){
 					// Remove the listener when the page fails to load within 5 seconds
@@ -328,10 +341,14 @@ function doAction(selectionText, pageUrl, action){
 			}
 		}else{
 			if(newText.includes("%3A%2F%2F")){ // ://
-				openTab("https://translate.google.com/translate?sl=" + translate_now_source_language + "&tl=" + translate_now_destination_language + "&js=y&prev=_t&ie=UTF-8&u=" + newText);
+				//openTab("https://translate.google.com/translate?sl=" + translate_now_source_language + "&tl=" + translate_now_destination_language + "&js=y&prev=_t&ie=UTF-8&u=" + newText);
+				openTab("https://translate.google.com/translate?hl=" + translate_now_source_language + "&sl=" + translate_now_source_language + "&tl=" + translate_now_destination_language + "&u=" + newText);
 			}else{
 				// Using HTTP instead of HTTPS, to trigger Firefox HTTP -> HTTPS redirect. Otherwise, the old text is retained. See bug 18. https://github.com/Smile4ever/firefoxaddons/issues/18
-				openTab("http://translate.google.com/#" + translate_now_source_language + "/" + translate_now_destination_language + "/" + newText);
+				//openTab("http://translate.google.com/#" + translate_now_source_language + "/" + translate_now_destination_language + "/" + newText);
+				// Use new URL structure, see bug 156. https://github.com/Smile4ever/firefoxaddons/issues/156
+				openTab("http://translate.google.com/#view=home&op=translate&sl=" + translate_now_source_language + "&tl=" + translate_now_destination_language + "&text=" + newText);
+
 			}
 		}
 	}
@@ -377,11 +394,15 @@ function setSelection(selectionText, pageUrl){
 
 /// Helper functions
 function notify(message){
-	browser.notifications.create(message.substring(0, 20).replace(" ", ""),
+	let messageId = message.substring(0, 20).replace(" ", "");
+	browser.notifications.create(messageId,
 	{
 		type: "basic",
 		iconUrl: browser.extension.getURL("icons/translatenow-64.png"),
 		title: "Translate Now",
 		message: message
 	});
+	setTimeout(function(){
+		browser.notifications.clear(messageId);
+	}, 5000);
 }

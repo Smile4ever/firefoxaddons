@@ -1,3 +1,10 @@
+4.0.1
+=====
+- Focus window if it contains the tab which was last opened for Google Translate
+- Use another URL structure for Google Translate, fixes #156
+- Automatically hide notification after 5 seconds
+- Change homepage to itsafeature.org
+
 4.0.0
 =====
 
