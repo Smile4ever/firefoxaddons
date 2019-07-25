@@ -286,8 +286,17 @@ function priviledgedSiteNoContentScript(selectionText, pageUrl){
 }
 
 function doAction(selectionText, pageUrl, action){
+	let isURL = false;
 	if(selectionText != "" && selectionText != null){
 		selectedText = selectionText;
+		// If user opted to show the context menu for translating links,
+		// check if the selection is a valid URL, if so translate as link
+		if(translate_now_context_link && /^\s*https?:\/\/\S+\s*$/i.test(selectedText)){
+			try{
+				selectedText = new URL(selectedText.trim()).href;
+				isURL = true;
+			}catch(e){}
+		}
 	}else{
 		if(pageUrl != "" && pageUrl != null){
 			if(pageUrl.includes("://translate.google.") || pageUrl.includes("://deepl.com") || pageUrl.includes("://www.bing.com/translator")){
@@ -307,6 +316,7 @@ function doAction(selectionText, pageUrl, action){
 				action = "google-translate";
 			}
 			selectedText = pageUrl;
+			isURL = true;
 		}else{
 			notify("Please try another selection.");
 			return;
@@ -340,7 +350,7 @@ function doAction(selectionText, pageUrl, action){
 				}, 5000);
 			}
 		}else{
-			if(newText.includes("%3A%2F%2F")){ // ://
+			if(isURL){
 				//openTab("https://translate.google.com/translate?sl=" + translate_now_source_language + "&tl=" + translate_now_destination_language + "&js=y&prev=_t&ie=UTF-8&u=" + newText);
 				openTab("https://translate.google.com/translate?hl=" + translate_now_source_language + "&sl=" + translate_now_source_language + "&tl=" + translate_now_destination_language + "&u=" + newText);
 			}else{
