@@ -1,6 +1,8 @@
 4.0.2
 =====
 - Fix support for Firefox 52.8.1, see #165
+- Improve URL validation using #162, fixes #161
+- Only translate selected links when the option is enabled
 
 4.0.1
 =====
