@@ -2,6 +2,9 @@
 let selectedText = "";
 let globalAction = "";
 let lastTabs = [];
+const minBrowserVersionForContextMenuIcons = 56;
+const minBrowserVersionForOpenerTabId = 57;
+let browserVersion = 60; // Enable all features by default
 
 //the addons icon is a modified version of http://www.flaticon.com/free-icon/translator-tool_69101
 //see their website for licensing information
@@ -128,7 +131,7 @@ function initContextMenus(){
 
 	browser.runtime.getBrowserInfo().then((info) => {
 		let v = info.version;
-		let browserVersion = parseInt(v.slice(0, v.search(".") - 1));
+		browserVersion = parseInt(v.slice(0, v.search(".") - 1));
 
 		if(translate_now_show_bing_translator)
 			createContextMenu("translatenow-bing-translate", "Translate with Bing", selectionContext, browserVersion, "icons/engines/bing.png");
@@ -147,7 +150,7 @@ function initContextMenus(){
 }
 
 function createContextMenu(id, title, contexts, browserVersion, icon64){
-	if(browserVersion > 55 && icon64 != null){
+	if(browserVersion >= minBrowserVersionForContextMenuIcons && icon64 != null){
 		browser.contextMenus.create({
 			id: id,
 			title: title,
@@ -247,7 +250,7 @@ function openFocusedTab(url){
 			active: true
 		};
 
-		if(translate_now_related_tabs){
+		if(translate_now_related_tabs && browserVersion >= minBrowserVersionForOpenerTabId){
 			createProperties.openerTabId = tabs[0].id;
 		}
 
@@ -348,7 +351,6 @@ function doAction(selectionText, pageUrl, action){
 				//openTab("http://translate.google.com/#" + translate_now_source_language + "/" + translate_now_destination_language + "/" + newText);
 				// Use new URL structure, see bug 156. https://github.com/Smile4ever/firefoxaddons/issues/156
 				openTab("http://translate.google.com/#view=home&op=translate&sl=" + translate_now_source_language + "&tl=" + translate_now_destination_language + "&text=" + newText);
-
 			}
 		}
 	}

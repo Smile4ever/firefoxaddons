@@ -1,3 +1,7 @@
+4.0.2
+=====
+- Fix support for Firefox 52.8.1, see #165
+
 4.0.1
 =====
 - Focus window if it contains the tab which was last opened for Google Translate
