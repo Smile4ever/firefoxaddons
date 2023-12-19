@@ -7,7 +7,7 @@ Add-ons:
 | ---------------- | ----------- | -------- | --------------------------
 | [Delete Tab XUL](https://addons.mozilla.org/firefox/addon/delete-tab-xul/) | [Smile4ever/Delete-Tab-XUL](https://github.com/Smile4ever/Delete-Tab-XUL) | Firefox | XUL
 | [Delete Tab](https://addons.mozilla.org/firefox/addon/delete-tab/) | [Smile4ever/Delete-Tab](https://github.com/Smile4ever/Delete-Tab) | Firefox | Manifest V2
-| [Double Click On Page Closes Tab](https://addons.mozilla.org/nl/firefox/addon/double-click-on-page-close-tab/) | [Smile4ever/Double-Click-On-Page-Closes-Tab](https://github.com/Smile4ever/Double-Click-On-Page-Closes-Tab) | Firefox | Manifest V2
+| [Double Click On Page Closes Tab](https://addons.mozilla.org/nl/firefox/addon/double-click-on-page-close-tab/) | [Smile4ever/Double-Click-On-Page-Closes-Tab](https://github.com/Smile4ever/Double-Click-On-Page-Closes-Tab) | Firefox | Manifest V3
 | [Fast Delete](https://addons.mozilla.org/firefox/addon/fast-delete/) | [Source code](https://github.com/Smile4ever/firefoxaddons/tree/master/Fast%20Delete-webext) | Firefox | Manifest V2
 | [FastNav](https://addons.mozilla.org/firefox/addon/fastnav/) | [Source code](https://github.com/Smile4ever/firefoxaddons/tree/master/FastNav-webext) | Firefox | Manifest V2
 | [Get Archive](https://addons.mozilla.org/firefox/addon/get-archive/) | [Source code](https://github.com/Smile4ever/firefoxaddons/tree/master/GetArchive-webext) | Firefox | Manifest V2
