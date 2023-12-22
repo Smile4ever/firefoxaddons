@@ -13,13 +13,15 @@ Extend the functionality of Firefox with cool addons
 | [Link Investigator](https://addons.mozilla.org/firefox/addon/link-investigator/) | [Smile4ever/Link-Investigator](https://github.com/Smile4ever/Link-Investigator) | Firefox | Manifest V2 (to migrate)
 | [Middle Click On Page Closes Tab](https://addons.mozilla.org/firefox/addon/middle-click-on-page-close-tab/) | [Source code](https://github.com/Smile4ever/firefoxaddons/tree/master/Middle%20Click%20On%20Page%20Closes%20Tab-webext) | Firefox | Manifest V2 (to migrate)
 | [Neat URL](https://addons.mozilla.org/firefox/addon/neat-url/) | [Smile4ever/Neat-URL](https://github.com/Smile4ever/Neat-URL) | Firefox, Chrome | Manifest V2 (to migrate)
-| [Scrollkey](https://addons.mozilla.org/firefox/addon/scrollkey/) | [Source code](https://github.com/Smile4ever/firefoxaddons/tree/master/Scrollkey-webext) | Firefox | Manifest V2 (to migrate)
-| [Translate Now](https://addons.mozilla.org/firefox/addon/translate-now/) | [Source code](https://github.com/Smile4ever/firefoxaddons/tree/master/Translate%20Now-webext) | Firefox | Manifest V2 (to migrate)
+| [Scrollkey](https://addons.mozilla.org/firefox/addon/scrollkey/) | [Smile4ever/Scrollkey](https://github.com/Smile4ever/Scrollkey) | Firefox | Manifest V2 (to migrate)
+| [Translate Now](https://addons.mozilla.org/firefox/addon/translate-now/) | [Smile4ever/Translate-Now](https://github.com/Smile4ever/Translate-Now) | Firefox | Manifest V3
 
 XUL Add-ons:
-| Description page (addons.mozilla.org) | Source code | Browsers | Technology
+| Description page | Source code | Browsers | Technology
 | ---------------- | ----------- | -------- | --------------------------
-| [Delete Tab XUL](https://addons.mozilla.org/firefox/addon/delete-tab-xul/) | [Smile4ever/Delete-Tab-XUL](https://github.com/Smile4ever/Delete-Tab-XUL) | Firefox | XUL
-| [Multi Links Plus](https://addons.mozilla.org/firefox/addon/multi-links-plus/) | [Source code](https://github.com/Smile4ever/firefoxaddons/tree/master/Multi%20Links%20Plus) | Firefox | XUL (no port available)
+| Delete Tab XUL | [Smile4ever/Delete-Tab-XUL](https://github.com/Smile4ever/Delete-Tab-XUL) | Firefox | XUL
+| Fast Delete XUL | firefoxaddons | Firefox | XUL
+| Get Archive XUL | firefoxaddons | Firefox | XUL
+| [Multi Links Plus](https://addons.palemoon.org/addon/multi-links-plus/) | [Source code](https://github.com/Smile4ever/firefoxaddons/tree/master/Multi%20Links%20Plus) | Firefox | XUL (no port available)
 | Translate Now XUL | [Source code](https://github.com/Smile4ever/Smile4ever/Translate-Now-XUL) | Firefox | XUL
 

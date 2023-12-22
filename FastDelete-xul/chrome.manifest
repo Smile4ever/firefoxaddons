@@ -1,0 +1,4 @@
+content   fastdelete           		chrome/content/
+locale    fastdelete   en-US			chrome/locale/en-US/
+
+overlay  chrome://browser/content/browser.xul chrome://fastdelete/content/fastdelete.xul
